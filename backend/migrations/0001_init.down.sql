@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS password_reset_tokens;
+DROP TABLE IF EXISTS certificates;
+DROP TABLE IF EXISTS course_regions;
+DROP TABLE IF EXISTS course_stacks;
+DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS schools;
+DROP TABLE IF EXISTS opportunity_regions;
+DROP TABLE IF EXISTS opportunity_stacks;
+DROP TABLE IF EXISTS opportunities;
+DROP TABLE IF EXISTS company_regions;
+DROP TABLE IF EXISTS company_stacks;
+DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS regions;
+DROP TABLE IF EXISTS stacks;
+DROP TABLE IF EXISTS achievements;
+DROP TABLE IF EXISTS users;

@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300;
+}
+
+.dark body {
+  @apply bg-slate-950 text-slate-100;
+}
+
+a {
+  @apply text-brand hover:text-brand-dark transition-colors;
+}
+
+.section-title {
+  @apply text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4;
+}
+
+.card {
+  @apply rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-white/90 dark:bg-slate-900/70 backdrop-blur shadow-sm hover:shadow-md transition-shadow;
+}
+
