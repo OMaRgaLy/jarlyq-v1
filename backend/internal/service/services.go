@@ -30,7 +30,7 @@ func NewServices(repos *Repositories, cfg *config.Config, log logger.Logger) *Se
 		passwordTokens = repository.NewPasswordTokenRepository(repos.DB)
 	}
 
-	userSvc := NewUserService(repos.Users, jwt, mail, verifier, passwordTokens)
+	userSvc := NewUserService(repos.Users, jwt, mail, verifier, passwordTokens, cfg, log)
 
 	return &Services{
 		User:        userSvc,

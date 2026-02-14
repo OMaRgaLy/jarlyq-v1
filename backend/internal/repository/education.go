@@ -27,6 +27,8 @@ type CourseRepository interface {
 type EducationFilter struct {
 	StackIDs  []uint
 	RegionIDs []uint
+	Limit     int
+	Offset    int
 }
 
 type schoolRepo struct {
@@ -55,6 +57,12 @@ func (r *schoolRepo) List(ctx context.Context, filter EducationFilter) ([]model.
 	if len(filter.RegionIDs) > 0 {
 		query = query.Joins("JOIN course_regions cr ON cr.course_id = courses.id").Where("cr.region_id IN ?", filter.RegionIDs).Group("schools.id")
 	}
+	limit := filter.Limit
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+	query = query.Offset(filter.Offset).Limit(limit)
+
 	var schools []model.School
 	if err := query.Find(&schools).Error; err != nil {
 		return nil, err

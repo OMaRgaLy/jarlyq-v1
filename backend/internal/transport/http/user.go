@@ -37,7 +37,7 @@ func (h *Handler) getProfile(c *gin.Context) {
 	id := c.GetUint("user_id")
 	user, err := h.Services.User.GetProfile(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": mapUser(user)})
@@ -46,7 +46,7 @@ func (h *Handler) getProfile(c *gin.Context) {
 func (h *Handler) updateProfile(c *gin.Context) {
 	var req updateProfileRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request data"})
 		return
 	}
 	id := c.GetUint("user_id")
@@ -66,7 +66,8 @@ func (h *Handler) updateProfile(c *gin.Context) {
 		Privacy:   privacy,
 	})
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		h.Logger.Warnf("update profile failed for user %d: %v", id, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to update profile"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": mapUser(user)})

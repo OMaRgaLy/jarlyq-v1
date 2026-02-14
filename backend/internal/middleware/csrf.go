@@ -55,17 +55,24 @@ func ensureCSRFCookie(c *gin.Context, cfg *config.Config) {
 
 	token := make([]byte, 32)
 	if _, err := rand.Read(token); err != nil {
-		panic(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "server error"})
+		return
 	}
 	encoded := base64.RawURLEncoding.EncodeToString(token)
+
+	secure := cfg.AppEnv == "production"
+	sameSite := http.SameSiteLaxMode
+	if secure {
+		sameSite = http.SameSiteStrictMode
+	}
 
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     cfg.CSRFCookieName,
 		Value:    encoded,
 		Path:     "/",
 		HttpOnly: false,
-		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
+		Secure:   secure,
+		SameSite: sameSite,
 		Domain:   cfg.CSRFCookieDomain,
 	})
 }

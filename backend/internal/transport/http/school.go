@@ -17,12 +17,19 @@ func newSchoolRoutes(group *gin.RouterGroup, handler *Handler) {
 func (h *Handler) listSchools(c *gin.Context) {
 	stackIDs := parseUintSlice(c.QueryArray("stack_ids[]"))
 	regionIDs := parseUintSlice(c.QueryArray("region_ids[]"))
-	schools, err := h.Services.Education.ListSchools(c.Request.Context(), repository.EducationFilter{StackIDs: stackIDs, RegionIDs: regionIDs})
+	limit, offset := parsePagination(c)
+	schools, err := h.Services.Education.ListSchools(c.Request.Context(), repository.EducationFilter{
+		StackIDs:  stackIDs,
+		RegionIDs: regionIDs,
+		Limit:     limit,
+		Offset:    offset,
+	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.Logger.Errorf("list schools: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch schools"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"schools": schools})
+	c.JSON(http.StatusOK, gin.H{"schools": schools, "limit": limit, "offset": offset})
 }
 
 func (h *Handler) getSchool(c *gin.Context) {
@@ -33,7 +40,7 @@ func (h *Handler) getSchool(c *gin.Context) {
 	}
 	school, err := h.Services.Education.GetSchool(c.Request.Context(), uint(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": "school not found"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"school": school})

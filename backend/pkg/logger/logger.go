@@ -29,7 +29,12 @@ func New(env string) Logger {
 
 	l, err := cfg.Build()
 	if err != nil {
-		panic(err)
+		// Fall back to a basic logger if config fails
+		fallback, _ := zap.NewProduction()
+		if fallback == nil {
+			fallback = zap.NewExample()
+		}
+		return &ZapLogger{SugaredLogger: fallback.Sugar()}
 	}
 	return &ZapLogger{SugaredLogger: l.Sugar()}
 }

@@ -26,7 +26,7 @@ func (h *Handler) verifyCertificate(c *gin.Context) {
 	}
 	certificate, err := h.Services.Certificate.Verify(c.Request.Context(), code)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": "certificate not found"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"certificate": certificate})

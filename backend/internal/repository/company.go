@@ -21,6 +21,8 @@ type CompanyRepository interface {
 type CompanyFilter struct {
 	StackIDs  []uint
 	RegionIDs []uint
+	Limit     int
+	Offset    int
 }
 
 type companyRepo struct {
@@ -41,6 +43,12 @@ func (r *companyRepo) List(ctx context.Context, filter CompanyFilter) ([]model.C
 	if len(filter.RegionIDs) > 0 {
 		query = query.Joins("JOIN company_regions cr ON cr.company_id = companies.id").Where("cr.region_id IN ?", filter.RegionIDs).Group("companies.id")
 	}
+
+	limit := filter.Limit
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+	query = query.Offset(filter.Offset).Limit(limit)
 
 	var companies []model.Company
 	if err := query.Find(&companies).Error; err != nil {

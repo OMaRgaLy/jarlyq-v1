@@ -43,9 +43,9 @@ func NewHandler(services *service.Services, cfg *config.Config, log logger.Logge
 }
 
 // RegisterRoutes sets up endpoints.
-func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager) {
+func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager, authRateLimiter gin.HandlerFunc) {
 	v1 := router.Group("/v1")
-	newAuthRoutes(v1.Group("/auth"), handler, jwt)
+	newAuthRoutes(v1.Group("/auth"), handler, jwt, authRateLimiter)
 	newUserRoutes(v1.Group("/users"), handler, jwt)
 	newCompanyRoutes(v1.Group("/companies"), handler)
 	newSchoolRoutes(v1.Group("/schools"), handler)

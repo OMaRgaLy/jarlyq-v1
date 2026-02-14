@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"time"
@@ -11,8 +14,10 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	"github.com/example/jarlyq/internal/auth"
+	"github.com/example/jarlyq/internal/config"
 	"github.com/example/jarlyq/internal/model"
 	"github.com/example/jarlyq/internal/repository"
+	"github.com/example/jarlyq/pkg/logger"
 	"github.com/example/jarlyq/pkg/mailer"
 )
 
@@ -61,6 +66,8 @@ type userService struct {
 	mailer    mailer.Mailer
 	google    OAuthVerifier
 	tokenRepo PasswordTokenRepository
+	cfg       *config.Config
+	log       logger.Logger
 }
 
 // PasswordTokenRepository handles reset tokens.
@@ -84,7 +91,7 @@ type OAuthProfile struct {
 }
 
 // NewUserService constructs service.
-func NewUserService(users repository.UserRepository, jwt auth.Manager, mailer mailer.Mailer, verifier OAuthVerifier, tokenRepo PasswordTokenRepository) UserService {
+func NewUserService(users repository.UserRepository, jwt auth.Manager, mailer mailer.Mailer, verifier OAuthVerifier, tokenRepo PasswordTokenRepository, cfg *config.Config, log logger.Logger) UserService {
 	return &userService{
 		users:     users,
 		validator: validator.New(),
@@ -92,6 +99,8 @@ func NewUserService(users repository.UserRepository, jwt auth.Manager, mailer ma
 		mailer:    mailer,
 		google:    verifier,
 		tokenRepo: tokenRepo,
+		cfg:       cfg,
+		log:       log,
 	}
 }
 
@@ -127,7 +136,10 @@ func (s *userService) Register(ctx context.Context, input RegisterInput) (*AuthR
 	}
 
 	if s.mailer != nil {
-		_ = s.mailer.SendVerification(user.Email, fmt.Sprintf("https://app.jarlyq.com/verify?token=%s", access))
+		link := fmt.Sprintf("%s/verify?token=%s", s.cfg.AppBaseURL, access)
+		if err := s.mailer.SendVerification(user.Email, link); err != nil {
+			s.log.Warnf("failed to send verification email to %s: %v", user.Email, err)
+		}
 	}
 
 	return &AuthResult{AccessToken: access, RefreshToken: refresh, User: user}, nil
@@ -226,33 +238,61 @@ func (s *userService) UpdateProfile(ctx context.Context, id uint, input UpdatePr
 	return user, nil
 }
 
+// generateSecureToken creates a cryptographically secure random token.
+func generateSecureToken(n int) (string, error) {
+	b := make([]byte, n)
+	if _, err := rand.Read(b); err != nil {
+		return "", fmt.Errorf("generate token: %w", err)
+	}
+	return base64.URLEncoding.EncodeToString(b), nil
+}
+
+// hashToken returns a SHA-256 hash of the token for safe storage.
+func hashToken(token string) string {
+	h := sha256.Sum256([]byte(token))
+	return base64.URLEncoding.EncodeToString(h[:])
+}
+
 func (s *userService) RequestPasswordReset(ctx context.Context, email string) error {
 	user, err := s.users.FindByEmail(ctx, email)
 	if err != nil {
 		return err
 	}
-	token := fmt.Sprintf("reset-%d-%d", user.ID, time.Now().Unix())
+
+	token, err := generateSecureToken(32)
+	if err != nil {
+		return err
+	}
+
+	tokenHash := hashToken(token)
 	expires := time.Now().Add(1 * time.Hour)
 	if s.tokenRepo != nil {
-		if err := s.tokenRepo.Save(ctx, token, user.ID, expires); err != nil {
+		if err := s.tokenRepo.Save(ctx, tokenHash, user.ID, expires); err != nil {
 			return err
 		}
 	}
-	if s.mailer != nil {
-		return s.mailer.SendPasswordReset(user.Email, fmt.Sprintf("https://app.jarlyq.com/reset?token=%s", token))
+	if s.mailer == nil {
+		return errors.New("email service not configured")
 	}
-	return nil
+	link := fmt.Sprintf("%s/reset?token=%s", s.cfg.AppBaseURL, token)
+	return s.mailer.SendPasswordReset(user.Email, link)
 }
 
 func (s *userService) ResetPassword(ctx context.Context, token, newPassword string) error {
 	if s.tokenRepo == nil {
 		return errors.New("password reset not configured")
 	}
-	userID, expiresAt, err := s.tokenRepo.Find(ctx, token)
+	if len(newPassword) < 8 {
+		return errors.New("password must be at least 8 characters")
+	}
+
+	tokenHash := hashToken(token)
+	userID, expiresAt, err := s.tokenRepo.Find(ctx, tokenHash)
 	if err != nil {
-		return err
+		return errors.New("invalid or expired token")
 	}
 	if time.Now().After(expiresAt) {
+		_ = s.tokenRepo.Delete(ctx, tokenHash)
 		return errors.New("token expired")
 	}
 
@@ -265,8 +305,9 @@ func (s *userService) ResetPassword(ctx context.Context, token, newPassword stri
 		return err
 	}
 	user.PasswordHash = string(hashed)
+	user.EmailVerified = true
 	if err := s.users.Update(ctx, user); err != nil {
 		return err
 	}
-	return s.tokenRepo.Delete(ctx, token)
+	return s.tokenRepo.Delete(ctx, tokenHash)
 }

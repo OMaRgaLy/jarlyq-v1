@@ -52,16 +52,24 @@ func New(cfg *config.Config) (*Server, error) {
 	corsCfg := cors.DefaultConfig()
 	if len(cfg.CORSOrigins) > 0 {
 		corsCfg.AllowOrigins = cfg.CORSOrigins
+		corsCfg.AllowCredentials = true
+	} else if cfg.AppEnv == "production" {
+		return nil, fmt.Errorf("CORS_ORIGINS must be set in production")
 	} else {
 		corsCfg.AllowAllOrigins = true
 	}
 	corsCfg.AllowHeaders = []string{"Authorization", "Content-Type", "X-CSRF-Token"}
-	corsCfg.AllowCredentials = true
 	engine.Use(cors.New(corsCfg))
 
-	rate := limiter.Rate{Period: time.Minute, Limit: int64(cfg.RateLimitPerMin)}
+	// Global rate limiter
+	globalRate := limiter.Rate{Period: time.Minute, Limit: int64(cfg.RateLimitPerMin)}
 	store := memory.NewStore()
-	engine.Use(ginlimiter.NewMiddleware(limiter.New(store, rate)))
+	engine.Use(ginlimiter.NewMiddleware(limiter.New(store, globalRate)))
+
+	// Stricter rate limiter for auth endpoints (5 requests per minute)
+	authRate := limiter.Rate{Period: time.Minute, Limit: 5}
+	authStore := memory.NewStore()
+	authLimiter := ginlimiter.NewMiddleware(limiter.New(authStore, authRate))
 
 	csrfMiddleware := middleware.NewCSRFMiddleware(cfg)
 
@@ -70,7 +78,7 @@ func New(cfg *config.Config) (*Server, error) {
 	handler := httptransport.NewHandler(services, cfg, log)
 
 	api := engine.Group("/api")
-	httptransport.RegisterRoutes(api, handler, auth.NewJWTManager(cfg))
+	httptransport.RegisterRoutes(api, handler, auth.NewJWTManager(cfg), authLimiter)
 
 	engine.Use(csrfMiddleware)
 

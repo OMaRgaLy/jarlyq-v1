@@ -15,6 +15,7 @@ type Config struct {
 	AppEnv             string
 	HTTPPort           string
 	DatabaseURL        string
+	AppBaseURL         string
 	JWTAccessSecret    string
 	JWTRefreshSecret   string
 	SMTPHost           string
@@ -39,6 +40,7 @@ func Load() (*Config, error) {
 		AppEnv:             getString("APP_ENV", "development"),
 		HTTPPort:           getString("HTTP_PORT", "8080"),
 		DatabaseURL:        mustString("DATABASE_URL"),
+		AppBaseURL:         getString("APP_BASE_URL", "http://localhost:3000"),
 		JWTAccessSecret:    mustString("JWT_ACCESS_SECRET"),
 		JWTRefreshSecret:   mustString("JWT_REFRESH_SECRET"),
 		SMTPHost:           getString("SMTP_HOST", ""),
@@ -52,7 +54,7 @@ func Load() (*Config, error) {
 		CORSOrigins:        getStringSlice("CORS_ORIGINS", ","),
 		CSRFCookieName:     getString("CSRF_COOKIE_NAME", "csrf_token"),
 		CSRFCookieDomain:   getString("CSRF_COOKIE_DOMAIN", ""),
-		SwaggerEnabled:     getBool("SWAGGER_ENABLED", true),
+		SwaggerEnabled:     getBool("SWAGGER_ENABLED", getString("APP_ENV", "development") != "production"),
 	}
 
 	return cfg, nil

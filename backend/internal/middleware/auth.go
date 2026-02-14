@@ -24,7 +24,7 @@ func JWTAuth(jwtManager auth.Manager) gin.HandlerFunc {
 		}
 		claims, err := jwtManager.ParseToken(parts[1])
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
 			return
 		}
 		c.Set("user_id", claims.UserID)
