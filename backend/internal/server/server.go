@@ -20,6 +20,7 @@ import (
 	"github.com/example/jarlyq/internal/config"
 	"github.com/example/jarlyq/internal/middleware"
 	"github.com/example/jarlyq/internal/model"
+	"github.com/example/jarlyq/internal/seed"
 	httptransport "github.com/example/jarlyq/internal/transport/http"
 	"github.com/example/jarlyq/pkg/logger"
 )
@@ -43,6 +44,11 @@ func New(cfg *config.Config) (*Server, error) {
 
 	if err := model.AutoMigrate(db); err != nil {
 		return nil, fmt.Errorf("auto migrate: %w", err)
+	}
+
+	// Seed database with initial data if empty
+	if err := seed.Seed(db); err != nil {
+		log.Warnf("seed database: %v (probably already seeded)", err)
 	}
 
 	gin.SetMode(gin.ReleaseMode)

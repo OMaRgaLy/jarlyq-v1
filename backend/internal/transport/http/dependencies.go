@@ -28,6 +28,9 @@ func NewRepositories(db *gorm.DB) *service.Repositories {
 		Stacks:       repository.NewStackRepository(db),
 		Certificates: repository.NewCertificateRepository(db),
 		Passwords:    repository.NewPasswordTokenRepository(db),
+		CareerPaths:  repository.NewCareerPathRepository(db),
+		Questions:    repository.NewInterviewQuestionRepository(db),
+		Progress:     repository.NewUserProgressRepository(db),
 		DB:           db,
 	}
 }
@@ -51,4 +54,8 @@ func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager, auth
 	newSchoolRoutes(v1.Group("/schools"), handler)
 	newStackRoutes(v1.Group("/stacks"), handler)
 	newCertificateRoutes(v1.Group("/certificates"), handler)
+	newCareerPathRoutes(v1.Group("/career-paths"), handler)
+	newInterviewRoutes(v1.Group("/interview-questions"), handler)
+	newJobRoutes(v1.Group("/jobs"), handler)
+	newCompanyProfileRoutes(v1.Group("/companies-profile"), handler)
 }
