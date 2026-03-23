@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/example/jarlyq/internal/auth"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/auth"
 )
 
 // JWTAuth validates JWT access tokens.

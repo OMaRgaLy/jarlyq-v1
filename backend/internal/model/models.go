@@ -251,10 +251,10 @@ type CompanyProfile struct {
 	Description     string `gorm:"type:text"`
 
 	// Relations
-	Jobs            []Job
-	InterviewQs     []JobInterviewQuestion
-	Reviews         []CompanyReview
-	HRAdvices       []HRAdvice
+	Jobs            []Job                 `gorm:"foreignKey:CompanyID"`
+	InterviewQs     []JobInterviewQuestion `gorm:"foreignKey:CompanyID"`
+	Reviews         []CompanyReview        `gorm:"foreignKey:CompanyID"`
+	HRAdvices       []HRAdvice             `gorm:"foreignKey:CompanyID"`
 }
 
 // Job represents a job posting/vacancy from a company
@@ -413,6 +413,25 @@ type ConferenceEvent struct {
 	Companies       []Company `gorm:"many2many:conference_companies"`
 }
 
+// ProjectIdea represents a pet-project idea for portfolio building.
+type ProjectIdea struct {
+	ID          uint      `gorm:"primaryKey"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Title       string `gorm:"size:255"`
+	Description string `gorm:"type:text"`
+	Direction   string `gorm:"size:50;index"` // backend, frontend, data-science, mobile, devops, qa, security, gamedev, ml-ai, fullstack
+	Difficulty  string `gorm:"size:20;index"` // beginner, intermediate, advanced
+	Duration    string `gorm:"size:50"`       // "1-2 недели", "2-4 недели", "1-2 месяца", "2-3 месяца"
+	TechStack   string `gorm:"type:text"`     // comma-separated: "Go, PostgreSQL, Docker"
+	Skills      string `gorm:"type:text"`     // what you'll learn, comma-separated
+	Features    string `gorm:"type:text"`     // key features to implement, one per line
+	WhyGood     string `gorm:"type:text"`     // why this is good for portfolio
+	ExampleURL  string `gorm:"size:512"`      // link to example or tutorial
+	Likes       int                           // community likes
+	CompletedBy int                           // how many built it
+}
+
 // AutoMigrate runs database migrations using GORM.
 func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
@@ -440,5 +459,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&HRAdvice{},
 		&TechStackPopularity{},
 		&ConferenceEvent{},
+		&ProjectIdea{},
 	)
 }

@@ -18,17 +18,23 @@ export function Header() {
           Jarlyq
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300 md:flex">
-          <Link href="#companies" className="hover:text-brand">
-            Компании
-          </Link>
-          <Link href="#schools" className="hover:text-brand">
-            Школы
-          </Link>
-          <Link href="#opportunities" className="hover:text-brand">
+          <Link href="/jobs" className="hover:text-brand">
             Вакансии
           </Link>
-          <Link href="#certificates" className="hover:text-brand">
-            Проверка сертификата
+          <Link href="/career-paths" className="hover:text-brand">
+            Карьерные пути
+          </Link>
+          <Link href="/interview" className="hover:text-brand">
+            Собеседования
+          </Link>
+          <Link href="/project-ideas" className="hover:text-brand">
+            Портфолио
+          </Link>
+          <Link href="/#companies" className="hover:text-brand">
+            Компании
+          </Link>
+          <Link href="/#schools" className="hover:text-brand">
+            Школы
           </Link>
         </nav>
         <button

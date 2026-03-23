@@ -13,12 +13,12 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	"github.com/example/jarlyq/internal/auth"
-	"github.com/example/jarlyq/internal/config"
-	"github.com/example/jarlyq/internal/model"
-	"github.com/example/jarlyq/internal/repository"
-	"github.com/example/jarlyq/pkg/logger"
-	"github.com/example/jarlyq/pkg/mailer"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/auth"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/config"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/pkg/logger"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/pkg/mailer"
 )
 
 // UserService manages users.
@@ -272,9 +272,13 @@ func (s *userService) RequestPasswordReset(ctx context.Context, email string) er
 		}
 	}
 	if s.mailer == nil {
-		return errors.New("email service not configured")
+		return nil
 	}
-	link := fmt.Sprintf("%s/reset?token=%s", s.cfg.AppBaseURL, token)
+	baseURL := "http://localhost:3000"
+	if s.cfg != nil && s.cfg.AppBaseURL != "" {
+		baseURL = s.cfg.AppBaseURL
+	}
+	link := fmt.Sprintf("%s/reset?token=%s", baseURL, token)
 	return s.mailer.SendPasswordReset(user.Email, link)
 }
 

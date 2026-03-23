@@ -32,9 +32,9 @@ func (h *Handler) getCareerPaths(c *gin.Context) {
 		}
 	}
 
-	paths, err := h.services.CareerPath.GetAllPaths(c.Request.Context(), limit, offset)
+	paths, err := h.Services.CareerPath.GetAllPaths(c.Request.Context(), limit, offset)
 	if err != nil {
-		h.log.Errorf("get career paths: %v", err)
+		h.Logger.Errorf("get career paths: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get career paths"})
 		return
 	}
@@ -63,9 +63,9 @@ func (h *Handler) getCareerPathDetail(c *gin.Context) {
 		return
 	}
 
-	path, err := h.services.CareerPath.GetPathDetail(c.Request.Context(), uint(pathID))
+	path, err := h.Services.CareerPath.GetPathDetail(c.Request.Context(), uint(pathID))
 	if err != nil {
-		h.log.Errorf("get career path detail: %v", err)
+		h.Logger.Errorf("get career path detail: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get career path"})
 		return
 	}
@@ -97,9 +97,9 @@ func (h *Handler) getCareerPathStages(c *gin.Context) {
 		return
 	}
 
-	stages, err := h.services.CareerPath.GetPathStages(c.Request.Context(), uint(pathID))
+	stages, err := h.Services.CareerPath.GetPathStages(c.Request.Context(), uint(pathID))
 	if err != nil {
-		h.log.Errorf("get career path stages: %v", err)
+		h.Logger.Errorf("get career path stages: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get stages"})
 		return
 	}

@@ -1,11 +1,12 @@
 package service
 
 import (
-	"github.com/example/jarlyq/internal/auth"
-	"github.com/example/jarlyq/internal/config"
-	"github.com/example/jarlyq/internal/repository"
-	"github.com/example/jarlyq/pkg/logger"
-	"github.com/example/jarlyq/pkg/mailer"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/auth"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/config"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/pkg/logger"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/pkg/mailer"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +22,7 @@ type Services struct {
 	UserProgress   UserProgressService
 	Job            JobService
 	CompanyProfile CompanyProfileService
+	ProjectIdea    ProjectIdeaService
 }
 
 // NewServices wires dependencies.
@@ -40,7 +42,6 @@ func NewServices(repos *Repositories, cfg *config.Config, log logger.Logger) *Se
 	// Initialize new repositories if not provided
 	var careerPathRepo repository.CareerPathRepository
 	var questionRepo repository.InterviewQuestionRepository
-	var progressRepo repository.UserProgressRepository
 
 	if repos.CareerPaths != nil {
 		careerPathRepo = repos.CareerPaths
@@ -54,23 +55,16 @@ func NewServices(repos *Repositories, cfg *config.Config, log logger.Logger) *Se
 		questionRepo = repository.NewInterviewQuestionRepository(repos.DB)
 	}
 
-	if repos.Progress != nil {
-		progressRepo = repos.Progress
-	} else if repos.DB != nil {
-		progressRepo = repository.NewUserProgressRepository(repos.DB)
-	}
-
 	// Initialize job search platform repositories
 	var jobRepo repository.JobRepository
 	var companyProfileRepo repository.CompanyProfileRepository
-	var jobInterviewRepo repository.JobInterviewRepository
-	var jobReviewRepo repository.JobReviewRepository
+
+	var projectIdeaRepo repository.ProjectIdeaRepository
 
 	if repos.DB != nil {
 		jobRepo = repository.NewJobRepository(repos.DB)
 		companyProfileRepo = repository.NewCompanyProfileRepository(repos.DB)
-		jobInterviewRepo = repository.NewJobInterviewRepository(repos.DB)
-		jobReviewRepo = repository.NewJobReviewRepository(repos.DB)
+		projectIdeaRepo = repository.NewProjectIdeaRepository(repos.DB)
 	}
 
 	return &Services{
@@ -83,13 +77,14 @@ func NewServices(repos *Repositories, cfg *config.Config, log logger.Logger) *Se
 		Interview:      NewInterviewService(questionRepo),
 		Job:            NewJobService(jobRepo),
 		CompanyProfile: NewCompanyProfileService(companyProfileRepo),
+		ProjectIdea:    NewProjectIdeaService(projectIdeaRepo),
 	}
 }
 
 // UserProgressService interface for user progress operations.
 type UserProgressService interface {
-	GetCurrentPath(userID uint) (*repository.UserProgress, error)
-	StartPath(userID, pathID uint) (*repository.UserProgress, error)
+	GetCurrentPath(userID uint) (*model.UserProgress, error)
+	StartPath(userID, pathID uint) (*model.UserProgress, error)
 	UpdateProgress(userID, pathID uint, stage, progress int) error
 	CompletePath(userID, pathID uint) error
 	TrackQuestion(userID, questionID uint, status string) error

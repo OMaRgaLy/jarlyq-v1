@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
-	"github.com/example/jarlyq/internal/auth"
-	"github.com/example/jarlyq/internal/config"
-	"github.com/example/jarlyq/internal/repository"
-	"github.com/example/jarlyq/internal/service"
-	"github.com/example/jarlyq/pkg/logger"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/auth"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/config"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/service"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/pkg/logger"
 )
 
 // Handler holds HTTP handlers.
@@ -58,4 +58,5 @@ func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager, auth
 	newInterviewRoutes(v1.Group("/interview-questions"), handler)
 	newJobRoutes(v1.Group("/jobs"), handler)
 	newCompanyProfileRoutes(v1.Group("/companies-profile"), handler)
+	newProjectIdeaRoutes(v1.Group("/project-ideas"), handler)
 }

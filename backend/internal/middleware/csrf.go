@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/example/jarlyq/internal/config"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/config"
 )
 
 // NewCSRFMiddleware adds a simple double submit cookie mechanism.

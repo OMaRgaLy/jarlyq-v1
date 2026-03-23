@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/example/jarlyq/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
 	"gorm.io/gorm"
 )
 
@@ -90,8 +90,9 @@ func (r *interviewQuestionRepo) GetTopTopics() ([]string, error) {
 	var topics []string
 	if err := r.db.
 		Model(&model.InterviewQuestion{}).
-		Distinct("topic").
-		Order("CAST(COUNT(*) AS INT) DESC").
+		Select("topic").
+		Group("topic").
+		Order("COUNT(*) DESC").
 		Limit(10).
 		Pluck("topic", &topics).Error; err != nil {
 		return nil, err

@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/example/jarlyq/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
 )
 
 // UserRepository defines DB operations for users.

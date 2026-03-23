@@ -36,9 +36,9 @@ func (h *Handler) getInterviewQuestions(c *gin.Context) {
 		}
 	}
 
-	questions, err := h.services.Interview.GetQuestions(c.Request.Context(), level, topic, limit, offset)
+	questions, err := h.Services.Interview.GetQuestions(c.Request.Context(), level, topic, limit, offset)
 	if err != nil {
-		h.log.Errorf("get interview questions: %v", err)
+		h.Logger.Errorf("get interview questions: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get questions"})
 		return
 	}
@@ -67,9 +67,9 @@ func (h *Handler) getInterviewQuestion(c *gin.Context) {
 		return
 	}
 
-	question, err := h.services.Interview.GetQuestion(c.Request.Context(), uint(questionID))
+	question, err := h.Services.Interview.GetQuestion(c.Request.Context(), uint(questionID))
 	if err != nil {
-		h.log.Errorf("get interview question: %v", err)
+		h.Logger.Errorf("get interview question: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get question"})
 		return
 	}
@@ -118,9 +118,9 @@ func (h *Handler) getPathInterviewQuestions(c *gin.Context) {
 		}
 	}
 
-	questions, err := h.services.Interview.GetPathQuestions(c.Request.Context(), uint(pathID), limit, offset)
+	questions, err := h.Services.Interview.GetPathQuestions(c.Request.Context(), uint(pathID), limit, offset)
 	if err != nil {
-		h.log.Errorf("get path interview questions: %v", err)
+		h.Logger.Errorf("get path interview questions: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get questions"})
 		return
 	}
@@ -140,9 +140,9 @@ func (h *Handler) getPathInterviewQuestions(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Router /interview-questions/topics [get]
 func (h *Handler) getInterviewTopics(c *gin.Context) {
-	topics, err := h.services.Interview.GetTopics(c.Request.Context())
+	topics, err := h.Services.Interview.GetTopics(c.Request.Context())
 	if err != nil {
-		h.log.Errorf("get interview topics: %v", err)
+		h.Logger.Errorf("get interview topics: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get topics"})
 		return
 	}

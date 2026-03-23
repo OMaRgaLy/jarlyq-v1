@@ -74,3 +74,78 @@ export const regions: RegionOption[] = [
   { id: 4, name: 'EMEA' }
 ];
 
+// Phase 2: Career Paths
+export interface CareerPath {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  duration: number;
+  difficulty: string;
+  completedBy: number;
+  stages?: PathStage[];
+}
+
+export interface PathStage {
+  id: number;
+  careerPathId: number;
+  order: number;
+  title: string;
+  description: string;
+  durationDays: number;
+  milestone: string;
+  badge: string;
+}
+
+// Phase 2: Interview Questions
+export interface InterviewQuestion {
+  id: number;
+  question: string;
+  answer: string;
+  explanation: string;
+  level: string;
+  topic: string;
+  timesAsked: number;
+  successRate: number;
+  difficulty: number;
+}
+
+// Phase 2: Jobs
+export interface Job {
+  id: number;
+  companyId: number;
+  title: string;
+  description: string;
+  level: string;
+  jobType: string;
+  location: string;
+  countries: string;
+  salaryMin: number;
+  salaryMax: number;
+  salaryCurrency: string;
+  workFormat: string;
+  yearsExperience: number;
+  requirements: string;
+  applicationURL: string;
+  applicationEmail: string;
+  views: number;
+  applications: number;
+}
+
+// Phase 2: Project Ideas for Portfolio
+export interface ProjectIdea {
+  id: number;
+  title: string;
+  description: string;
+  direction: string;
+  difficulty: string;
+  duration: string;
+  techStack: string;
+  skills: string;
+  features: string;
+  whyGood: string;
+  exampleURL: string;
+  likes: number;
+  completedBy: number;
+}
+

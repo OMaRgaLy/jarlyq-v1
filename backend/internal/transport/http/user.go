@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/example/jarlyq/internal/auth"
-	"github.com/example/jarlyq/internal/middleware"
-	"github.com/example/jarlyq/internal/model"
-	"github.com/example/jarlyq/internal/service"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/auth"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/middleware"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/service"
 )
 
 func newUserRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) {

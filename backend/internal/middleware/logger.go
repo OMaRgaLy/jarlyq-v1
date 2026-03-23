@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/example/jarlyq/pkg/logger"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/pkg/logger"
 )
 
 // RequestLogger logs HTTP requests with latency.

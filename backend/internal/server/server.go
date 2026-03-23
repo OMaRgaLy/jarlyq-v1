@@ -16,21 +16,22 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/example/jarlyq/internal/auth"
-	"github.com/example/jarlyq/internal/config"
-	"github.com/example/jarlyq/internal/middleware"
-	"github.com/example/jarlyq/internal/model"
-	"github.com/example/jarlyq/internal/seed"
-	httptransport "github.com/example/jarlyq/internal/transport/http"
-	"github.com/example/jarlyq/pkg/logger"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/auth"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/config"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/middleware"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/seed"
+	httptransport "github.com/OMaRgaLy/jarlyq-v1/backend/internal/transport/http"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/pkg/logger"
 )
 
 // Server wraps HTTP server dependencies.
 type Server struct {
-	engine *gin.Engine
-	cfg    *config.Config
-	db     *gorm.DB
-	log    logger.Logger
+	engine   *gin.Engine
+	httpSrv  *gohttp.Server
+	cfg      *config.Config
+	db       *gorm.DB
+	log      logger.Logger
 }
 
 // New creates the API server.
@@ -78,6 +79,7 @@ func New(cfg *config.Config) (*Server, error) {
 	authLimiter := ginlimiter.NewMiddleware(limiter.New(authStore, authRate))
 
 	csrfMiddleware := middleware.NewCSRFMiddleware(cfg)
+	engine.Use(csrfMiddleware)
 
 	repoSet := httptransport.NewRepositories(db)
 	services := httptransport.NewServices(repoSet, cfg, log)
@@ -85,8 +87,6 @@ func New(cfg *config.Config) (*Server, error) {
 
 	api := engine.Group("/api")
 	httptransport.RegisterRoutes(api, handler, auth.NewJWTManager(cfg), authLimiter)
-
-	engine.Use(csrfMiddleware)
 
 	if cfg.SwaggerEnabled {
 		engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -97,7 +97,7 @@ func New(cfg *config.Config) (*Server, error) {
 
 // Run starts HTTP server.
 func (s *Server) Run() error {
-	srv := &gohttp.Server{
+	s.httpSrv = &gohttp.Server{
 		Addr:              ":" + s.cfg.HTTPPort,
 		Handler:           s.engine,
 		ReadTimeout:       15 * time.Second,
@@ -108,11 +108,17 @@ func (s *Server) Run() error {
 
 	s.log.Infof("HTTP server listening on %s", s.cfg.HTTPPort)
 
-	return srv.ListenAndServe()
+	return s.httpSrv.ListenAndServe()
 }
 
-// Shutdown gracefully closes resources.
+// Shutdown gracefully stops the HTTP server and closes DB connections.
 func (s *Server) Shutdown(ctx context.Context) error {
+	if s.httpSrv != nil {
+		if err := s.httpSrv.Shutdown(ctx); err != nil {
+			s.log.Errorf("http server shutdown: %v", err)
+		}
+	}
+
 	sqlDB, err := s.db.DB()
 	if err != nil {
 		return err

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/example/jarlyq/internal/repository"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
 )
 
 // GetJobs godoc

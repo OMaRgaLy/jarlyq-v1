@@ -6,12 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/example/jarlyq/internal/repository"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
 )
 
 func newSchoolRoutes(group *gin.RouterGroup, handler *Handler) {
 	group.GET("", handler.listSchools)
-	group.GET(":id", handler.getSchool)
+	group.GET("/:id", handler.getSchool)
 }
 
 func (h *Handler) listSchools(c *gin.Context) {

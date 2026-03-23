@@ -6,17 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/example/jarlyq/internal/repository"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
 )
 
 func newCompanyRoutes(group *gin.RouterGroup, handler *Handler) {
 	group.GET("", handler.listCompanies)
-	group.GET(":id", handler.getCompany)
-}
-
-type companyFilterRequest struct {
-	StackIDs  []uint `form:"stack_ids[]"`
-	RegionIDs []uint `form:"region_ids[]"`
+	group.GET("/:id", handler.getCompany)
 }
 
 func (h *Handler) listCompanies(c *gin.Context) {

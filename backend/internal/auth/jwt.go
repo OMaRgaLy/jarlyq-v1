@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/example/jarlyq/internal/config"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/config"
 )
 
 // Claims represents JWT claims.

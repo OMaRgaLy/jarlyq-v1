@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/example/jarlyq/internal/auth"
-	"github.com/example/jarlyq/internal/model"
-	"github.com/example/jarlyq/internal/service"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/auth"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/service"
 )
 
 func newAuthRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager, authRateLimiter gin.HandlerFunc) {

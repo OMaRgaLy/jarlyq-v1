@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/example/jarlyq/internal/model"
-	"github.com/example/jarlyq/internal/repository"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
 )
 
 func TestCertificateVerify(t *testing.T) {

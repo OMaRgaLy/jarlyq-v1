@@ -3,7 +3,7 @@ package repository
 import (
 	"time"
 
-	"github.com/example/jarlyq/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
 	"gorm.io/gorm"
 )
 

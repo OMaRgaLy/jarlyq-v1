@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/example/jarlyq/internal/model"
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
 	"gorm.io/gorm"
 )
 
@@ -94,7 +94,7 @@ type JobReviewRepository interface {
 	// GetAverageRating returns average interview rating for a company
 	GetAverageRating(companyID uint) (float32, error)
 	// GetHiringStats returns how many people were hired vs total interviews
-	GetHiringStats(companyID uint) (hired, total int, error)
+	GetHiringStats(companyID uint) (int, int, error)
 }
 
 type jobReviewRepo struct {
