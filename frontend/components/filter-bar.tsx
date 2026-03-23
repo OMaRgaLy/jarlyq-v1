@@ -27,7 +27,7 @@ export function FilterBar({ stacks, value, onChange }: FilterBarProps) {
     <div className="card flex flex-col gap-4 p-4 md:flex-row md:items-center">
       <Select.Root
         value={value.stackId}
-        onValueChange={(stackId) => onChange({ ...value, stackId: stackId || undefined })}
+        onValueChange={(stackId) => onChange({ ...value, stackId: stackId === 'all' ? undefined : stackId })}
       >
         <Select.Trigger className="inline-flex min-w-[200px] items-center justify-between rounded-xl border border-slate-200/70 bg-white px-4 py-2 text-sm font-medium shadow-sm focus:outline-none dark:border-slate-700/60 dark:bg-slate-900/70">
           <Select.Value placeholder="Технология" />
@@ -38,7 +38,7 @@ export function FilterBar({ stacks, value, onChange }: FilterBarProps) {
         <Select.Portal>
           <Select.Content className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
             <Select.Viewport className="p-2">
-              <Select.Item value="" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+              <Select.Item value="all" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
                 <Select.ItemText>Любой стек</Select.ItemText>
               </Select.Item>
               {stacks.map((stack) => (
@@ -57,7 +57,7 @@ export function FilterBar({ stacks, value, onChange }: FilterBarProps) {
 
       <Select.Root
         value={value.regionId}
-        onValueChange={(regionId) => onChange({ ...value, regionId: regionId || undefined })}
+        onValueChange={(regionId) => onChange({ ...value, regionId: regionId === 'all' ? undefined : regionId })}
       >
         <Select.Trigger className="inline-flex min-w-[200px] items-center justify-between rounded-xl border border-slate-200/70 bg-white px-4 py-2 text-sm font-medium shadow-sm focus:outline-none dark:border-slate-700/60 dark:bg-slate-900/70">
           <Select.Value placeholder="Регион" />
@@ -68,7 +68,7 @@ export function FilterBar({ stacks, value, onChange }: FilterBarProps) {
         <Select.Portal>
           <Select.Content className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
             <Select.Viewport className="p-2">
-              <Select.Item value="" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+              <Select.Item value="all" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
                 <Select.ItemText>Любой регион</Select.ItemText>
               </Select.Item>
               {regions.map((region) => (
@@ -85,7 +85,7 @@ export function FilterBar({ stacks, value, onChange }: FilterBarProps) {
         </Select.Portal>
       </Select.Root>
 
-      <Select.Root value={value.level} onValueChange={(level) => onChange({ ...value, level: level || undefined })}>
+      <Select.Root value={value.level} onValueChange={(level) => onChange({ ...value, level: level === 'all' ? undefined : level })}>
         <Select.Trigger className="inline-flex min-w-[200px] items-center justify-between rounded-xl border border-slate-200/70 bg-white px-4 py-2 text-sm font-medium shadow-sm focus:outline-none dark:border-slate-700/60 dark:bg-slate-900/70">
           <Select.Value placeholder="Уровень" />
           <Select.Icon>
@@ -95,7 +95,7 @@ export function FilterBar({ stacks, value, onChange }: FilterBarProps) {
         <Select.Portal>
           <Select.Content className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
             <Select.Viewport className="p-2">
-              <Select.Item value="" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+              <Select.Item value="all" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
                 <Select.ItemText>Любой уровень</Select.ItemText>
               </Select.Item>
               {levels.map((level) => (
