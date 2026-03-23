@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:15-alpine
     container_name: jarlyq-db
+    restart: unless-stopped
     env_file:
       - ../.env
     volumes:
@@ -16,6 +17,7 @@ services:
     build:
       context: ../backend
     container_name: jarlyq-backend
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -39,6 +41,7 @@ services:
   nginx:
     image: nginx:1.27-alpine
     container_name: jarlyq-nginx
+    restart: unless-stopped
     depends_on:
       - backend
     volumes:
