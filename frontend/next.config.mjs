@@ -10,7 +10,7 @@ const nextConfig = {
     ]
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://93.183.87.152:8080';
+    const backendUrl = process.env.BACKEND_URL || 'https://jarlyq.com';
     return [
       {
         source: '/api/v1/:path*',
