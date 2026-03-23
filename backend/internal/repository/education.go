@@ -15,12 +15,16 @@ type SchoolRepository interface {
 	FindByID(ctx context.Context, id uint) (*model.School, error)
 	Create(ctx context.Context, school *model.School) error
 	Update(ctx context.Context, school *model.School) error
+	Delete(ctx context.Context, id uint) error
 }
 
 // CourseRepository handles courses.
 type CourseRepository interface {
 	ListBySchool(ctx context.Context, schoolID uint) ([]model.Course, error)
+	FindByID(ctx context.Context, id uint) (*model.Course, error)
 	Create(ctx context.Context, course *model.Course) error
+	Update(ctx context.Context, course *model.Course) error
+	Delete(ctx context.Context, id uint) error
 }
 
 // EducationFilter filters schools/courses.
@@ -89,6 +93,10 @@ func (r *schoolRepo) Update(ctx context.Context, school *model.School) error {
 	return r.db.WithContext(ctx).Session(&gorm.Session{FullSaveAssociations: true}).Save(school).Error
 }
 
+func (r *schoolRepo) Delete(ctx context.Context, id uint) error {
+	return r.db.WithContext(ctx).Delete(&model.School{}, id).Error
+}
+
 func (r *courseRepo) ListBySchool(ctx context.Context, schoolID uint) ([]model.Course, error) {
 	var courses []model.Course
 	if err := r.db.WithContext(ctx).Where("school_id = ?", schoolID).Preload("Stack").Preload("Regions").Find(&courses).Error; err != nil {
@@ -97,6 +105,25 @@ func (r *courseRepo) ListBySchool(ctx context.Context, schoolID uint) ([]model.C
 	return courses, nil
 }
 
+func (r *courseRepo) FindByID(ctx context.Context, id uint) (*model.Course, error) {
+	var course model.Course
+	if err := r.db.WithContext(ctx).Preload("Stack").Preload("Regions").First(&course, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
+		}
+		return nil, err
+	}
+	return &course, nil
+}
+
 func (r *courseRepo) Create(ctx context.Context, course *model.Course) error {
 	return r.db.WithContext(ctx).Create(course).Error
+}
+
+func (r *courseRepo) Update(ctx context.Context, course *model.Course) error {
+	return r.db.WithContext(ctx).Save(course).Error
+}
+
+func (r *courseRepo) Delete(ctx context.Context, id uint) error {
+	return r.db.WithContext(ctx).Delete(&model.Course{}, id).Error
 }

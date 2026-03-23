@@ -788,9 +788,418 @@ func SeedProjectIdeas(db *gorm.DB) error {
 	return nil
 }
 
+// SeedStacks seeds technology stacks if they don't exist
+func SeedStacks(db *gorm.DB) error {
+	var count int64
+	db.Model(&model.Stack{}).Count(&count)
+	if count > 0 {
+		log.Println("Stacks already seeded, skipping")
+		return nil
+	}
+
+	stacks := []model.Stack{
+		{Name: "Go", Popularity: 85},
+		{Name: "Python", Popularity: 95},
+		{Name: "JavaScript", Popularity: 98},
+		{Name: "TypeScript", Popularity: 90},
+		{Name: "React", Popularity: 92},
+		{Name: "Vue.js", Popularity: 75},
+		{Name: "Node.js", Popularity: 88},
+		{Name: "PostgreSQL", Popularity: 87},
+		{Name: "MySQL", Popularity: 80},
+		{Name: "MongoDB", Popularity: 72},
+		{Name: "Docker", Popularity: 89},
+		{Name: "Kubernetes", Popularity: 70},
+		{Name: "Flutter", Popularity: 78},
+		{Name: "Kotlin", Popularity: 68},
+		{Name: "Swift", Popularity: 60},
+		{Name: "Java", Popularity: 82},
+		{Name: "C#", Popularity: 65},
+		{Name: "PHP", Popularity: 74},
+		{Name: "Redis", Popularity: 76},
+		{Name: "Nginx", Popularity: 71},
+		{Name: "AWS", Popularity: 73},
+		{Name: "Next.js", Popularity: 83},
+	}
+
+	for _, s := range stacks {
+		if err := db.Create(&s).Error; err != nil {
+			return err
+		}
+		log.Printf("Seeded stack: %s", s.Name)
+	}
+	return nil
+}
+
+// SeedCompanies seeds initial companies if they don't exist
+func SeedCompanies(db *gorm.DB) error {
+	var count int64
+	db.Model(&model.Company{}).Count(&count)
+	if count > 0 {
+		log.Println("Companies already seeded, skipping")
+		return nil
+	}
+
+	// Find region IDs
+	var kazRegion, kgRegion, uzRegion model.Region
+	db.Where("name ILIKE ?", "%Казахстан%").First(&kazRegion)
+	db.Where("name ILIKE ?", "%Кыргызстан%").First(&kgRegion)
+	db.Where("name ILIKE ?", "%Узбекистан%").First(&uzRegion)
+
+	// Find some stacks
+	var goStack, pythonStack, jsStack, tsStack, reactStack, nodeStack, pgStack, dockerStack, kotlinStack, flutterStack model.Stack
+	db.Where("name = ?", "Go").First(&goStack)
+	db.Where("name = ?", "Python").First(&pythonStack)
+	db.Where("name = ?", "JavaScript").First(&jsStack)
+	db.Where("name = ?", "TypeScript").First(&tsStack)
+	db.Where("name = ?", "React").First(&reactStack)
+	db.Where("name = ?", "Node.js").First(&nodeStack)
+	db.Where("name = ?", "PostgreSQL").First(&pgStack)
+	db.Where("name = ?", "Docker").First(&dockerStack)
+	db.Where("name = ?", "Kotlin").First(&kotlinStack)
+	db.Where("name = ?", "Flutter").First(&flutterStack)
+
+	companies := []model.Company{
+		{
+			Name:        "Kaspi Bank",
+			Description: "Крупнейший финтех Казахстана. Kaspi.kz — суперприложение с 14 млн пользователей: платежи, маркетплейс, кредиты. Активно нанимает Go, Python, React разработчиков.",
+			CoverURL:    "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=800&q=80",
+			Stack:       []model.Stack{goStack, pythonStack, reactStack, pgStack, dockerStack},
+			Regions:     []model.Region{kazRegion},
+			Widgets: model.CompanyWidgets{
+				TrainingEnabled:   false,
+				InternshipEnabled: true,
+				VacancyEnabled:    true,
+			},
+			Contacts: model.ContactInfo{
+				Website: "https://kaspi.kz",
+			},
+			Opportunities: []model.Opportunity{
+				{
+					Type:        "internship",
+					Title:       "Backend стажёр (Go)",
+					Description: "Разработка микросервисов на Go. Работа с PostgreSQL, Kafka, Docker. Наставник-ментор от команды.",
+					Level:       "intern",
+					ApplyURL:    "https://kaspi.kz/careers",
+				},
+				{
+					Type:        "vacancy",
+					Title:       "Frontend разработчик (React)",
+					Description: "Разработка веб-интерфейсов Kaspi.kz. TypeScript, React, Next.js.",
+					Level:       "junior",
+					ApplyURL:    "https://kaspi.kz/careers",
+				},
+			},
+		},
+		{
+			Name:        "Kolesa Group",
+			Description: "IT-компания, создающая ведущие маркетплейсы Казахстана: Kolesa.kz, Krisha.kz, Market.kz. Одна из лучших продуктовых IT-компаний страны. Go, PHP, Flutter.",
+			CoverURL:    "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=800&q=80",
+			Stack:       []model.Stack{goStack, flutterStack, pgStack, dockerStack},
+			Regions:     []model.Region{kazRegion},
+			Widgets: model.CompanyWidgets{
+				TrainingEnabled:   false,
+				InternshipEnabled: true,
+				VacancyEnabled:    true,
+			},
+			Contacts: model.ContactInfo{
+				Website: "https://kolesa-group.kz",
+			},
+			Opportunities: []model.Opportunity{
+				{
+					Type:        "internship",
+					Title:       "iOS/Android стажёр (Flutter)",
+					Description: "Разработка мобильных приложений Kolesa.kz и Krisha.kz на Flutter. Реальные задачи с первого дня.",
+					Level:       "intern",
+					ApplyURL:    "https://kolesa-group.kz/careers",
+				},
+				{
+					Type:        "vacancy",
+					Title:       "Go Backend разработчик",
+					Description: "Разработка высоконагруженных сервисов для маркетплейсов. Go, PostgreSQL, Kafka.",
+					Level:       "middle",
+					ApplyURL:    "https://kolesa-group.kz/careers",
+				},
+			},
+		},
+		{
+			Name:        "Chocofamily",
+			Description: "Холдинг Казахстана: Chocofood, Chocolife, Chocotravel. E-commerce и food delivery с миллионами пользователей. Нанимают React, Node.js, Python разработчиков.",
+			CoverURL:    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
+			Stack:       []model.Stack{jsStack, tsStack, reactStack, nodeStack, pgStack},
+			Regions:     []model.Region{kazRegion},
+			Widgets: model.CompanyWidgets{
+				TrainingEnabled:   false,
+				InternshipEnabled: true,
+				VacancyEnabled:    true,
+			},
+			Contacts: model.ContactInfo{
+				Website: "https://chocofamily.kz",
+			},
+			Opportunities: []model.Opportunity{
+				{
+					Type:        "internship",
+					Title:       "Frontend стажёр (React)",
+					Description: "Разработка интерфейсов Chocofood и Chocolife. React, TypeScript, работа в продуктовой команде.",
+					Level:       "intern",
+					ApplyURL:    "https://chocofamily.kz/careers",
+				},
+			},
+		},
+		{
+			Name:        "Jusan Bank",
+			Description: "Один из быстрорастущих цифровых банков Казахстана. Активно развивает IT-команду и финтех-продукты. Kotlin, Swift, Go.",
+			CoverURL:    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80",
+			Stack:       []model.Stack{kotlinStack, goStack, pgStack, dockerStack},
+			Regions:     []model.Region{kazRegion},
+			Widgets: model.CompanyWidgets{
+				TrainingEnabled:   false,
+				InternshipEnabled: true,
+				VacancyEnabled:    true,
+			},
+			Contacts: model.ContactInfo{
+				Website: "https://jusan.kz",
+			},
+			Opportunities: []model.Opportunity{
+				{
+					Type:        "vacancy",
+					Title:       "Android разработчик (Kotlin)",
+					Description: "Разработка мобильного банкинга Jusan. Kotlin, Jetpack Compose, REST API.",
+					Level:       "junior",
+					ApplyURL:    "https://jusan.kz/careers",
+				},
+			},
+		},
+		{
+			Name:        "EPAM Kazakhstan",
+			Description: "Международная IT-компания с офисом в Алматы. Проекты для глобальных клиентов из Fortune 500. Хорошая точка входа в международные проекты.",
+			CoverURL:    "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+			Stack:       []model.Stack{jsStack, tsStack, reactStack, pythonStack, pgStack},
+			Regions:     []model.Region{kazRegion},
+			Widgets: model.CompanyWidgets{
+				TrainingEnabled:   true,
+				InternshipEnabled: true,
+				VacancyEnabled:    true,
+			},
+			Contacts: model.ContactInfo{
+				Website: "https://epam.com/careers",
+			},
+			Opportunities: []model.Opportunity{
+				{
+					Type:        "internship",
+					Title:       "Junior JavaScript Developer",
+					Description: "Программа EPAM University для студентов. Обучение + проект с командой. Возможность получить оффер.",
+					Level:       "intern",
+					ApplyURL:    "https://epam.com/careers",
+				},
+				{
+					Type:        "vacancy",
+					Title:       "Python Developer",
+					Description: "Разработка backend сервисов для международных клиентов. Python, Django/FastAPI, PostgreSQL.",
+					Level:       "middle",
+					ApplyURL:    "https://epam.com/careers",
+				},
+			},
+		},
+		{
+			Name:        "Uzum (Uzbekistan)",
+			Description: "Крупнейший маркетплейс Узбекистана от Человекфактор. Быстро растущая IT-компания с сотнями вакансий. Go, Python, React.",
+			CoverURL:    "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=800&q=80",
+			Stack:       []model.Stack{goStack, pythonStack, reactStack, pgStack, dockerStack},
+			Regions:     []model.Region{uzRegion},
+			Widgets: model.CompanyWidgets{
+				TrainingEnabled:   false,
+				InternshipEnabled: true,
+				VacancyEnabled:    true,
+			},
+			Contacts: model.ContactInfo{
+				Website: "https://uzum.uz",
+			},
+			Opportunities: []model.Opportunity{
+				{
+					Type:        "vacancy",
+					Title:       "Backend разработчик (Go)",
+					Description: "Разработка высоконагруженных сервисов маркетплейса. Go, gRPC, PostgreSQL, Redis.",
+					Level:       "junior",
+					ApplyURL:    "https://uzum.uz/careers",
+				},
+			},
+		},
+	}
+
+	for _, company := range companies {
+		if err := db.Create(&company).Error; err != nil {
+			return err
+		}
+		log.Printf("Seeded company: %s", company.Name)
+	}
+	return nil
+}
+
+// SeedSchools seeds initial schools if they don't exist
+func SeedSchools(db *gorm.DB) error {
+	var count int64
+	db.Model(&model.School{}).Count(&count)
+	if count > 0 {
+		log.Println("Schools already seeded, skipping")
+		return nil
+	}
+
+	schools := []model.School{
+		{
+			Name:        "Alem School",
+			Description: "Бесплатная школа программирования от Beeline Казахстан. Принимают без опыта, без оплаты. Учат через проекты и peer-to-peer обучение. Более 500 выпускников устроились в IT.",
+			Courses: []model.Course{
+				{
+					Title:       "Основы программирования (C)",
+					Description: "Базовый курс на языке C. Алгоритмы, структуры данных, Unix. Входной отбор через онлайн-тест.",
+					ExternalURL: "https://alem.school",
+				},
+				{
+					Title:       "Web разработка",
+					Description: "HTML, CSS, JavaScript, React. Fullstack проекты в командах.",
+					ExternalURL: "https://alem.school",
+				},
+			},
+		},
+		{
+			Name:        "IT Step Academy",
+			Description: "Международная сеть IT-школ с офисами в Алматы, Астане, Бишкеке и Ташкенте. Программы от 6 месяцев до 2 лет. Трудоустройство через партнёров.",
+			Courses: []model.Course{
+				{
+					Title:       "Web разработчик Full Stack",
+					Description: "HTML/CSS, JavaScript, React, Node.js, PostgreSQL. 12 месяцев. Диплом государственного образца.",
+					ExternalURL: "https://itstep.org",
+				},
+				{
+					Title:       "Мобильная разработка (Android + iOS)",
+					Description: "Kotlin для Android, Swift для iOS, Flutter для кроссплатформы. 10 месяцев.",
+					ExternalURL: "https://itstep.org",
+				},
+				{
+					Title:       "Data Science & ML",
+					Description: "Python, Pandas, Sklearn, нейросети. 12 месяцев для начинающих.",
+					ExternalURL: "https://itstep.org",
+				},
+			},
+		},
+		{
+			Name:        "Geeks (Bishkek)",
+			Description: "Ведущая IT-школа Кыргызстана. Практические курсы по веб-разработке, дизайну и аналитике. Партнёр крупных IT-компаний страны.",
+			Courses: []model.Course{
+				{
+					Title:       "Frontend разработчик",
+					Description: "React, TypeScript, CSS. 6 месяцев. Собственные проекты в портфолио.",
+					ExternalURL: "https://geeks.kg",
+				},
+				{
+					Title:       "Backend разработчик (Python/Django)",
+					Description: "Python, Django, REST API, PostgreSQL. 8 месяцев.",
+					ExternalURL: "https://geeks.kg",
+				},
+				{
+					Title:       "UI/UX дизайн",
+					Description: "Figma, прототипирование, исследование пользователей. 4 месяца.",
+					ExternalURL: "https://geeks.kg",
+				},
+			},
+		},
+		{
+			Name:        "QazCode",
+			Description: "Онлайн-платформа для изучения программирования на казахском и русском языках. Курсы для школьников и студентов. Поддержка правительства Казахстана.",
+			Courses: []model.Course{
+				{
+					Title:       "Python для начинающих",
+					Description: "Первый курс программирования на Python. Алгоритмы, структуры данных. Бесплатно для школьников.",
+					ExternalURL: "https://qazcode.kz",
+				},
+				{
+					Title:       "Web разработка с нуля",
+					Description: "HTML, CSS, JavaScript. Создай свой первый сайт за 2 месяца.",
+					ExternalURL: "https://qazcode.kz",
+				},
+			},
+		},
+		{
+			Name:        "Najot Ta'lim (Tashkent)",
+			Description: "Крупнейшая IT-школа Узбекистана. 10 000+ выпускников. Курсы по всем направлениям IT. Гарантия трудоустройства для лучших студентов.",
+			Courses: []model.Course{
+				{
+					Title:       "Flutter разработчик",
+					Description: "Dart, Flutter, Firebase, публикация в App Store и Google Play. 6 месяцев.",
+					ExternalURL: "https://najottalim.uz",
+				},
+				{
+					Title:       "Backend (Java/Spring)",
+					Description: "Java, Spring Boot, PostgreSQL, микросервисы. 8 месяцев.",
+					ExternalURL: "https://najottalim.uz",
+				},
+				{
+					Title:       "Data Science",
+					Description: "Python, ML, Deep Learning, Computer Vision. 10 месяцев.",
+					ExternalURL: "https://najottalim.uz",
+				},
+			},
+		},
+	}
+
+	for _, school := range schools {
+		if err := db.Create(&school).Error; err != nil {
+			return err
+		}
+		log.Printf("Seeded school: %s", school.Name)
+	}
+	return nil
+}
+
+// SeedRegions seeds regions if they don't exist
+func SeedRegions(db *gorm.DB) error {
+	var count int64
+	db.Model(&model.Region{}).Count(&count)
+	if count > 0 {
+		log.Println("Regions already seeded, skipping")
+		return nil
+	}
+
+	regions := []model.Region{
+		{Code: "KZ", Name: "Казахстан"},
+		{Code: "KG", Name: "Кыргызстан"},
+		{Code: "UZ", Name: "Узбекистан"},
+		{Code: "EMEA", Name: "EMEA"},
+	}
+
+	for _, r := range regions {
+		if err := db.Create(&r).Error; err != nil {
+			return err
+		}
+		log.Printf("Seeded region: %s", r.Name)
+	}
+	return nil
+}
+
 // Seed runs all seeders (skips if data already exists)
 func Seed(db *gorm.DB) error {
 	log.Println("Starting database seeding...")
+
+	if err := SeedRegions(db); err != nil {
+		log.Printf("Error seeding regions: %v", err)
+		return err
+	}
+
+	if err := SeedStacks(db); err != nil {
+		log.Printf("Error seeding stacks: %v", err)
+		return err
+	}
+
+	if err := SeedCompanies(db); err != nil {
+		log.Printf("Error seeding companies: %v", err)
+		return err
+	}
+
+	if err := SeedSchools(db); err != nil {
+		log.Printf("Error seeding schools: %v", err)
+		return err
+	}
 
 	if err := SeedCareerPaths(db); err != nil {
 		log.Printf("Error seeding career paths: %v", err)

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export function Hero() {
   return (
@@ -12,13 +13,21 @@ export function Hero() {
             Быстрый старт карьеры в IT для Казахстана, Кыргызстана и Узбекистана
           </h1>
           <p className="text-base text-slate-700 dark:text-slate-300">
-            Собрали курсы, стажировки, вакансии и компании по нужным стекам. Фильтруйте возможности по региону, проверяйте
-            сертификаты и управляйте своими профилями без кода.
+            Карьерные пути, вакансии, стажировки и компании по нужным стекам — всё в одном месте. Бесплатно.
           </p>
-          <div className="flex flex-wrap gap-3 text-sm text-slate-600 dark:text-slate-300">
-            <span className="rounded-full bg-white px-3 py-1 shadow dark:bg-slate-900">SSR + SPA</span>
-            <span className="rounded-full bg-white px-3 py-1 shadow dark:bg-slate-900">Мобильная оптимизация</span>
-            <span className="rounded-full bg-white px-3 py-1 shadow dark:bg-slate-900">Проверка сертификатов</span>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/career-paths"
+              className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-brand-dark"
+            >
+              Выбрать карьерный путь →
+            </Link>
+            <Link
+              href="/jobs"
+              className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow transition hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              Найти вакансию
+            </Link>
           </div>
         </div>
         <div className="relative hidden h-72 md:block">

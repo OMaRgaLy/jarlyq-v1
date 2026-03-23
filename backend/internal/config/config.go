@@ -30,6 +30,7 @@ type Config struct {
 	CSRFCookieName     string
 	CSRFCookieDomain   string
 	SwaggerEnabled     bool
+	AdminEmail         string
 }
 
 // Load reads environment variables from .env (if present) and returns config.
@@ -55,6 +56,7 @@ func Load() (*Config, error) {
 		CSRFCookieName:     getString("CSRF_COOKIE_NAME", "csrf_token"),
 		CSRFCookieDomain:   getString("CSRF_COOKIE_DOMAIN", ""),
 		SwaggerEnabled:     getBool("SWAGGER_ENABLED", getString("APP_ENV", "development") != "production"),
+		AdminEmail:         getString("ADMIN_EMAIL", ""),
 	}
 
 	return cfg, nil

@@ -10,6 +10,8 @@ import (
 // StackService handles stacks.
 type StackService interface {
 	List(ctx context.Context) ([]model.Stack, error)
+	Create(ctx context.Context, stack *model.Stack) error
+	Delete(ctx context.Context, id uint) error
 }
 
 type stackService struct {
@@ -23,4 +25,12 @@ func NewStackService(stacks repository.StackRepository) StackService {
 
 func (s *stackService) List(ctx context.Context) ([]model.Stack, error) {
 	return s.stacks.List(ctx)
+}
+
+func (s *stackService) Create(ctx context.Context, stack *model.Stack) error {
+	return s.stacks.Create(ctx, stack)
+}
+
+func (s *stackService) Delete(ctx context.Context, id uint) error {
+	return s.stacks.Delete(ctx, id)
 }

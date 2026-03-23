@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Header } from '../../components/header';
+import { CareerPathCardSkeleton } from '../../components/skeleton';
 import { useCareerPaths } from '../../lib/hooks';
 
 const difficultyLabel: Record<string, string> = {
@@ -33,7 +34,19 @@ export default function CareerPathsPage() {
         </div>
 
         {isLoading ? (
-          <p className="text-sm text-slate-500">Загружаем карьерные пути...</p>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <CareerPathCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : paths.length === 0 ? (
+          <div className="card flex flex-col items-center gap-3 py-16 text-center">
+            <span className="text-5xl">🗺️</span>
+            <p className="font-semibold text-slate-700 dark:text-slate-200">
+              Пути загружаются
+            </p>
+            <p className="text-sm text-slate-500">Попробуй обновить страницу</p>
+          </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {paths.map((path) => (
@@ -46,7 +59,7 @@ export default function CareerPathsPage() {
                 <h2 className="text-lg font-semibold text-slate-900 group-hover:text-brand dark:text-white">
                   {path.title}
                 </h2>
-                <p className="mt-2 text-sm text-slate-600 line-clamp-2 dark:text-slate-400">
+                <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
                   {path.description}
                 </p>
                 <div className="mt-4 flex items-center gap-3">

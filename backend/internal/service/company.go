@@ -13,6 +13,7 @@ type CompanyService interface {
 	Get(ctx context.Context, id uint) (*model.Company, error)
 	Create(ctx context.Context, company *model.Company) error
 	Update(ctx context.Context, company *model.Company) error
+	Delete(ctx context.Context, id uint) error
 }
 
 type companyService struct {
@@ -38,4 +39,8 @@ func (s *companyService) Create(ctx context.Context, company *model.Company) err
 
 func (s *companyService) Update(ctx context.Context, company *model.Company) error {
 	return s.companies.Update(ctx, company)
+}
+
+func (s *companyService) Delete(ctx context.Context, id uint) error {
+	return s.companies.Delete(ctx, id)
 }

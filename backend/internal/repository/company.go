@@ -15,6 +15,7 @@ type CompanyRepository interface {
 	FindByID(ctx context.Context, id uint) (*model.Company, error)
 	Create(ctx context.Context, company *model.Company) error
 	Update(ctx context.Context, company *model.Company) error
+	Delete(ctx context.Context, id uint) error
 }
 
 // CompanyFilter for search.
@@ -74,4 +75,8 @@ func (r *companyRepo) Create(ctx context.Context, company *model.Company) error 
 
 func (r *companyRepo) Update(ctx context.Context, company *model.Company) error {
 	return r.db.WithContext(ctx).Session(&gorm.Session{FullSaveAssociations: true}).Save(company).Error
+}
+
+func (r *companyRepo) Delete(ctx context.Context, id uint) error {
+	return r.db.WithContext(ctx).Delete(&model.Company{}, id).Error
 }

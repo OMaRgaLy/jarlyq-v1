@@ -13,6 +13,7 @@ type EducationService interface {
 	GetSchool(ctx context.Context, id uint) (*model.School, error)
 	CreateSchool(ctx context.Context, school *model.School) error
 	UpdateSchool(ctx context.Context, school *model.School) error
+	DeleteSchool(ctx context.Context, id uint) error
 }
 
 type educationService struct {
@@ -38,4 +39,8 @@ func (s *educationService) CreateSchool(ctx context.Context, school *model.Schoo
 
 func (s *educationService) UpdateSchool(ctx context.Context, school *model.School) error {
 	return s.schools.Update(ctx, school)
+}
+
+func (s *educationService) DeleteSchool(ctx context.Context, id uint) error {
+	return s.schools.Delete(ctx, id)
 }

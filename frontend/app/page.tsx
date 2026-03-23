@@ -7,7 +7,10 @@ import { FilterBar, FilterState } from '../components/filter-bar';
 import { CertificateChecker } from '../components/certificate-checker';
 import { CompanyCard } from '../components/company-card';
 import { SchoolCard } from '../components/school-card';
+import { OnboardingBanner } from '../components/onboarding-banner';
+import { CompanyCardSkeleton, SchoolCardSkeleton, StacksSkeleton } from '../components/skeleton';
 import { useCompanies, useSchools, useStacks } from '../lib/hooks';
+import Link from 'next/link';
 
 export default function Page() {
   const [filters, setFilters] = useState<FilterState>({});
@@ -36,12 +39,18 @@ export default function Page() {
       <Header />
       <main className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-8">
         <Hero />
+        <OnboardingBanner />
         <FilterBar stacks={stacks} value={filters} onChange={setFilters} />
 
+        {/* Популярные стеки */}
         <section id="stacks" className="card p-6">
           <h2 className="section-title">Популярные стеки</h2>
           {stacksLoading ? (
-            <p className="text-sm text-slate-500">Загружаем данные…</p>
+            <StacksSkeleton />
+          ) : stacks.length === 0 ? (
+            <div className="py-6 text-center">
+              <p className="text-sm text-slate-500">Стеки загружаются...</p>
+            </div>
           ) : (
             <div className="flex flex-wrap gap-3">
               {stacks.map((stack) => (
@@ -56,17 +65,35 @@ export default function Page() {
           )}
         </section>
 
+        {/* Компании */}
         <section id="companies" className="space-y-4">
           <div>
             <h2 className="section-title">Компании региона</h2>
             <p className="text-sm text-slate-600 dark:text-slate-300">
-              Управляйте виджетами профиля компании и показывайте обучение, стажировки и вакансии тем, кому это важно.
+              IT-компании Казахстана, Кыргызстана и Узбекистана — стажировки и вакансии
             </p>
           </div>
           {companiesLoading ? (
-            <p className="text-sm text-slate-500">Загружаем компании…</p>
+            <div className="grid gap-6">
+              <CompanyCardSkeleton />
+              <CompanyCardSkeleton />
+            </div>
           ) : companies.length === 0 ? (
-            <p className="text-sm text-slate-500">Пока нет результатов. Попробуйте другой фильтр.</p>
+            <div className="card flex flex-col items-center gap-3 py-10 text-center">
+              <span className="text-4xl">🏢</span>
+              <p className="font-semibold text-slate-700 dark:text-slate-200">
+                Компании скоро появятся
+              </p>
+              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">
+                Пока данных нет — попробуй изменить фильтры или посмотри карьерные пути
+              </p>
+              <Link
+                href="/career-paths"
+                className="mt-1 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
+              >
+                Карьерные пути →
+              </Link>
+            </div>
           ) : (
             <div className="grid gap-6">
               {companies.map((company) => (
@@ -76,17 +103,35 @@ export default function Page() {
           )}
         </section>
 
+        {/* Школы */}
         <section id="schools" className="space-y-4">
           <div>
             <h2 className="section-title">Школы и курсы</h2>
             <p className="text-sm text-slate-600 dark:text-slate-300">
-              Управляйте витриной курсов без кода и отслеживайте UTM-метки для эффективности кампаний.
+              Курсы и буткемпы для входа в IT — с сертификатами и трудоустройством
             </p>
           </div>
           {schoolsLoading ? (
-            <p className="text-sm text-slate-500">Загружаем школы…</p>
+            <div className="grid gap-6 md:grid-cols-2">
+              <SchoolCardSkeleton />
+              <SchoolCardSkeleton />
+            </div>
           ) : schools.length === 0 ? (
-            <p className="text-sm text-slate-500">Нет курсов по выбранному стеку или региону.</p>
+            <div className="card flex flex-col items-center gap-3 py-10 text-center">
+              <span className="text-4xl">🎓</span>
+              <p className="font-semibold text-slate-700 dark:text-slate-200">
+                Школы скоро появятся
+              </p>
+              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">
+                Пока нет школ по выбранному фильтру. Попробуй сбросить фильтры.
+              </p>
+              <Link
+                href="/interview"
+                className="mt-1 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
+              >
+                Подготовиться к собеседованию →
+              </Link>
+            </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2">
               {schools.map((school) => (
@@ -96,26 +141,30 @@ export default function Page() {
           )}
         </section>
 
-        <section id="opportunities" className="card space-y-4 p-6">
-          <div>
-            <h2 className="section-title">Актуальные возможности</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300">
-              Стажировки и вакансии с быстрым доступом к подаче заявки и указанием требуемого уровня.
-            </p>
-          </div>
-          {companiesLoading ? (
-            <p className="text-sm text-slate-500">Загружаем предложения…</p>
-          ) : opportunities.length === 0 ? (
-            <p className="text-sm text-slate-500">Нет возможностей для выбранных фильтров.</p>
-          ) : (
+        {/* Возможности */}
+        {opportunities.length > 0 && (
+          <section id="opportunities" className="card space-y-4 p-6">
+            <div>
+              <h2 className="section-title">Актуальные возможности</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                Стажировки и вакансии с быстрым откликом
+              </p>
+            </div>
             <ul className="grid gap-4 md:grid-cols-2">
               {opportunities.map((opportunity) => (
-                <li key={`${opportunity.id}-${opportunity.company}`} className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/70">
+                <li
+                  key={`${opportunity.id}-${opportunity.company}`}
+                  className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/70"
+                >
                   <p className="text-xs uppercase tracking-wide text-brand">
                     {opportunity.type === 'internship' ? 'Стажировка' : 'Вакансия'} · {opportunity.level}
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50">{opportunity.title}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Компания: {opportunity.company}</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                    {opportunity.title}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {opportunity.company}
+                  </p>
                   {opportunity.applyURL && (
                     <a
                       href={opportunity.applyURL}
@@ -129,8 +178,8 @@ export default function Page() {
                 </li>
               ))}
             </ul>
-          )}
-        </section>
+          </section>
+        )}
 
         <CertificateChecker />
       </main>

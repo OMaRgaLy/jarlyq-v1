@@ -12,6 +12,8 @@ import (
 type StackRepository interface {
 	List(ctx context.Context) ([]model.Stack, error)
 	IncrementPopularity(ctx context.Context, stackID uint, delta uint) error
+	Create(ctx context.Context, stack *model.Stack) error
+	Delete(ctx context.Context, id uint) error
 }
 
 type stackRepo struct {
@@ -33,4 +35,12 @@ func (r *stackRepo) List(ctx context.Context) ([]model.Stack, error) {
 
 func (r *stackRepo) IncrementPopularity(ctx context.Context, stackID uint, delta uint) error {
 	return r.db.WithContext(ctx).Model(&model.Stack{}).Where("id = ?", stackID).UpdateColumn("popularity", gorm.Expr("popularity + ?", delta)).Error
+}
+
+func (r *stackRepo) Create(ctx context.Context, stack *model.Stack) error {
+	return r.db.WithContext(ctx).Create(stack).Error
+}
+
+func (r *stackRepo) Delete(ctx context.Context, id uint) error {
+	return r.db.WithContext(ctx).Delete(&model.Stack{}, id).Error
 }
