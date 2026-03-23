@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+// Use relative URL by default so requests go through Next.js proxy (no CORS, no mixed-content)
+// Override with NEXT_PUBLIC_API_URL only in local dev (http://localhost:8080/api/v1)
+const baseURL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 export const api = axios.create({
   baseURL,
-  withCredentials: true
 });
 
 export interface Stack {

@@ -61,10 +61,9 @@ func ensureCSRFCookie(c *gin.Context, cfg *config.Config) {
 	encoded := base64.RawURLEncoding.EncodeToString(token)
 
 	secure := cfg.AppEnv == "production"
+	// Lax works for same-site and cross-site GET navigations.
+	// Strict breaks cross-origin requests (Vercel → VPS via proxy).
 	sameSite := http.SameSiteLaxMode
-	if secure {
-		sameSite = http.SameSiteStrictMode
-	}
 
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     cfg.CSRFCookieName,
