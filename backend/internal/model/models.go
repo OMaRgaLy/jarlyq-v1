@@ -21,8 +21,12 @@ type User struct {
 	Bio           string `gorm:"size:255"`
 	Theme         string `gorm:"size:20"`
 	EmailVerified bool
+	TermsAccepted bool
 	Achievements  []Achievement
-	Privacy       PrivacySettings `gorm:"embedded;embeddedPrefix:privacy_"`
+	Privacy       PrivacySettings    `gorm:"embedded;embeddedPrefix:privacy_"`
+	Profile       *UserExtProfile    `gorm:"foreignKey:UserID"`
+	Experiences   []UserExperience   `gorm:"foreignKey:UserID"`
+	Skills        []UserSkill        `gorm:"foreignKey:UserID"`
 }
 
 // PrivacySettings defines what information is private.
@@ -30,6 +34,42 @@ type PrivacySettings struct {
 	PhonePrivate    bool
 	TelegramPrivate bool
 	EmailPrivate    bool
+	ProfilePublic   bool // true = visible to everyone, false = private
+}
+
+// UserExtProfile stores extended public profile info.
+type UserExtProfile struct {
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	UserID      uint      `gorm:"uniqueIndex" json:"userId"`
+	AvatarURL   string    `gorm:"size:512" json:"avatarURL,omitempty"`
+	City        string    `gorm:"size:100" json:"city,omitempty"`
+	GithubURL   string    `gorm:"size:512" json:"githubURL,omitempty"`
+	LinkedinURL string    `gorm:"size:512" json:"linkedinURL,omitempty"`
+	InstagramURL string   `gorm:"size:512" json:"instagramURL,omitempty"`
+	UpdatedAt   time.Time `json:"-"`
+}
+
+// UserExperience represents work/internship history.
+type UserExperience struct {
+	ID          uint       `gorm:"primaryKey" json:"id"`
+	UserID      uint       `gorm:"index" json:"-"`
+	CompanyName string     `gorm:"size:255" json:"companyName"`
+	Position    string     `gorm:"size:255" json:"position"`
+	StartDate   time.Time  `json:"startDate"`
+	EndDate     *time.Time `json:"endDate,omitempty"`
+	IsCurrent   bool       `json:"isCurrent"`
+	Description string     `gorm:"type:text" json:"description,omitempty"`
+	CreatedAt   time.Time  `json:"-"`
+}
+
+// UserSkill links a user to a technology stack with proficiency level.
+type UserSkill struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	UserID    uint      `gorm:"index" json:"-"`
+	StackID   uint      `json:"stackId"`
+	Stack     Stack     `json:"stack"`
+	Level     string    `gorm:"size:20" json:"level"` // beginner|intermediate|expert
+	CreatedAt time.Time `json:"-"`
 }
 
 // Achievement represents user achievements.
@@ -130,6 +170,9 @@ type Opportunity struct {
 	WorkFormat     string     `gorm:"size:20" json:"workFormat,omitempty"` // remote|office|hybrid
 	City           string     `gorm:"size:100" json:"city,omitempty"`
 	Deadline       *time.Time `json:"deadline,omitempty"`
+	IsYearRound    bool       `json:"isYearRound"`
+	Source         string     `gorm:"size:100" json:"source,omitempty"`  // "admin"|"oss-data"|"partner"
+	IsVerified     bool       `json:"isVerified"`
 	StartDate      *time.Time `json:"-"`
 	EndDate        *time.Time `json:"-"`
 	Stack          []Stack    `gorm:"many2many:opportunity_stacks" json:"-"`
@@ -507,7 +550,61 @@ func AutoMigrate(db *gorm.DB) error {
 		&CompanyOffice{},
 		&CompanyPhoto{},
 		&CompanyShowcase{},
+		&HRContact{},
+		&HRContent{},
+		&Hackathon{},
+		&UserExtProfile{},
+		&UserExperience{},
+		&UserSkill{},
 	)
+}
+
+// HRContact represents a public HR contact from a company.
+type HRContact struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
+	CompanyID uint      `gorm:"index" json:"companyId"`
+	Name      string    `gorm:"size:255" json:"name"`
+	Position  string    `gorm:"size:255" json:"position,omitempty"`
+	Telegram  string    `gorm:"size:100" json:"telegram,omitempty"`
+	LinkedIn  string    `gorm:"size:512" json:"linkedin,omitempty"`
+	Note      string    `gorm:"size:512" json:"note,omitempty"` // e.g. "рад общению со студентами"
+}
+
+// HRContent represents articles, tips, speeches by HR reps.
+type HRContent struct {
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time `json:"-"`
+	UpdatedAt   time.Time `json:"-"`
+	CompanyID   uint      `gorm:"index" json:"companyId"`
+	AuthorName  string    `gorm:"size:255" json:"authorName"`
+	AuthorPos   string    `gorm:"size:255" json:"authorPos,omitempty"`
+	Type        string    `gorm:"size:20" json:"type"` // article|tip|speech|video
+	Title       string    `gorm:"size:512" json:"title"`
+	URL         string    `gorm:"size:512" json:"url,omitempty"`
+	Description string    `gorm:"type:text" json:"description,omitempty"`
+	PublishedAt *time.Time `json:"publishedAt,omitempty"`
+}
+
+// Hackathon represents a hackathon or competition event.
+type Hackathon struct {
+	ID           uint       `gorm:"primaryKey" json:"id"`
+	CreatedAt    time.Time  `json:"-"`
+	UpdatedAt    time.Time  `json:"-"`
+	Title        string     `gorm:"size:255" json:"title"`
+	Description  string     `gorm:"type:text" json:"description,omitempty"`
+	Organizer    string     `gorm:"size:255" json:"organizer,omitempty"`
+	Location     string     `gorm:"size:255" json:"location,omitempty"` // city or "Online"
+	IsOnline     bool       `json:"isOnline"`
+	PrizePool    string     `gorm:"size:255" json:"prizePool,omitempty"`
+	RegisterURL  string     `gorm:"size:512" json:"registerURL,omitempty"`
+	WebsiteURL   string     `gorm:"size:512" json:"websiteURL,omitempty"`
+	TechStack    string     `gorm:"size:512" json:"techStack,omitempty"` // comma-separated tags
+	RegistrationDeadline *time.Time `json:"registrationDeadline,omitempty"`
+	StartDate    *time.Time `json:"startDate,omitempty"`
+	EndDate      *time.Time `json:"endDate,omitempty"`
+	IsActive     bool       `gorm:"default:true" json:"isActive"`
 }
 
 // Suggestion — user-submitted request to add a company or school.

@@ -83,6 +83,81 @@ export interface Opportunity {
   workFormat?: string;
   city?: string;
   deadline?: string;
+  isYearRound?: boolean;
+  source?: string;
+  isVerified?: boolean;
+}
+
+export interface InternshipItem extends Opportunity {
+  companyName: string;
+  companyLogoURL?: string;
+  companyId: number;
+}
+
+export interface HRContact {
+  id: number;
+  companyId: number;
+  name: string;
+  position?: string;
+  telegram?: string;
+  linkedin?: string;
+  note?: string;
+}
+
+export interface HRContent {
+  id: number;
+  companyId: number;
+  authorName: string;
+  authorPos?: string;
+  type: 'article' | 'tip' | 'speech' | 'video';
+  title: string;
+  url?: string;
+  description?: string;
+  publishedAt?: string;
+}
+
+export interface Hackathon {
+  id: number;
+  title: string;
+  description?: string;
+  organizer?: string;
+  location?: string;
+  isOnline: boolean;
+  prizePool?: string;
+  registerURL?: string;
+  websiteURL?: string;
+  techStack?: string;
+  registrationDeadline?: string;
+  startDate?: string;
+  endDate?: string;
+  isActive: boolean;
+}
+
+export interface UserExtProfile {
+  id: number;
+  userId: number;
+  avatarURL?: string;
+  city?: string;
+  githubURL?: string;
+  linkedinURL?: string;
+  instagramURL?: string;
+}
+
+export interface UserExperience {
+  id: number;
+  companyName: string;
+  position: string;
+  startDate: string;
+  endDate?: string;
+  isCurrent: boolean;
+  description?: string;
+}
+
+export interface UserSkill {
+  id: number;
+  stackId: number;
+  stack: Stack;
+  level: 'beginner' | 'intermediate' | 'expert';
 }
 
 export interface School {

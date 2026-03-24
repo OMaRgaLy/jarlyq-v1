@@ -51,8 +51,9 @@ export async function emailRegister(
   password: string,
   first_name: string,
   last_name: string,
+  terms_accepted = false,
 ): Promise<AuthUser> {
-  const { data } = await api.post('/auth/register', { email, password, first_name, last_name });
+  const { data } = await api.post('/auth/register', { email, password, first_name, last_name, terms_accepted });
   saveAuth(data.access_token, data.user);
   return data.user;
 }

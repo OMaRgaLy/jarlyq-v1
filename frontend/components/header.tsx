@@ -36,10 +36,11 @@ export function Header() {
   }, []);
 
   const navLinks = [
+    { href: '/internships', label: t.nav.internships },
+    { href: '/hackathons', label: t.nav.hackathons },
     { href: '/jobs', label: t.nav.jobs },
     { href: '/career-paths', label: t.nav.careerPaths },
     { href: '/interview', label: t.nav.interview },
-    { href: '/internship-guide', label: t.nav.guide },
     { href: '/#companies', label: t.nav.companies },
     { href: '/#schools', label: t.nav.schools },
   ];

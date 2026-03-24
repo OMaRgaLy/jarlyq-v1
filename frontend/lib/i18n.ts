@@ -16,6 +16,8 @@ const dict = {
       guide: 'Гайд по стажировкам',
       companies: 'Компании',
       schools: 'Школы',
+      internships: 'Стажировки',
+      hackathons: 'Хакатоны',
       login: 'Войти',
       logout: 'Выйти',
     },
@@ -145,6 +147,74 @@ const dict = {
       intermediate: 'Средний',
       advanced: 'Продвинутый',
     },
+    internships: {
+      title: 'Стажировки',
+      subtitle: 'Найди стажировку в лучших IT-компаниях Центральной Азии',
+      filterCity: 'Город',
+      filterFormat: 'Формат',
+      filterYearRound: 'Круглогодичные',
+      filterPaid: 'Оплачиваемые',
+      yearRound: '🔄 Круглогодичная',
+      paid: 'Оплачиваемая',
+      unpaid: 'Без оплаты',
+      deadline: 'Дедлайн',
+      apply: 'Подать заявку',
+      details: 'О компании',
+      ossDisclaimer: 'Данные получены из открытых источников. Актуальность не гарантируется — проверяй информацию на сайте компании.',
+      empty: 'Стажировок по фильтрам не найдено',
+      emptyCompanies: 'Компании, открытые к стажёрам',
+      hrContacts: 'HR-контакты',
+      hrContent: 'Советы и статьи от HR',
+      hrContentTypes: { article: 'Статья', tip: 'Совет', speech: 'Выступление', video: 'Видео' },
+    },
+    hackathons: {
+      title: 'Хакатоны',
+      subtitle: 'Соревнования и хакатоны Центральной Азии — прокачай скиллы и найди команду',
+      register: 'Регистрация',
+      website: 'Сайт',
+      deadline: 'Регистрация до',
+      starts: 'Начало',
+      ends: 'Конец',
+      online: 'Онлайн',
+      prize: 'Призовой фонд',
+      stack: 'Технологии',
+      active: 'Активный',
+      ended: 'Завершён',
+      empty: 'Хакатоны скоро появятся',
+    },
+    profile: {
+      title: 'Мой профиль',
+      publicProfile: 'Публичный профиль',
+      privateProfile: 'Приватный профиль',
+      makePublic: 'Сделать публичным',
+      makePrivate: 'Сделать приватным',
+      editProfile: 'Редактировать',
+      saveChanges: 'Сохранить',
+      cancel: 'Отмена',
+      firstName: 'Имя',
+      lastName: 'Фамилия',
+      bio: 'О себе',
+      city: 'Город',
+      github: 'GitHub',
+      linkedin: 'LinkedIn',
+      instagram: 'Instagram',
+      experience: 'Опыт работы',
+      addExperience: '+ Добавить опыт',
+      skills: 'Навыки',
+      addSkill: '+ Добавить навык',
+      current: 'По настоящее время',
+      skillLevels: { beginner: 'Начинающий', intermediate: 'Средний', expert: 'Эксперт' },
+      memberSince: 'Участник с',
+      saved: 'Сохранено!',
+      saving: 'Сохраняем...',
+    },
+    legal: {
+      title: 'Пользовательское соглашение',
+      subtitle: 'Правила использования платформы Jarlyq',
+      lastUpdated: 'Последнее обновление',
+      acceptCheckbox: 'Я принимаю условия Пользовательского соглашения',
+      acceptRequired: 'Необходимо принять условия соглашения',
+    },
   },
 
   en: {
@@ -156,6 +226,8 @@ const dict = {
       guide: 'Internship Guide',
       companies: 'Companies',
       schools: 'Schools',
+      internships: 'Internships',
+      hackathons: 'Hackathons',
       login: 'Log in',
       logout: 'Log out',
     },
@@ -285,6 +357,74 @@ const dict = {
       intermediate: 'Intermediate',
       advanced: 'Advanced',
     },
+    internships: {
+      title: 'Internships',
+      subtitle: 'Find an internship at the best IT companies in Central Asia',
+      filterCity: 'City',
+      filterFormat: 'Format',
+      filterYearRound: 'Year-round',
+      filterPaid: 'Paid only',
+      yearRound: '🔄 Year-round',
+      paid: 'Paid',
+      unpaid: 'Unpaid',
+      deadline: 'Deadline',
+      apply: 'Apply',
+      details: 'About company',
+      ossDisclaimer: 'Data sourced from public repositories. Accuracy not guaranteed — verify on the company website.',
+      empty: 'No internships match your filters',
+      emptyCompanies: 'Companies open to interns',
+      hrContacts: 'HR contacts',
+      hrContent: 'Tips & articles from HR',
+      hrContentTypes: { article: 'Article', tip: 'Tip', speech: 'Talk', video: 'Video' },
+    },
+    hackathons: {
+      title: 'Hackathons',
+      subtitle: 'Competitions and hackathons in Central Asia — level up and find your team',
+      register: 'Register',
+      website: 'Website',
+      deadline: 'Register by',
+      starts: 'Starts',
+      ends: 'Ends',
+      online: 'Online',
+      prize: 'Prize pool',
+      stack: 'Tech stack',
+      active: 'Active',
+      ended: 'Ended',
+      empty: 'Hackathons coming soon',
+    },
+    profile: {
+      title: 'My Profile',
+      publicProfile: 'Public profile',
+      privateProfile: 'Private profile',
+      makePublic: 'Make public',
+      makePrivate: 'Make private',
+      editProfile: 'Edit',
+      saveChanges: 'Save',
+      cancel: 'Cancel',
+      firstName: 'First name',
+      lastName: 'Last name',
+      bio: 'About me',
+      city: 'City',
+      github: 'GitHub',
+      linkedin: 'LinkedIn',
+      instagram: 'Instagram',
+      experience: 'Work experience',
+      addExperience: '+ Add experience',
+      skills: 'Skills',
+      addSkill: '+ Add skill',
+      current: 'Present',
+      skillLevels: { beginner: 'Beginner', intermediate: 'Intermediate', expert: 'Expert' },
+      memberSince: 'Member since',
+      saved: 'Saved!',
+      saving: 'Saving...',
+    },
+    legal: {
+      title: 'Terms of Service',
+      subtitle: 'Jarlyq platform usage policy',
+      lastUpdated: 'Last updated',
+      acceptCheckbox: 'I accept the Terms of Service',
+      acceptRequired: 'You must accept the Terms of Service',
+    },
   },
 
   kk: {
@@ -296,6 +436,8 @@ const dict = {
       guide: 'Тәжірибе нұсқаулығы',
       companies: 'Компаниялар',
       schools: 'Мектептер',
+      internships: 'Тәжірибелер',
+      hackathons: 'Хакатондар',
       login: 'Кіру',
       logout: 'Шығу',
     },
@@ -425,13 +567,83 @@ const dict = {
       intermediate: 'Орташа',
       advanced: 'Жоғары',
     },
+    internships: {
+      title: 'Тәжірибелер',
+      subtitle: 'Орталық Азияның үздік IT-компанияларында тәжірибе тап',
+      filterCity: 'Қала',
+      filterFormat: 'Формат',
+      filterYearRound: 'Жыл бойы',
+      filterPaid: 'Ақылы ғана',
+      yearRound: '🔄 Жыл бойы',
+      paid: 'Ақылы',
+      unpaid: 'Ақысыз',
+      deadline: 'Мерзім',
+      apply: 'Өтінім беру',
+      details: 'Компания туралы',
+      ossDisclaimer: 'Деректер ашық дереккөздерден алынған. Нақтылығы кепілдендірілмейді — компанияның сайтынан тексер.',
+      empty: 'Сүзгілер бойынша тәжірибелер табылмады',
+      emptyCompanies: 'Тәжірибешілерге ашық компаниялар',
+      hrContacts: 'HR байланыстары',
+      hrContent: 'HR-дан кеңестер мен мақалалар',
+      hrContentTypes: { article: 'Мақала', tip: 'Кеңес', speech: 'Баяндама', video: 'Видео' },
+    },
+    hackathons: {
+      title: 'Хакатондар',
+      subtitle: 'Орталық Азиядағы жарыстар мен хакатондар — дағдыларды дамыт және топ тап',
+      register: 'Тіркелу',
+      website: 'Сайт',
+      deadline: 'Тіркелу мерзімі',
+      starts: 'Басталады',
+      ends: 'Аяқталады',
+      online: 'Онлайн',
+      prize: 'Жүлде қоры',
+      stack: 'Технологиялар',
+      active: 'Белсенді',
+      ended: 'Аяқталған',
+      empty: 'Хакатондар жақында қосылады',
+    },
+    profile: {
+      title: 'Менің профилім',
+      publicProfile: 'Жалпыға ашық профиль',
+      privateProfile: 'Жабық профиль',
+      makePublic: 'Ашық ету',
+      makePrivate: 'Жабық ету',
+      editProfile: 'Өңдеу',
+      saveChanges: 'Сақтау',
+      cancel: 'Болдырмау',
+      firstName: 'Аты',
+      lastName: 'Тегі',
+      bio: 'Өзім туралы',
+      city: 'Қала',
+      github: 'GitHub',
+      linkedin: 'LinkedIn',
+      instagram: 'Instagram',
+      experience: 'Жұмыс тәжірибесі',
+      addExperience: '+ Тәжірибе қосу',
+      skills: 'Дағдылар',
+      addSkill: '+ Дағды қосу',
+      current: 'Қазіргі уақытқа дейін',
+      skillLevels: { beginner: 'Бастаушы', intermediate: 'Орташа', expert: 'Сарапшы' },
+      memberSince: 'Мүше болған',
+      saved: 'Сақталды!',
+      saving: 'Сақталуда...',
+    },
+    legal: {
+      title: 'Пайдаланушы келісімі',
+      subtitle: 'Jarlyq платформасын пайдалану ережелері',
+      lastUpdated: 'Соңғы жаңарту',
+      acceptCheckbox: 'Мен Пайдаланушы келісімін қабылдаймын',
+      acceptRequired: 'Келісімді қабылдау қажет',
+    },
   },
 } as const;
 
 export interface Translations {
   nav: {
     jobs: string; careerPaths: string; interview: string; portfolio: string;
-    guide: string; companies: string; schools: string; login: string; logout: string;
+    guide: string; companies: string; schools: string;
+    internships: string; hackathons: string;
+    login: string; logout: string;
   };
   home: {
     heroTitle: string; heroSubtitle: string;
@@ -477,6 +689,31 @@ export interface Translations {
     title: string; subtitle: string; loading: string; emptyTitle: string; emptyHint: string;
     months: string; completed: string; backToAll: string; stages: string; stage: string;
     days: string; goal: string; pathNotFound: string; beginner: string; intermediate: string; advanced: string;
+  };
+  internships: {
+    title: string; subtitle: string; filterCity: string; filterFormat: string;
+    filterYearRound: string; filterPaid: string; yearRound: string; paid: string; unpaid: string;
+    deadline: string; apply: string; details: string; ossDisclaimer: string;
+    empty: string; emptyCompanies: string; hrContacts: string; hrContent: string;
+    hrContentTypes: { article: string; tip: string; speech: string; video: string };
+  };
+  hackathons: {
+    title: string; subtitle: string; register: string; website: string;
+    deadline: string; starts: string; ends: string; online: string;
+    prize: string; stack: string; active: string; ended: string; empty: string;
+  };
+  profile: {
+    title: string; publicProfile: string; privateProfile: string;
+    makePublic: string; makePrivate: string; editProfile: string;
+    saveChanges: string; cancel: string; firstName: string; lastName: string;
+    bio: string; city: string; github: string; linkedin: string; instagram: string;
+    experience: string; addExperience: string; skills: string; addSkill: string;
+    current: string; skillLevels: { beginner: string; intermediate: string; expert: string };
+    memberSince: string; saved: string; saving: string;
+  };
+  legal: {
+    title: string; subtitle: string; lastUpdated: string;
+    acceptCheckbox: string; acceptRequired: string;
   };
 }
 

@@ -1241,6 +1241,21 @@ func Seed(db *gorm.DB) error {
 		return err
 	}
 
+	if err := SeedHackathons(db); err != nil {
+		log.Printf("Error seeding hackathons: %v", err)
+		return err
+	}
+
+	if err := SeedInternshipsFromOSS(db); err != nil {
+		log.Printf("Error seeding OSS internships: %v", err)
+		return err
+	}
+
+	if err := SeedNewInternships(db); err != nil {
+		log.Printf("Error seeding new internships: %v", err)
+		return err
+	}
+
 	log.Println("Database seeding completed successfully!")
 	return nil
 }

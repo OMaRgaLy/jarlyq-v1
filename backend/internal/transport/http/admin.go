@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -51,6 +52,20 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 	group.GET("/stacks", handler.adminListStacks)
 	group.POST("/stacks", handler.adminCreateStack)
 	group.DELETE("/stacks/:id", handler.adminDeleteStack)
+
+	// HR Contacts
+	group.POST("/companies/:id/hr-contacts", handler.adminCreateHRContact)
+	group.DELETE("/hr-contacts/:id", handler.adminDeleteHRContact)
+
+	// HR Content
+	group.POST("/companies/:id/hr-content", handler.adminCreateHRContent)
+	group.DELETE("/hr-content/:id", handler.adminDeleteHRContent)
+
+	// Hackathons
+	group.GET("/hackathons", handler.adminListHackathons)
+	group.POST("/hackathons", handler.adminCreateHackathon)
+	group.PUT("/hackathons/:id", handler.adminUpdateHackathon)
+	group.DELETE("/hackathons/:id", handler.adminDeleteHackathon)
 
 	// Suggestions
 	newAdminSuggestionRoutes(group.Group("/suggestions"), handler)
@@ -444,5 +459,209 @@ func (h *Handler) adminDeleteStack(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+// ---- HR Contacts ----
+
+type adminHRContactRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Position string `json:"position"`
+	Telegram string `json:"telegram"`
+	LinkedIn string `json:"linkedin"`
+	Note     string `json:"note"`
+}
+
+func (h *Handler) adminCreateHRContact(c *gin.Context) {
+	companyID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid company id"})
+		return
+	}
+	var req adminHRContactRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	contact := &model.HRContact{
+		CompanyID: uint(companyID),
+		Name:      req.Name,
+		Position:  req.Position,
+		Telegram:  req.Telegram,
+		LinkedIn:  req.LinkedIn,
+		Note:      req.Note,
+	}
+	if err := h.Services.DB.Create(contact).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"contact": contact})
+}
+
+func (h *Handler) adminDeleteHRContact(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	h.Services.DB.Delete(&model.HRContact{}, id)
+	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+// ---- HR Content ----
+
+type adminHRContentRequest struct {
+	AuthorName  string `json:"author_name" binding:"required"`
+	AuthorPos   string `json:"author_pos"`
+	Type        string `json:"type" binding:"required"` // article|tip|speech|video
+	Title       string `json:"title" binding:"required"`
+	URL         string `json:"url"`
+	Description string `json:"description"`
+	PublishedAt string `json:"published_at"` // RFC3339 or empty
+}
+
+func (h *Handler) adminCreateHRContent(c *gin.Context) {
+	companyID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid company id"})
+		return
+	}
+	var req adminHRContentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	content := &model.HRContent{
+		CompanyID:   uint(companyID),
+		AuthorName:  req.AuthorName,
+		AuthorPos:   req.AuthorPos,
+		Type:        req.Type,
+		Title:       req.Title,
+		URL:         req.URL,
+		Description: req.Description,
+	}
+	if req.PublishedAt != "" {
+		if t, err := time.Parse(time.RFC3339, req.PublishedAt); err == nil {
+			content.PublishedAt = &t
+		}
+	}
+	if err := h.Services.DB.Create(content).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"content": content})
+}
+
+func (h *Handler) adminDeleteHRContent(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	h.Services.DB.Delete(&model.HRContent{}, id)
+	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+// ---- Hackathons ----
+
+type adminHackathonRequest struct {
+	Title                string `json:"title" binding:"required"`
+	Description          string `json:"description"`
+	Organizer            string `json:"organizer"`
+	Location             string `json:"location"`
+	IsOnline             bool   `json:"is_online"`
+	PrizePool            string `json:"prize_pool"`
+	RegisterURL          string `json:"register_url"`
+	WebsiteURL           string `json:"website_url"`
+	TechStack            string `json:"tech_stack"`
+	RegistrationDeadline string `json:"registration_deadline"`
+	StartDate            string `json:"start_date"`
+	EndDate              string `json:"end_date"`
+	IsActive             bool   `json:"is_active"`
+}
+
+func parseOptionalTime(s string) *time.Time {
+	if s == "" {
+		return nil
+	}
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		t2, err2 := time.Parse("2006-01-02", s)
+		if err2 != nil {
+			return nil
+		}
+		return &t2
+	}
+	return &t
+}
+
+func (h *Handler) adminListHackathons(c *gin.Context) {
+	var list []model.Hackathon
+	h.Services.DB.Order("registration_deadline ASC").Find(&list)
+	c.JSON(http.StatusOK, gin.H{"hackathons": list})
+}
+
+func (h *Handler) adminCreateHackathon(c *gin.Context) {
+	var req adminHackathonRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	hack := &model.Hackathon{
+		Title:                req.Title,
+		Description:          req.Description,
+		Organizer:            req.Organizer,
+		Location:             req.Location,
+		IsOnline:             req.IsOnline,
+		PrizePool:            req.PrizePool,
+		RegisterURL:          req.RegisterURL,
+		WebsiteURL:           req.WebsiteURL,
+		TechStack:            req.TechStack,
+		IsActive:             req.IsActive,
+		RegistrationDeadline: parseOptionalTime(req.RegistrationDeadline),
+		StartDate:            parseOptionalTime(req.StartDate),
+		EndDate:              parseOptionalTime(req.EndDate),
+	}
+	if err := h.Services.DB.Create(hack).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"hackathon": hack})
+}
+
+func (h *Handler) adminUpdateHackathon(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	var req adminHackathonRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	upd := map[string]interface{}{
+		"title": req.Title, "description": req.Description,
+		"organizer": req.Organizer, "location": req.Location,
+		"is_online": req.IsOnline, "prize_pool": req.PrizePool,
+		"register_url": req.RegisterURL, "website_url": req.WebsiteURL,
+		"tech_stack": req.TechStack, "is_active": req.IsActive,
+		"registration_deadline": parseOptionalTime(req.RegistrationDeadline),
+		"start_date": parseOptionalTime(req.StartDate),
+		"end_date": parseOptionalTime(req.EndDate),
+	}
+	h.Services.DB.Model(&model.Hackathon{}).Where("id = ?", id).Updates(upd)
+	var hack model.Hackathon
+	h.Services.DB.First(&hack, id)
+	c.JSON(http.StatusOK, gin.H{"hackathon": hack})
+}
+
+func (h *Handler) adminDeleteHackathon(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	h.Services.DB.Delete(&model.Hackathon{}, id)
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
 }

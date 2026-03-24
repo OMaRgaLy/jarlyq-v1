@@ -34,10 +34,11 @@ type UserService interface {
 
 // RegisterInput for new users.
 type RegisterInput struct {
-	Email     string `validate:"required,email"`
-	Password  string `validate:"required,min=8"`
-	FirstName string `validate:"required"`
-	LastName  string `validate:"required"`
+	Email         string `validate:"required,email"`
+	Password      string `validate:"required,min=8"`
+	FirstName     string `validate:"required"`
+	LastName      string `validate:"required"`
+	TermsAccepted bool
 }
 
 // UpdateProfileInput for editing profiles.
@@ -115,11 +116,12 @@ func (s *userService) Register(ctx context.Context, input RegisterInput) (*AuthR
 	}
 
 	user := &model.User{
-		Email:        input.Email,
-		PasswordHash: string(hashed),
-		FirstName:    input.FirstName,
-		LastName:     input.LastName,
-		Theme:        "light",
+		Email:         input.Email,
+		PasswordHash:  string(hashed),
+		FirstName:     input.FirstName,
+		LastName:      input.LastName,
+		Theme:         "light",
+		TermsAccepted: input.TermsAccepted,
 	}
 
 	if err := s.users.Create(ctx, user); err != nil {

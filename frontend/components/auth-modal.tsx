@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Cross1Icon } from '@radix-ui/react-icons';
 import { GoogleLoginButton } from './google-login-button';
 import { emailLogin, emailRegister } from '../lib/auth';
@@ -18,18 +19,23 @@ export function AuthModal({ onClose, onSuccess }: Props) {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (mode === 'register' && !termsAccepted) {
+      setError('Необходимо принять условия Пользовательского соглашения');
+      return;
+    }
     setLoading(true);
     try {
       if (mode === 'login') {
         await emailLogin(email, password);
       } else {
-        await emailRegister(email, password, firstName, lastName);
+        await emailRegister(email, password, firstName, lastName, termsAccepted);
       }
       onSuccess();
     } catch {
@@ -117,6 +123,23 @@ export function AuthModal({ onClose, onSuccess }: Props) {
               className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
+
+          {mode === 'register' && (
+            <label className="flex items-start gap-2 cursor-pointer text-xs text-slate-500 dark:text-slate-400">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={e => setTermsAccepted(e.target.checked)}
+                className="mt-0.5 rounded"
+              />
+              <span>
+                Я принимаю условия{' '}
+                <Link href="/legal" target="_blank" className="text-brand hover:underline">
+                  Пользовательского соглашения
+                </Link>
+              </span>
+            </label>
+          )}
 
           {error && (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-900/20 dark:text-red-400">

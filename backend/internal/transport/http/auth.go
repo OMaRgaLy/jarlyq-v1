@@ -19,10 +19,11 @@ func newAuthRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager, a
 }
 
 type registerRequest struct {
-	Email     string `json:"email" binding:"required,email"`
-	Password  string `json:"password" binding:"required,min=8"`
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
+	Email         string `json:"email" binding:"required,email"`
+	Password      string `json:"password" binding:"required,min=8"`
+	FirstName     string `json:"first_name" binding:"required"`
+	LastName      string `json:"last_name" binding:"required"`
+	TermsAccepted bool   `json:"terms_accepted"`
 }
 
 type authResponse struct {
@@ -47,10 +48,11 @@ func (h *Handler) register(c *gin.Context) {
 	}
 
 	res, err := h.Services.User.Register(c.Request.Context(), service.RegisterInput{
-		Email:     req.Email,
-		Password:  req.Password,
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
+		Email:         req.Email,
+		Password:      req.Password,
+		FirstName:     req.FirstName,
+		LastName:      req.LastName,
+		TermsAccepted: req.TermsAccepted,
 	})
 	if err != nil {
 		h.Logger.Warnf("register failed: %v", err)

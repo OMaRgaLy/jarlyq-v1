@@ -48,7 +48,12 @@ export default function Page() {
 
         {/* Популярные стеки */}
         <section id="stacks" className="card p-6">
-          <h2 className="section-title">{t.home.sectionStacks}</h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="section-title mb-0">{t.home.sectionStacks}</h2>
+            {!stacksLoading && stacks.some(s => s.isTrending) && (
+              <span className="text-xs text-slate-400 dark:text-slate-500">🔥 = в тренде</span>
+            )}
+          </div>
           {stacksLoading ? (
             <StacksSkeleton />
           ) : stacks.length === 0 ? (
@@ -58,12 +63,18 @@ export default function Page() {
           ) : (
             <div className="flex flex-wrap gap-3">
               {stacks.map((stack) => (
-                <span
+                <button
                   key={stack.id}
-                  className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900 dark:text-slate-100"
+                  onClick={() => setFilters(f => ({ ...f, stackId: f.stackId === String(stack.id) ? undefined : String(stack.id) }))}
+                  className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+                    filters.stackId === String(stack.id)
+                      ? 'bg-brand text-white'
+                      : 'bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-100'
+                  }`}
                 >
+                  {stack.isTrending && <span>🔥</span>}
                   #{stack.name}
-                </span>
+                </button>
               ))}
             </div>
           )}
@@ -174,7 +185,12 @@ export default function Page() {
         <CertificateChecker />
       </main>
       <footer className="border-t border-slate-200/70 bg-white/80 py-6 text-center text-xs text-slate-500 dark:border-slate-800/60 dark:bg-slate-950/80 dark:text-slate-400">
-        © {new Date().getFullYear()} Jarlyq. {t.home.footer}
+        <p>© {new Date().getFullYear()} Jarlyq. {t.home.footer}</p>
+        <p className="mt-1 flex items-center justify-center gap-3">
+          <Link href="/legal" className="hover:text-brand hover:underline">{t.legal.title}</Link>
+          <Link href="/internships" className="hover:text-brand hover:underline">{t.nav.internships}</Link>
+          <Link href="/hackathons" className="hover:text-brand hover:underline">{t.nav.hackathons}</Link>
+        </p>
       </footer>
     </div>
   );
