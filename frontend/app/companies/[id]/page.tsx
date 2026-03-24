@@ -2,6 +2,7 @@
 
 import { use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Header } from '../../../components/header';
 import { useCompany } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
@@ -61,23 +62,26 @@ export default function CompanyDetailPage({ params }: { params: Promise<{ id: st
         {/* Header card */}
         <div className="card p-6">
           {company.coverURL && (
-            <img
-              src={company.coverURL}
-              alt={company.name}
-              className="mb-4 h-32 w-full rounded-xl object-cover"
-            />
+            <div className="relative mb-4 h-32 w-full overflow-hidden rounded-xl">
+              <Image
+                src={company.coverURL}
+                alt={company.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 896px"
+              />
+            </div>
           )}
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{company.name}</h1>
           {company.description && (
             <p className="mt-2 text-slate-600 dark:text-slate-300">{company.description}</p>
           )}
 
-          {/* Contacts */}
-          {(company as any).contacts && (
+          {company.contacts && (
             <div className="mt-4 flex flex-wrap gap-3">
-              {(company as any).contacts.website && (
+              {company.contacts.website && (
                 <a
-                  href={(company as any).contacts.website}
+                  href={company.contacts.website}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-brand hover:bg-brand/5 dark:border-slate-700"
@@ -85,9 +89,9 @@ export default function CompanyDetailPage({ params }: { params: Promise<{ id: st
                   🌐 {t.company.website}
                 </a>
               )}
-              {(company as any).contacts.telegram && (
+              {company.contacts.telegram && (
                 <a
-                  href={`https://t.me/${(company as any).contacts.telegram.replace('@', '')}`}
+                  href={`https://t.me/${company.contacts.telegram.replace('@', '')}`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-[#229ED9] hover:bg-[#229ED9]/5 dark:border-slate-700"
@@ -95,9 +99,9 @@ export default function CompanyDetailPage({ params }: { params: Promise<{ id: st
                   ✈️ {t.company.telegram}
                 </a>
               )}
-              {(company as any).contacts.email && (
+              {company.contacts.email && (
                 <a
-                  href={`mailto:${(company as any).contacts.email}`}
+                  href={`mailto:${company.contacts.email}`}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
                 >
                   📧 {t.company.email}
@@ -121,7 +125,7 @@ export default function CompanyDetailPage({ params }: { params: Promise<{ id: st
                 >
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-semibold text-slate-900 dark:text-white">{opp.title}</p>
-                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${levelColors[opp.level] || 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${levelColors[opp.level] ?? 'bg-slate-100 text-slate-600'}`}>
                       {opp.level}
                     </span>
                   </div>
@@ -158,7 +162,7 @@ export default function CompanyDetailPage({ params }: { params: Promise<{ id: st
                 >
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-semibold text-slate-900 dark:text-white">{opp.title}</p>
-                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${levelColors[opp.level] || 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${levelColors[opp.level] ?? 'bg-slate-100 text-slate-600'}`}>
                       {opp.level}
                     </span>
                   </div>

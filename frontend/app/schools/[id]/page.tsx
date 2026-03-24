@@ -2,6 +2,7 @@
 
 import { use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Header } from '../../../components/header';
 import { useSchool } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
@@ -40,8 +41,6 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  const contacts = (school as any).contacts;
-
   return (
     <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
       <Header />
@@ -52,24 +51,27 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
 
         {/* Header card */}
         <div className="card p-6">
-          {(school as any).coverURL && (
-            <img
-              src={(school as any).coverURL}
-              alt={school.name}
-              className="mb-4 h-32 w-full rounded-xl object-cover"
-            />
+          {school.coverURL && (
+            <div className="relative mb-4 h-32 w-full overflow-hidden rounded-xl">
+              <Image
+                src={school.coverURL}
+                alt={school.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 896px"
+              />
+            </div>
           )}
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{school.name}</h1>
           {school.description && (
             <p className="mt-2 text-slate-600 dark:text-slate-300">{school.description}</p>
           )}
 
-          {/* Contacts */}
-          {contacts && (
+          {school.contacts && (
             <div className="mt-4 flex flex-wrap gap-3">
-              {contacts.website && (
+              {school.contacts.website && (
                 <a
-                  href={contacts.website}
+                  href={school.contacts.website}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-brand hover:bg-brand/5 dark:border-slate-700"
@@ -77,9 +79,9 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                   🌐 {t.company.website}
                 </a>
               )}
-              {contacts.telegram && (
+              {school.contacts.telegram && (
                 <a
-                  href={`https://t.me/${contacts.telegram.replace('@', '')}`}
+                  href={`https://t.me/${school.contacts.telegram.replace('@', '')}`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-[#229ED9] hover:bg-[#229ED9]/5 dark:border-slate-700"
@@ -87,9 +89,9 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                   ✈️ {t.company.telegram}
                 </a>
               )}
-              {contacts.email && (
+              {school.contacts.email && (
                 <a
-                  href={`mailto:${contacts.email}`}
+                  href={`mailto:${school.contacts.email}`}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
                 >
                   📧 {t.company.email}

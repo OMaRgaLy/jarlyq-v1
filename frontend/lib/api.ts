@@ -14,11 +14,19 @@ export interface Stack {
   popularity: number;
 }
 
+export interface ContactInfo {
+  website?: string;
+  telegram?: string;
+  email?: string;
+  phone?: string;
+}
+
 export interface Company {
   id: number;
   name: string;
   coverURL?: string;
   description?: string;
+  contacts?: ContactInfo;
   widgets: {
     trainingEnabled: boolean;
     internshipEnabled: boolean;
@@ -39,7 +47,9 @@ export interface Opportunity {
 export interface School {
   id: number;
   name: string;
+  coverURL?: string;
   description?: string;
+  contacts?: ContactInfo;
   courses: Course[];
 }
 
