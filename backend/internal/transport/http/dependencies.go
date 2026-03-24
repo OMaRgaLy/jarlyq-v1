@@ -59,5 +59,6 @@ func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager, auth
 	newJobRoutes(v1.Group("/jobs"), handler)
 	newCompanyProfileRoutes(v1.Group("/companies-profile"), handler)
 	newProjectIdeaRoutes(v1.Group("/project-ideas"), handler)
+	newSuggestionRoutes(v1.Group("/suggestions"), handler)
 	newAdminRoutes(v1.Group("/admin"), handler, jwt)
 }

@@ -6,9 +6,19 @@ import { Providers } from './providers';
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
 export const metadata: Metadata = {
-  title: 'Jarlyq — IT возможности Центральной Азии',
+  title: {
+    default: 'Jarlyq — IT возможности Центральной Азии',
+    template: '%s | Jarlyq',
+  },
   description:
-    'Платформа для поиска курсов, стажировок, вакансий и компаний по IT-стекам в Казахстане, Кыргызстане и Узбекистане.'
+    'Платформа для поиска курсов, стажировок, вакансий и компаний по IT-стекам в Казахстане, Кыргызстане и Узбекистане.',
+  openGraph: {
+    siteName: 'Jarlyq',
+    type: 'website',
+    locale: 'ru_RU',
+    description: 'IT стажировки, вакансии, школы и карьерные пути в Казахстане, Кыргызстане и Узбекистане.',
+  },
+  twitter: { card: 'summary' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

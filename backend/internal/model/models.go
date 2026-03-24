@@ -452,5 +452,22 @@ func AutoMigrate(db *gorm.DB) error {
 		&TechStackPopularity{},
 		&ConferenceEvent{},
 		&ProjectIdea{},
+		&Suggestion{},
 	)
+}
+
+// Suggestion — user-submitted request to add a company or school.
+type Suggestion struct {
+	ID           uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt    time.Time `json:"createdAt"`
+	Type         string    `gorm:"size:20" json:"type"`         // "company" | "school"
+	Name         string    `gorm:"size:255" json:"name"`
+	Description  string    `gorm:"type:text" json:"description"`
+	Website      string    `gorm:"size:500" json:"website"`
+	Telegram     string    `gorm:"size:255" json:"telegram"`
+	Email        string    `gorm:"size:255" json:"email"`
+	ContactName  string    `gorm:"size:255" json:"contactName"`
+	ContactEmail string    `gorm:"size:255" json:"contactEmail"`
+	Status       string    `gorm:"size:20;default:'pending'" json:"status"` // pending | approved | rejected
+	AdminNotes   string    `gorm:"type:text" json:"adminNotes,omitempty"`
 }

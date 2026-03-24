@@ -89,6 +89,14 @@ export function Header() {
               {mounted && theme === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
 
+            {/* Suggest button */}
+            <Link
+              href="/suggest"
+              className="hidden rounded-full border border-brand/40 bg-brand/5 px-3 py-1.5 text-sm font-medium text-brand hover:bg-brand/10 md:flex"
+            >
+              + {locale === 'ru' ? 'Предложить' : locale === 'en' ? 'Suggest' : 'Ұсыну'}
+            </Link>
+
             {/* Auth button */}
             {mounted && (
               user ? (

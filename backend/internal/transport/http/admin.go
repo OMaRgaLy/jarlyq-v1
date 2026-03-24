@@ -51,6 +51,9 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 	group.GET("/stacks", handler.adminListStacks)
 	group.POST("/stacks", handler.adminCreateStack)
 	group.DELETE("/stacks/:id", handler.adminDeleteStack)
+
+	// Suggestions
+	newAdminSuggestionRoutes(group.Group("/suggestions"), handler)
 }
 
 // ─── COMPANIES ────────────────────────────────────────────────────────────────

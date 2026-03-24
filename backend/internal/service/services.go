@@ -23,6 +23,7 @@ type Services struct {
 	Job            JobService
 	CompanyProfile CompanyProfileService
 	ProjectIdea    ProjectIdeaService
+	Suggestion     SuggestionService
 	DB             *gorm.DB
 }
 
@@ -79,6 +80,7 @@ func NewServices(repos *Repositories, cfg *config.Config, log logger.Logger) *Se
 		Job:            NewJobService(jobRepo),
 		CompanyProfile: NewCompanyProfileService(companyProfileRepo),
 		ProjectIdea:    NewProjectIdeaService(projectIdeaRepo),
+		Suggestion:     NewSuggestionService(repository.NewSuggestionRepository(repos.DB)),
 		DB:             repos.DB,
 	}
 }
