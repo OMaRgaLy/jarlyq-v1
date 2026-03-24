@@ -13,6 +13,7 @@ const dict = {
       careerPaths: 'Карьерные пути',
       interview: 'Собеседования',
       portfolio: 'Портфолио',
+      guide: 'Гайд по стажировкам',
       companies: 'Компании',
       schools: 'Школы',
       login: 'Войти',
@@ -92,6 +93,7 @@ const dict = {
       careerPaths: 'Career Paths',
       interview: 'Interviews',
       portfolio: 'Portfolio',
+      guide: 'Internship Guide',
       companies: 'Companies',
       schools: 'Schools',
       login: 'Log in',
@@ -171,6 +173,7 @@ const dict = {
       careerPaths: 'Мансап жолдары',
       interview: 'Сұхбат',
       portfolio: 'Портфолио',
+      guide: 'Тәжірибе нұсқаулығы',
       companies: 'Компаниялар',
       schools: 'Мектептер',
       login: 'Кіру',
@@ -248,7 +251,7 @@ const dict = {
 export interface Translations {
   nav: {
     jobs: string; careerPaths: string; interview: string; portfolio: string;
-    companies: string; schools: string; login: string; logout: string;
+    guide: string; companies: string; schools: string; login: string; logout: string;
   };
   home: {
     heroTitle: string; heroSubtitle: string;
