@@ -83,14 +83,27 @@ export const adminLogin = async (email: string, password: string) => {
   return data as { access_token: string; user: { email: string } };
 };
 
+// Company write body uses snake_case (what the backend form accepts)
+export interface AdminCompanyBody {
+  name: string;
+  description: string;
+  cover_url: string;
+  website: string;
+  telegram: string;
+  email: string;
+  training_enabled: boolean;
+  internship_enabled: boolean;
+  vacancy_enabled: boolean;
+}
+
 // Companies
 export const fetchAdminCompanies = async (): Promise<AdminCompany[]> => {
   const { data } = await adminApi.get('/admin/companies');
   return data.companies;
 };
-export const createAdminCompany = (body: Omit<AdminCompany, 'id' | 'opportunities'>) =>
+export const createAdminCompany = (body: AdminCompanyBody) =>
   adminApi.post('/admin/companies', body);
-export const updateAdminCompany = (id: number, body: Omit<AdminCompany, 'id' | 'opportunities'>) =>
+export const updateAdminCompany = (id: number, body: AdminCompanyBody) =>
   adminApi.put(`/admin/companies/${id}`, body);
 export const deleteAdminCompany = (id: number) => adminApi.delete(`/admin/companies/${id}`);
 

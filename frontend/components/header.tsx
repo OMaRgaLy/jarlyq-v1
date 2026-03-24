@@ -6,15 +6,8 @@ import { useEffect, useState } from 'react';
 import { SunIcon, MoonIcon, HamburgerMenuIcon, Cross1Icon, PersonIcon } from '@radix-ui/react-icons';
 import { AuthModal } from './auth-modal';
 import { getUser, clearAuth, AuthUser } from '../lib/auth';
-
-const navLinks = [
-  { href: '/jobs', label: 'Вакансии' },
-  { href: '/career-paths', label: 'Карьерные пути' },
-  { href: '/interview', label: 'Собеседования' },
-  { href: '/project-ideas', label: 'Портфолио' },
-  { href: '/#companies', label: 'Компании' },
-  { href: '/#schools', label: 'Школы' },
-];
+import { useLang } from '../lib/lang-context';
+import { LOCALES, Locale } from '../lib/i18n';
 
 export function Header() {
   const { theme, setTheme } = useTheme();
@@ -22,11 +15,21 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const { t, locale, setLocale } = useLang();
 
   useEffect(() => {
     setMounted(true);
     setUser(getUser());
   }, []);
+
+  const navLinks = [
+    { href: '/jobs', label: t.nav.jobs },
+    { href: '/career-paths', label: t.nav.careerPaths },
+    { href: '/interview', label: t.nav.interview },
+    { href: '/project-ideas', label: t.nav.portfolio },
+    { href: '/#companies', label: t.nav.companies },
+    { href: '/#schools', label: t.nav.schools },
+  ];
 
   const handleLogout = () => {
     clearAuth();
@@ -56,10 +59,30 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Language switcher */}
+            {mounted && (
+              <div className="hidden items-center gap-0.5 rounded-lg border border-slate-200/70 bg-white/50 p-0.5 dark:border-slate-700/60 dark:bg-slate-900/60 md:flex">
+                {LOCALES.map((loc) => (
+                  <button
+                    key={loc.code}
+                    type="button"
+                    onClick={() => setLocale(loc.code as Locale)}
+                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                      locale === loc.code
+                        ? 'bg-brand text-white'
+                        : 'text-slate-500 hover:text-brand dark:text-slate-400'
+                    }`}
+                  >
+                    {loc.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Theme toggle */}
             <button
               type="button"
-              aria-label="Сменить тему"
+              aria-label="Toggle theme"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="rounded-full border border-slate-200/70 bg-white/50 p-2 shadow-sm hover:shadow dark:border-slate-700/60 dark:bg-slate-900/60"
             >
@@ -73,7 +96,7 @@ export function Header() {
                   <button
                     className="flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/50 px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:shadow dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-slate-200"
                     onClick={handleLogout}
-                    title="Выйти"
+                    title={t.nav.logout}
                   >
                     <PersonIcon />
                     <span>{user.first_name}</span>
@@ -84,7 +107,7 @@ export function Header() {
                   onClick={() => setShowAuth(true)}
                   className="hidden rounded-full border border-slate-200/70 bg-white/50 px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:border-brand hover:text-brand dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-slate-200 md:flex"
                 >
-                  Войти
+                  {t.nav.login}
                 </button>
               )
             )}
@@ -92,7 +115,7 @@ export function Header() {
             {/* Mobile hamburger */}
             <button
               type="button"
-              aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setMenuOpen((v) => !v)}
               className="rounded-full border border-slate-200/70 bg-white/50 p-2 shadow-sm hover:shadow dark:border-slate-700/60 dark:bg-slate-900/60 md:hidden"
             >
@@ -115,20 +138,39 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Mobile language switcher */}
+              <div className="flex gap-1 px-3 py-2">
+                {LOCALES.map((loc) => (
+                  <button
+                    key={loc.code}
+                    type="button"
+                    onClick={() => { setLocale(loc.code as Locale); setMenuOpen(false); }}
+                    className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                      locale === loc.code
+                        ? 'bg-brand text-white'
+                        : 'border border-slate-200 text-slate-500 dark:border-slate-700 dark:text-slate-400'
+                    }`}
+                  >
+                    {loc.label}
+                  </button>
+                ))}
+              </div>
+
               {mounted && (
                 user ? (
                   <button
                     onClick={() => { handleLogout(); setMenuOpen(false); }}
                     className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-500 hover:bg-slate-100"
                   >
-                    Выйти ({user.first_name})
+                    {t.nav.logout} ({user.first_name})
                   </button>
                 ) : (
                   <button
                     onClick={() => { setShowAuth(true); setMenuOpen(false); }}
                     className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-brand hover:bg-brand/5"
                   >
-                    Войти
+                    {t.nav.login}
                   </button>
                 )
               )}

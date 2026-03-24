@@ -1,6 +1,26 @@
 import { useQuery } from '@tanstack/react-query';
 import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea } from './api';
 
+export const useCompany = (id: number) =>
+  useQuery<Company>({
+    queryKey: ['company', id],
+    queryFn: async () => {
+      const { data } = await api.get<{ company: Company }>(`/companies/${id}`);
+      return data.company;
+    },
+    enabled: id > 0,
+  });
+
+export const useSchool = (id: number) =>
+  useQuery<School>({
+    queryKey: ['school', id],
+    queryFn: async () => {
+      const { data } = await api.get<{ school: School }>(`/schools/${id}`);
+      return data.school;
+    },
+    enabled: id > 0,
+  });
+
 export const useStacks = () =>
   useQuery<Stack[]>({
     queryKey: ['stacks'],

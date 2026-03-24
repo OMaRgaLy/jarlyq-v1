@@ -10,10 +10,13 @@ import { SchoolCard } from '../components/school-card';
 import { OnboardingBanner } from '../components/onboarding-banner';
 import { CompanyCardSkeleton, SchoolCardSkeleton, StacksSkeleton } from '../components/skeleton';
 import { useCompanies, useSchools, useStacks } from '../lib/hooks';
+import { useLang } from '../lib/lang-context';
 import Link from 'next/link';
 
 export default function Page() {
   const [filters, setFilters] = useState<FilterState>({});
+  const { t } = useLang();
+
   const { data: stacks = [], isLoading: stacksLoading } = useStacks();
   const { data: companies = [], isLoading: companiesLoading } = useCompanies({
     'stack_ids[]': filters.stackId ? [filters.stackId] : undefined,
@@ -29,7 +32,8 @@ export default function Page() {
     companies.flatMap((company) =>
       (company.opportunities ?? []).map((opportunity) => ({
         ...opportunity,
-        company: company.name
+        company: company.name,
+        companyId: company.id,
       }))
     ),
   [companies]);
@@ -44,12 +48,12 @@ export default function Page() {
 
         {/* Популярные стеки */}
         <section id="stacks" className="card p-6">
-          <h2 className="section-title">Популярные стеки</h2>
+          <h2 className="section-title">{t.home.sectionStacks}</h2>
           {stacksLoading ? (
             <StacksSkeleton />
           ) : stacks.length === 0 ? (
             <div className="py-6 text-center">
-              <p className="text-sm text-slate-500">Стеки загружаются...</p>
+              <p className="text-sm text-slate-500">{t.common.loading}</p>
             </div>
           ) : (
             <div className="flex flex-wrap gap-3">
@@ -68,10 +72,8 @@ export default function Page() {
         {/* Компании */}
         <section id="companies" className="space-y-4">
           <div>
-            <h2 className="section-title">Компании региона</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300">
-              IT-компании Казахстана, Кыргызстана и Узбекистана — стажировки и вакансии
-            </p>
+            <h2 className="section-title">{t.home.sectionCompanies}</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionCompaniesSub}</p>
           </div>
           {companiesLoading ? (
             <div className="grid gap-6">
@@ -81,17 +83,13 @@ export default function Page() {
           ) : companies.length === 0 ? (
             <div className="card flex flex-col items-center gap-3 py-10 text-center">
               <span className="text-4xl">🏢</span>
-              <p className="font-semibold text-slate-700 dark:text-slate-200">
-                Компании скоро появятся
-              </p>
-              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">
-                Пока данных нет — попробуй изменить фильтры или посмотри карьерные пути
-              </p>
+              <p className="font-semibold text-slate-700 dark:text-slate-200">{t.home.emptyCo}</p>
+              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">{t.home.emptyCoSub}</p>
               <Link
                 href="/career-paths"
                 className="mt-1 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
               >
-                Карьерные пути →
+                {t.nav.careerPaths} →
               </Link>
             </div>
           ) : (
@@ -106,10 +104,8 @@ export default function Page() {
         {/* Школы */}
         <section id="schools" className="space-y-4">
           <div>
-            <h2 className="section-title">Школы и курсы</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300">
-              Курсы и буткемпы для входа в IT — с сертификатами и трудоустройством
-            </p>
+            <h2 className="section-title">{t.home.sectionSchools}</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionSchoolsSub}</p>
           </div>
           {schoolsLoading ? (
             <div className="grid gap-6 md:grid-cols-2">
@@ -119,17 +115,13 @@ export default function Page() {
           ) : schools.length === 0 ? (
             <div className="card flex flex-col items-center gap-3 py-10 text-center">
               <span className="text-4xl">🎓</span>
-              <p className="font-semibold text-slate-700 dark:text-slate-200">
-                Школы скоро появятся
-              </p>
-              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">
-                Пока нет школ по выбранному фильтру. Попробуй сбросить фильтры.
-              </p>
+              <p className="font-semibold text-slate-700 dark:text-slate-200">{t.home.emptySch}</p>
+              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">{t.home.emptySchSub}</p>
               <Link
                 href="/interview"
                 className="mt-1 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
               >
-                Подготовиться к собеседованию →
+                {t.nav.interview} →
               </Link>
             </div>
           ) : (
@@ -145,10 +137,8 @@ export default function Page() {
         {opportunities.length > 0 && (
           <section id="opportunities" className="card space-y-4 p-6">
             <div>
-              <h2 className="section-title">Актуальные возможности</h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300">
-                Стажировки и вакансии с быстрым откликом
-              </p>
+              <h2 className="section-title">{t.home.sectionOpportunities}</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionOpportunitiesSub}</p>
             </div>
             <ul className="grid gap-4 md:grid-cols-2">
               {opportunities.map((opportunity) => (
@@ -157,7 +147,7 @@ export default function Page() {
                   className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/70"
                 >
                   <p className="text-xs uppercase tracking-wide text-brand">
-                    {opportunity.type === 'internship' ? 'Стажировка' : 'Вакансия'} · {opportunity.level}
+                    {opportunity.type === 'internship' ? t.common.internship : t.common.vacancy} · {opportunity.level}
                   </p>
                   <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
                     {opportunity.title}
@@ -172,7 +162,7 @@ export default function Page() {
                       rel="noreferrer"
                       className="mt-2 inline-flex text-xs text-brand hover:text-brand-dark"
                     >
-                      Подать заявку →
+                      {t.company.apply} →
                     </a>
                   )}
                 </li>
@@ -184,7 +174,7 @@ export default function Page() {
         <CertificateChecker />
       </main>
       <footer className="border-t border-slate-200/70 bg-white/80 py-6 text-center text-xs text-slate-500 dark:border-slate-800/60 dark:bg-slate-950/80 dark:text-slate-400">
-        © {new Date().getFullYear()} Jarlyq. Сделано для роста IT-комьюнити Центральной Азии.
+        © {new Date().getFullYear()} Jarlyq. {t.home.footer}
       </footer>
     </div>
   );
