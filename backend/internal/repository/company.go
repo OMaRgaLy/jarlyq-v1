@@ -60,7 +60,12 @@ func (r *companyRepo) List(ctx context.Context, filter CompanyFilter) ([]model.C
 
 func (r *companyRepo) FindByID(ctx context.Context, id uint) (*model.Company, error) {
 	var company model.Company
-	if err := r.db.WithContext(ctx).Preload("Stack").Preload("Regions").Preload("Opportunities").Preload("Opportunities.Stack").Preload("Opportunities.Regions").First(&company, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).
+		Preload("Stack").Preload("Regions").
+		Preload("Opportunities").Preload("Opportunities.Stack").Preload("Opportunities.Regions").
+		Preload("Offices").Preload("Photos", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
+		Preload("Showcase", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
+		First(&company, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}

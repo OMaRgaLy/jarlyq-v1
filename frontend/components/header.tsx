@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SunIcon, MoonIcon, HamburgerMenuIcon, Cross1Icon, PersonIcon } from '@radix-ui/react-icons';
 import { AuthModal } from './auth-modal';
 import { getUser, clearAuth, AuthUser } from '../lib/auth';
@@ -15,7 +15,20 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useLang();
+
+  // Close user dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -100,15 +113,33 @@ export function Header() {
             {/* Auth button */}
             {mounted && (
               user ? (
-                <div className="relative hidden md:block">
+                <div className="relative hidden md:block" ref={userMenuRef}>
                   <button
                     className="flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/50 px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:shadow dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-slate-200"
-                    onClick={handleLogout}
-                    title={t.nav.logout}
+                    onClick={() => setUserMenuOpen((v) => !v)}
                   >
                     <PersonIcon />
                     <span>{user.first_name}</span>
+                    <span className="text-slate-400">▾</span>
                   </button>
+                  {userMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-slate-200/70 bg-white py-1 shadow-lg dark:border-slate-700/60 dark:bg-slate-900">
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                      >
+                        <PersonIcon />
+                        {locale === 'ru' ? 'Мой профиль' : locale === 'en' ? 'My Profile' : 'Менің профилім'}
+                      </Link>
+                      <button
+                        onClick={() => { handleLogout(); setUserMenuOpen(false); }}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        {t.nav.logout}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <button

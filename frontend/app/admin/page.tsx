@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import { adminLogin, saveAdminToken } from '../../lib/admin-api';
+import { adminLogin, saveAdminToken, fetchAdminCompanies } from '../../lib/admin-api';
 import { api } from '../../lib/api';
 
 export default function AdminLoginPage() {
@@ -19,6 +19,15 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       const data = await adminLogin(email, password);
+      // Temporarily set the token so the adminApi interceptor picks it up
+      localStorage.setItem('jarlyq_admin_token', data.access_token);
+      try {
+        await fetchAdminCompanies();
+      } catch {
+        localStorage.removeItem('jarlyq_admin_token');
+        setError('Нет прав администратора');
+        return;
+      }
       saveAdminToken(data.access_token);
       router.push('/admin/dashboard');
     } catch {
@@ -32,6 +41,15 @@ export default function AdminLoginPage() {
     if (!credentialResponse.credential) return;
     try {
       const { data } = await api.post('/auth/google', { token: credentialResponse.credential });
+      // Temporarily set the token so the adminApi interceptor picks it up
+      localStorage.setItem('jarlyq_admin_token', data.access_token);
+      try {
+        await fetchAdminCompanies();
+      } catch {
+        localStorage.removeItem('jarlyq_admin_token');
+        setError('Нет прав администратора. Убедись что ADMIN_EMAIL совпадает с твоим Google аккаунтом.');
+        return;
+      }
       saveAdminToken(data.access_token);
       router.push('/admin/dashboard');
     } catch {

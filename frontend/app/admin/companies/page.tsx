@@ -16,7 +16,9 @@ import {
 } from '../../../lib/admin-api';
 
 const emptyCompany = {
-  name: '', description: '', cover_url: '', website: '', telegram: '', email: '',
+  name: '', description: '', cover_url: '', logo_url: '', about: '',
+  founded_year: 0, employee_count: '', industry: '',
+  website: '', telegram: '', email: '',
   training_enabled: false, internship_enabled: true, vacancy_enabled: true,
 };
 
@@ -27,10 +29,16 @@ interface OppForm {
   requirements: string;
   apply_url: string;
   level: string;
+  salary_min: number;
+  salary_max: number;
+  salary_currency: string;
+  work_format: string;
+  city: string;
 }
 
 const emptyOpp: OppForm = {
   type: 'internship', title: '', description: '', requirements: '', apply_url: '', level: 'intern',
+  salary_min: 0, salary_max: 0, salary_currency: '₸', work_format: '', city: '',
 };
 
 export default function AdminCompaniesPage() {
@@ -59,8 +67,17 @@ export default function AdminCompaniesPage() {
   const openEdit = (c: AdminCompany) => {
     setEditing(c);
     setForm({
-      name: c.name, description: c.description || '', cover_url: c.coverURL || '',
-      website: c.contacts?.website || '', telegram: c.contacts?.telegram || '', email: c.contacts?.email || '',
+      name: c.name,
+      description: c.description || '',
+      cover_url: c.coverURL || '',
+      logo_url: '',
+      about: '',
+      founded_year: 0,
+      employee_count: '',
+      industry: '',
+      website: c.contacts?.website || '',
+      telegram: c.contacts?.telegram || '',
+      email: c.contacts?.email || '',
       training_enabled: c.widgets?.trainingEnabled ?? false,
       internship_enabled: c.widgets?.internshipEnabled ?? true,
       vacancy_enabled: c.widgets?.vacancyEnabled ?? true,
@@ -172,19 +189,31 @@ export default function AdminCompaniesPage() {
               <div className="space-y-3">
                 {([
                   ['name', 'Название *'],
-                  ['description', 'Описание'],
+                  ['description', 'Краткое описание'],
                   ['cover_url', 'URL обложки'],
+                  ['logo_url', 'URL логотипа'],
+                  ['about', 'О компании (подробно)'],
+                  ['industry', 'Отрасль (например: FinTech)'],
+                  ['employee_count', 'Сотрудников (например: 100-500)'],
+                  ['founded_year', 'Год основания'],
                   ['website', 'Сайт'],
                   ['telegram', 'Telegram'],
                   ['email', 'Email'],
                 ] as [keyof typeof form, string][]).map(([field, label]) => (
                   <div key={field}>
                     <label className="mb-1 block text-xs font-medium text-slate-500">{label}</label>
-                    {field === 'description' ? (
+                    {(field === 'description' || field === 'about') ? (
                       <textarea
                         value={form[field] as string}
                         onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                        rows={3}
+                        rows={field === 'about' ? 4 : 3}
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      />
+                    ) : field === 'founded_year' ? (
+                      <input
+                        type="number"
+                        value={form[field] as number || ''}
+                        onChange={(e) => setForm({ ...form, [field]: Number(e.target.value) })}
                         className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                       />
                     ) : (
@@ -240,15 +269,78 @@ export default function AdminCompaniesPage() {
                     <option value="vacancy">Вакансия</option>
                   </select>
                 </div>
-                {(['title', 'description', 'requirements', 'apply_url'] as const).map((field) => (
+                {(['title', 'apply_url', 'city'] as const).map((field) => (
                   <div key={field}>
                     <label className="mb-1 block text-xs font-medium text-slate-500">
-                      {field === 'title' ? 'Название *' : field === 'description' ? 'Описание' : field === 'requirements' ? 'Требования' : 'Ссылка для отклика'}
+                      {field === 'title' ? 'Название *' : field === 'apply_url' ? 'Ссылка для отклика' : 'Город'}
                     </label>
                     <input
                       type="text"
                       value={oppForm[field]}
                       onChange={(e) => setOppForm({ ...oppForm, [field]: e.target.value })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                ))}
+                {/* Salary */}
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">ЗП от *</label>
+                    <input
+                      type="number"
+                      value={oppForm.salary_min || ''}
+                      onChange={(e) => setOppForm({ ...oppForm, salary_min: Number(e.target.value) })}
+                      placeholder="150000"
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">ЗП до</label>
+                    <input
+                      type="number"
+                      value={oppForm.salary_max || ''}
+                      onChange={(e) => setOppForm({ ...oppForm, salary_max: Number(e.target.value) })}
+                      placeholder="300000"
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">Валюта</label>
+                    <select
+                      value={oppForm.salary_currency}
+                      onChange={(e) => setOppForm({ ...oppForm, salary_currency: e.target.value })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    >
+                      <option value="₸">₸ KZT</option>
+                      <option value="$">$ USD</option>
+                      <option value="сом">сом KGS</option>
+                      <option value="сум">сум UZS</option>
+                    </select>
+                  </div>
+                </div>
+                {/* Work format */}
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500">Формат работы</label>
+                  <select
+                    value={oppForm.work_format}
+                    onChange={(e) => setOppForm({ ...oppForm, work_format: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  >
+                    <option value="">Не указано</option>
+                    <option value="office">Офис</option>
+                    <option value="remote">Удалённо</option>
+                    <option value="hybrid">Гибрид</option>
+                  </select>
+                </div>
+                {(['description', 'requirements'] as const).map((field) => (
+                  <div key={field}>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">
+                      {field === 'description' ? 'Описание' : 'Требования'}
+                    </label>
+                    <textarea
+                      value={oppForm[field]}
+                      onChange={(e) => setOppForm({ ...oppForm, [field]: e.target.value })}
+                      rows={2}
                       className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                     />
                   </div>

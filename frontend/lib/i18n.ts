@@ -52,7 +52,25 @@ const dict = {
       contacts: 'Контакты',
       techStack: 'Технологии',
       noOpportunities: 'Нет открытых позиций',
+      noOpeningsCard: 'Открытых позиций пока нет — следи за обновлениями',
       backToList: '← Все компании',
+      salaryFrom: 'от',
+      remote: 'Удалёнка',
+      office: 'Офис',
+      hybrid: 'Гибрид',
+      about: 'О компании',
+      offices: 'Офисы',
+      hq: 'Главный офис',
+      photos: 'Галерея',
+      showcase: 'Витрина',
+      founded: 'Основана',
+      employees: 'Сотрудников',
+      industry: 'Отрасль',
+      showcaseInternship: 'Стажировка',
+      showcaseEvent: 'Мероприятие',
+      showcaseVacancy: 'Вакансия',
+      showcaseNews: 'Новость',
+      learnMore: 'Узнать больше',
     },
     school: {
       courses: 'Курсы',
@@ -60,6 +78,13 @@ const dict = {
       details: 'Подробнее',
       noCourses: 'Нет курсов',
       backToList: '← Все школы',
+      priceFrom: 'от',
+      free: 'Бесплатно',
+      online: 'Онлайн',
+      offline: 'Офлайн',
+      hybrid: 'Гибрид',
+      weeks: 'нед.',
+      hasEmployment: 'Трудоустройство',
     },
     interview: {
       title: 'Вопросы с собеседований',
@@ -84,6 +109,41 @@ const dict = {
       notFound: 'Не найдено',
       internship: 'Стажировка',
       vacancy: 'Вакансия',
+    },
+    jobs: {
+      title: 'Вакансии',
+      subtitle: 'IT вакансии в Казахстане, Кыргызстане и Узбекистане',
+      allLevels: 'Все уровни',
+      allLocations: 'Все локации',
+      remote: 'Удаленно',
+      almaty: 'Алматы',
+      bishkek: 'Бишкек',
+      tashkent: 'Ташкент',
+      intern: 'Стажер',
+      loading: 'Загружаем вакансии...',
+      empty: 'Нет вакансий для выбранных фильтров',
+      noSalary: 'Зарплата не указана',
+      views: 'просмотров',
+      applications: 'откликов',
+      apply: 'Откликнуться',
+    },
+    careerPaths: {
+      title: 'Карьерные пути',
+      subtitle: 'Структурированные маршруты от новичка до junior-специалиста',
+      loading: 'Загружаем...',
+      emptyTitle: 'Пути загружаются',
+      emptyHint: 'Попробуй обновить страницу',
+      months: 'мес.',
+      completed: 'завершили',
+      backToAll: '← Все пути',
+      stages: 'Этапы обучения',
+      stage: 'Этап',
+      days: 'дней',
+      goal: 'Цель:',
+      pathNotFound: 'Путь не найден',
+      beginner: 'Начальный',
+      intermediate: 'Средний',
+      advanced: 'Продвинутый',
     },
   },
 
@@ -132,7 +192,25 @@ const dict = {
       contacts: 'Contacts',
       techStack: 'Tech Stack',
       noOpportunities: 'No open positions',
+      noOpeningsCard: 'No open positions right now — check back later',
       backToList: '← All companies',
+      salaryFrom: 'from',
+      remote: 'Remote',
+      office: 'Office',
+      hybrid: 'Hybrid',
+      about: 'About',
+      offices: 'Offices',
+      hq: 'HQ',
+      photos: 'Gallery',
+      showcase: 'Highlights',
+      founded: 'Founded',
+      employees: 'Employees',
+      industry: 'Industry',
+      showcaseInternship: 'Internship',
+      showcaseEvent: 'Event',
+      showcaseVacancy: 'Vacancy',
+      showcaseNews: 'News',
+      learnMore: 'Learn more',
     },
     school: {
       courses: 'Courses',
@@ -140,6 +218,13 @@ const dict = {
       details: 'View details',
       noCourses: 'No courses',
       backToList: '← All schools',
+      priceFrom: 'from',
+      free: 'Free',
+      online: 'Online',
+      offline: 'Offline',
+      hybrid: 'Hybrid',
+      weeks: 'wk.',
+      hasEmployment: 'Job placement',
     },
     interview: {
       title: 'Interview Questions',
@@ -164,6 +249,41 @@ const dict = {
       notFound: 'Not found',
       internship: 'Internship',
       vacancy: 'Vacancy',
+    },
+    jobs: {
+      title: 'Jobs',
+      subtitle: 'IT jobs in Kazakhstan, Kyrgyzstan and Uzbekistan',
+      allLevels: 'All levels',
+      allLocations: 'All locations',
+      remote: 'Remote',
+      almaty: 'Almaty',
+      bishkek: 'Bishkek',
+      tashkent: 'Tashkent',
+      intern: 'Intern',
+      loading: 'Loading jobs...',
+      empty: 'No jobs for selected filters',
+      noSalary: 'Salary not specified',
+      views: 'views',
+      applications: 'applications',
+      apply: 'Apply',
+    },
+    careerPaths: {
+      title: 'Career Paths',
+      subtitle: 'Structured routes from beginner to junior specialist',
+      loading: 'Loading...',
+      emptyTitle: 'Paths loading',
+      emptyHint: 'Try refreshing the page',
+      months: 'mo.',
+      completed: 'completed',
+      backToAll: '← All paths',
+      stages: 'Learning stages',
+      stage: 'Stage',
+      days: 'days',
+      goal: 'Goal:',
+      pathNotFound: 'Path not found',
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
     },
   },
 
@@ -212,7 +332,25 @@ const dict = {
       contacts: 'Байланыс',
       techStack: 'Технологиялар',
       noOpportunities: 'Ашық позициялар жоқ',
+      noOpeningsCard: 'Қазір ашық позициялар жоқ — жаңартуларды қадағала',
       backToList: '← Барлық компаниялар',
+      salaryFrom: 'бастап',
+      remote: 'Қашықтан',
+      office: 'Офис',
+      hybrid: 'Гибрид',
+      about: 'Компания туралы',
+      offices: 'Кеңселер',
+      hq: 'Бас офис',
+      photos: 'Галерея',
+      showcase: 'Витрина',
+      founded: 'Құрылған',
+      employees: 'Қызметкерлер',
+      industry: 'Сала',
+      showcaseInternship: 'Тәжірибе',
+      showcaseEvent: 'Іс-шара',
+      showcaseVacancy: 'Бос орын',
+      showcaseNews: 'Жаңалық',
+      learnMore: 'Толығырақ',
     },
     school: {
       courses: 'Курстар',
@@ -220,6 +358,13 @@ const dict = {
       details: 'Толығырақ',
       noCourses: 'Курстар жоқ',
       backToList: '← Барлық мектептер',
+      priceFrom: 'бастап',
+      free: 'Тегін',
+      online: 'Онлайн',
+      offline: 'Офлайн',
+      hybrid: 'Гибрид',
+      weeks: 'апта',
+      hasEmployment: 'Жұмысқа орналасу',
     },
     interview: {
       title: 'Сұхбат сұрақтары',
@@ -245,6 +390,41 @@ const dict = {
       internship: 'Тәжірибе',
       vacancy: 'Бос орын',
     },
+    jobs: {
+      title: 'Бос орындар',
+      subtitle: 'Қазақстан, Қырғызстан және Өзбекстандағы IT бос орындары',
+      allLevels: 'Барлық деңгейлер',
+      allLocations: 'Барлық орындар',
+      remote: 'Қашықтан',
+      almaty: 'Алматы',
+      bishkek: 'Бішкек',
+      tashkent: 'Ташкент',
+      intern: 'Стажер',
+      loading: 'Бос орындар жүктелуде...',
+      empty: 'Таңдалған сүзгілер бойынша бос орындар жоқ',
+      noSalary: 'Жалақы көрсетілмеген',
+      views: 'көру',
+      applications: 'өтінім',
+      apply: 'Өтінім беру',
+    },
+    careerPaths: {
+      title: 'Мансап жолдары',
+      subtitle: 'Жаңадан бастаушыдан junior маманға дейінгі құрылымдалған маршруттар',
+      loading: 'Жүктелуде...',
+      emptyTitle: 'Жолдар жүктелуде',
+      emptyHint: 'Бетті жаңартып көр',
+      months: 'ай',
+      completed: 'аяқтады',
+      backToAll: '← Барлық жолдар',
+      stages: 'Оқу кезеңдері',
+      stage: 'Кезең',
+      days: 'күн',
+      goal: 'Мақсат:',
+      pathNotFound: 'Жол табылмады',
+      beginner: 'Бастауыш',
+      intermediate: 'Орташа',
+      advanced: 'Жоғары',
+    },
   },
 } as const;
 
@@ -267,10 +447,17 @@ export interface Translations {
     internships: string; vacancies: string; apply: string; respond: string;
     level: string; details: string; website: string; telegram: string;
     email: string; contacts: string; techStack: string; noOpportunities: string;
-    backToList: string;
+    noOpeningsCard: string; backToList: string; salaryFrom: string;
+    remote: string; office: string; hybrid: string;
+    about: string; offices: string; hq: string; photos: string;
+    showcase: string; founded: string; employees: string; industry: string;
+    showcaseInternship: string; showcaseEvent: string; showcaseVacancy: string;
+    showcaseNews: string; learnMore: string;
   };
   school: {
     courses: string; goToSite: string; details: string; noCourses: string; backToList: string;
+    priceFrom: string; free: string; online: string; offline: string; hybrid: string;
+    weeks: string; hasEmployment: string;
   };
   interview: {
     title: string; subtitle: string; allLevels: string; allTopics: string; allSpecialties: string;
@@ -280,6 +467,16 @@ export interface Translations {
   };
   common: {
     loading: string; back: string; notFound: string; internship: string; vacancy: string;
+  };
+  jobs: {
+    title: string; subtitle: string; allLevels: string; allLocations: string;
+    remote: string; almaty: string; bishkek: string; tashkent: string; intern: string;
+    loading: string; empty: string; noSalary: string; views: string; applications: string; apply: string;
+  };
+  careerPaths: {
+    title: string; subtitle: string; loading: string; emptyTitle: string; emptyHint: string;
+    months: string; completed: string; backToAll: string; stages: string; stage: string;
+    days: string; goal: string; pathNotFound: string; beginner: string; intermediate: string; advanced: string;
   };
 }
 

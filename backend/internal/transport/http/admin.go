@@ -68,12 +68,17 @@ func (h *Handler) adminListCompanies(c *gin.Context) {
 }
 
 type adminCompanyRequest struct {
-	Name        string `json:"name" binding:"required"`
-	Description string `json:"description"`
-	CoverURL    string `json:"cover_url"`
-	Website     string `json:"website"`
-	Telegram    string `json:"telegram"`
-	Email       string `json:"email"`
+	Name          string `json:"name" binding:"required"`
+	Description   string `json:"description"`
+	CoverURL      string `json:"cover_url"`
+	LogoURL       string `json:"logo_url"`
+	About         string `json:"about"`
+	FoundedYear   int    `json:"founded_year"`
+	EmployeeCount string `json:"employee_count"`
+	Industry      string `json:"industry"`
+	Website       string `json:"website"`
+	Telegram      string `json:"telegram"`
+	Email         string `json:"email"`
 
 	TrainingEnabled   bool `json:"training_enabled"`
 	InternshipEnabled bool `json:"internship_enabled"`
@@ -87,9 +92,14 @@ func (h *Handler) adminCreateCompany(c *gin.Context) {
 		return
 	}
 	company := &model.Company{
-		Name:        req.Name,
-		Description: req.Description,
-		CoverURL:    req.CoverURL,
+		Name:          req.Name,
+		Description:   req.Description,
+		CoverURL:      req.CoverURL,
+		LogoURL:       req.LogoURL,
+		About:         req.About,
+		FoundedYear:   req.FoundedYear,
+		EmployeeCount: req.EmployeeCount,
+		Industry:      req.Industry,
 		Contacts: model.ContactInfo{
 			Website:  req.Website,
 			Telegram: req.Telegram,
@@ -127,6 +137,11 @@ func (h *Handler) adminUpdateCompany(c *gin.Context) {
 	company.Name = req.Name
 	company.Description = req.Description
 	company.CoverURL = req.CoverURL
+	company.LogoURL = req.LogoURL
+	company.About = req.About
+	company.FoundedYear = req.FoundedYear
+	company.EmployeeCount = req.EmployeeCount
+	company.Industry = req.Industry
 	company.Contacts = model.ContactInfo{
 		Website:  req.Website,
 		Telegram: req.Telegram,
@@ -160,12 +175,17 @@ func (h *Handler) adminDeleteCompany(c *gin.Context) {
 // ─── OPPORTUNITIES ────────────────────────────────────────────────────────────
 
 type adminOpportunityRequest struct {
-	Type        string `json:"type" binding:"required"`
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description"`
-	Requirements string `json:"requirements"`
-	ApplyURL    string `json:"apply_url"`
-	Level       string `json:"level"`
+	Type           string `json:"type" binding:"required"`
+	Title          string `json:"title" binding:"required"`
+	Description    string `json:"description"`
+	Requirements   string `json:"requirements"`
+	ApplyURL       string `json:"apply_url"`
+	Level          string `json:"level"`
+	SalaryMin      int    `json:"salary_min"`
+	SalaryMax      int    `json:"salary_max"`
+	SalaryCurrency string `json:"salary_currency"`
+	WorkFormat     string `json:"work_format"`
+	City           string `json:"city"`
 }
 
 func (h *Handler) adminCreateOpportunity(c *gin.Context) {
@@ -180,13 +200,18 @@ func (h *Handler) adminCreateOpportunity(c *gin.Context) {
 		return
 	}
 	opp := model.Opportunity{
-		CompanyID:    uint(companyID),
-		Type:         req.Type,
-		Title:        req.Title,
-		Description:  req.Description,
-		Requirements: req.Requirements,
-		ApplyURL:     req.ApplyURL,
-		Level:        req.Level,
+		CompanyID:      uint(companyID),
+		Type:           req.Type,
+		Title:          req.Title,
+		Description:    req.Description,
+		Requirements:   req.Requirements,
+		ApplyURL:       req.ApplyURL,
+		Level:          req.Level,
+		SalaryMin:      req.SalaryMin,
+		SalaryMax:      req.SalaryMax,
+		SalaryCurrency: req.SalaryCurrency,
+		WorkFormat:     req.WorkFormat,
+		City:           req.City,
 	}
 	if err := h.Services.DB.Create(&opp).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -298,9 +323,14 @@ func (h *Handler) adminDeleteSchool(c *gin.Context) {
 // ─── COURSES ──────────────────────────────────────────────────────────────────
 
 type adminCourseRequest struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description"`
-	ExternalURL string `json:"external_url"`
+	Title          string `json:"title" binding:"required"`
+	Description    string `json:"description"`
+	ExternalURL    string `json:"external_url"`
+	Price          int    `json:"price"`
+	PriceCurrency  string `json:"price_currency"`
+	DurationWeeks  int    `json:"duration_weeks"`
+	Format         string `json:"format"`
+	HasEmployment  bool   `json:"has_employment"`
 }
 
 func (h *Handler) adminCreateCourse(c *gin.Context) {
@@ -315,10 +345,15 @@ func (h *Handler) adminCreateCourse(c *gin.Context) {
 		return
 	}
 	course := model.Course{
-		SchoolID:    uint(schoolID),
-		Title:       req.Title,
-		Description: req.Description,
-		ExternalURL: req.ExternalURL,
+		SchoolID:      uint(schoolID),
+		Title:         req.Title,
+		Description:   req.Description,
+		ExternalURL:   req.ExternalURL,
+		Price:         req.Price,
+		PriceCurrency: req.PriceCurrency,
+		DurationWeeks: req.DurationWeeks,
+		Format:        req.Format,
+		HasEmployment: req.HasEmployment,
 	}
 	if err := h.Services.DB.Create(&course).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -338,7 +373,16 @@ func (h *Handler) adminUpdateCourse(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	course := model.Course{Title: req.Title, Description: req.Description, ExternalURL: req.ExternalURL}
+	course := model.Course{
+		Title:         req.Title,
+		Description:   req.Description,
+		ExternalURL:   req.ExternalURL,
+		Price:         req.Price,
+		PriceCurrency: req.PriceCurrency,
+		DurationWeeks: req.DurationWeeks,
+		Format:        req.Format,
+		HasEmployment: req.HasEmployment,
+	}
 	if err := h.Services.DB.Model(&model.Course{}).Where("id = ?", id).Updates(course).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -373,6 +417,7 @@ func (h *Handler) adminListStacks(c *gin.Context) {
 type adminStackRequest struct {
 	Name       string `json:"name" binding:"required"`
 	Popularity uint   `json:"popularity"`
+	IsTrending bool   `json:"is_trending"`
 }
 
 func (h *Handler) adminCreateStack(c *gin.Context) {
@@ -381,7 +426,7 @@ func (h *Handler) adminCreateStack(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	stack := &model.Stack{Name: req.Name, Popularity: req.Popularity}
+	stack := &model.Stack{Name: req.Name, Popularity: req.Popularity, IsTrending: req.IsTrending}
 	if err := h.Services.Stacks.Create(c.Request.Context(), stack); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

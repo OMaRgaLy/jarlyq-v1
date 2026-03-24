@@ -17,6 +17,7 @@ export default function AdminStacksPage() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
   const [popularity, setPopularity] = useState(50);
+  const [isTrending, setIsTrending] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const reload = useCallback(() => {
@@ -34,9 +35,10 @@ export default function AdminStacksPage() {
     if (!name.trim()) return;
     setSaving(true);
     try {
-      await createAdminStack({ name: name.trim(), popularity });
+      await createAdminStack({ name: name.trim(), popularity, is_trending: isTrending });
       setName('');
       setPopularity(50);
+      setIsTrending(false);
       reload();
     } finally { setSaving(false); }
   };
@@ -76,13 +78,24 @@ export default function AdminStacksPage() {
               className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
-          >
-            {saving ? 'Добавляем...' : '+ Добавить'}
-          </button>
+          <div className="flex flex-col gap-1">
+            <label className="flex items-center gap-2 text-xs text-slate-500">
+              <input
+                type="checkbox"
+                checked={isTrending}
+                onChange={(e) => setIsTrending(e.target.checked)}
+                className="rounded"
+              />
+              В тренде 🔥
+            </label>
+            <button
+              type="submit"
+              disabled={saving}
+              className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
+            >
+              {saving ? 'Добавляем...' : '+ Добавить'}
+            </button>
+          </div>
         </form>
 
         {/* List */}
@@ -94,7 +107,9 @@ export default function AdminStacksPage() {
                 className="flex items-center justify-between rounded-xl border border-slate-200/70 bg-white px-4 py-3 dark:border-slate-700/60 dark:bg-slate-900"
               >
                 <div>
-                  <p className="font-medium text-slate-900 dark:text-white">#{s.name}</p>
+                  <p className="font-medium text-slate-900 dark:text-white">
+                    #{s.name} {s.is_trending && '🔥'}
+                  </p>
                   <p className="text-xs text-slate-400">Популярность: {s.popularity}</p>
                 </div>
                 <button

@@ -3,18 +3,20 @@
 import { useState } from 'react';
 import { Header } from '../../components/header';
 import { useJobs } from '../../lib/hooks';
-
-const levelLabels: Record<string, string> = {
-  intern: 'Стажер',
-  junior: 'Junior',
-  middle: 'Middle',
-  senior: 'Senior',
-  lead: 'Lead',
-};
+import { useLang } from '../../lib/lang-context';
 
 export default function JobsPage() {
+  const { t } = useLang();
   const [level, setLevel] = useState('');
   const [location, setLocation] = useState('');
+
+  const levelLabels: Record<string, string> = {
+    intern: t.jobs.intern,
+    junior: 'Junior',
+    middle: 'Middle',
+    senior: 'Senior',
+    lead: 'Lead',
+  };
 
   const { data: jobs = [], isLoading } = useJobs({
     level: level || undefined,
@@ -27,10 +29,10 @@ export default function JobsPage() {
       <main className="mx-auto max-w-6xl px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            Вакансии
+            {t.jobs.title}
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400">
-            IT вакансии в Казахстане, Кыргызстане и Узбекистане
+            {t.jobs.subtitle}
           </p>
         </div>
 
@@ -40,8 +42,8 @@ export default function JobsPage() {
             onChange={(e) => setLevel(e.target.value)}
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           >
-            <option value="">Все уровни</option>
-            <option value="intern">Стажер</option>
+            <option value="">{t.jobs.allLevels}</option>
+            <option value="intern">{t.jobs.intern}</option>
             <option value="junior">Junior</option>
             <option value="middle">Middle</option>
             <option value="senior">Senior</option>
@@ -52,18 +54,18 @@ export default function JobsPage() {
             onChange={(e) => setLocation(e.target.value)}
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           >
-            <option value="">Все локации</option>
-            <option value="Remote">Удаленно</option>
-            <option value="Almaty">Алматы</option>
-            <option value="Bishkek">Бишкек</option>
-            <option value="Tashkent">Ташкент</option>
+            <option value="">{t.jobs.allLocations}</option>
+            <option value="Remote">{t.jobs.remote}</option>
+            <option value="Almaty">{t.jobs.almaty}</option>
+            <option value="Bishkek">{t.jobs.bishkek}</option>
+            <option value="Tashkent">{t.jobs.tashkent}</option>
           </select>
         </div>
 
         {isLoading ? (
-          <p className="text-sm text-slate-500">Загружаем вакансии...</p>
+          <p className="text-sm text-slate-500">{t.jobs.loading}</p>
         ) : jobs.length === 0 ? (
-          <p className="text-sm text-slate-500">Нет вакансий для выбранных фильтров</p>
+          <p className="text-sm text-slate-500">{t.jobs.empty}</p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {jobs.map((job) => (
@@ -95,12 +97,12 @@ export default function JobsPage() {
                       ${job.salaryMin.toLocaleString()}{job.salaryMax > 0 ? ` - $${job.salaryMax.toLocaleString()}` : '+'}
                     </span>
                   ) : (
-                    <span className="text-sm text-slate-400">Зарплата не указана</span>
+                    <span className="text-sm text-slate-400">{t.jobs.noSalary}</span>
                   )}
 
                   <div className="flex gap-3 text-xs text-slate-500 dark:text-slate-400">
-                    <span>{job.views} просмотров</span>
-                    {job.applications > 0 && <span>{job.applications} откликов</span>}
+                    <span>{job.views} {t.jobs.views}</span>
+                    {job.applications > 0 && <span>{job.applications} {t.jobs.applications}</span>}
                   </div>
                 </div>
 
@@ -111,7 +113,7 @@ export default function JobsPage() {
                     rel="noreferrer"
                     className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-dark"
                   >
-                    Откликнуться
+                    {t.jobs.apply}
                   </a>
                 )}
               </div>

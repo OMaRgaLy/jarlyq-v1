@@ -4,12 +4,7 @@ import Link from 'next/link';
 import { Header } from '../../components/header';
 import { CareerPathCardSkeleton } from '../../components/skeleton';
 import { useCareerPaths } from '../../lib/hooks';
-
-const difficultyLabel: Record<string, string> = {
-  beginner: 'Начальный',
-  intermediate: 'Средний',
-  advanced: 'Продвинутый',
-};
+import { useLang } from '../../lib/lang-context';
 
 const difficultyColor: Record<string, string> = {
   beginner: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -18,7 +13,14 @@ const difficultyColor: Record<string, string> = {
 };
 
 export default function CareerPathsPage() {
+  const { t } = useLang();
   const { data: paths = [], isLoading } = useCareerPaths();
+
+  const difficultyLabel: Record<string, string> = {
+    beginner: t.careerPaths.beginner,
+    intermediate: t.careerPaths.intermediate,
+    advanced: t.careerPaths.advanced,
+  };
 
   return (
     <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
@@ -26,10 +28,10 @@ export default function CareerPathsPage() {
       <main className="mx-auto max-w-6xl px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            Карьерные пути
+            {t.careerPaths.title}
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400">
-            Структурированные маршруты от новичка до junior-специалиста
+            {t.careerPaths.subtitle}
           </p>
         </div>
 
@@ -43,9 +45,9 @@ export default function CareerPathsPage() {
           <div className="card flex flex-col items-center gap-3 py-16 text-center">
             <span className="text-5xl">🗺️</span>
             <p className="font-semibold text-slate-700 dark:text-slate-200">
-              Пути загружаются
+              {t.careerPaths.emptyTitle}
             </p>
-            <p className="text-sm text-slate-500">Попробуй обновить страницу</p>
+            <p className="text-sm text-slate-500">{t.careerPaths.emptyHint}</p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -67,11 +69,11 @@ export default function CareerPathsPage() {
                     {difficultyLabel[path.difficulty] || path.difficulty}
                   </span>
                   <span className="text-xs text-slate-500 dark:text-slate-400">
-                    {path.duration} мес.
+                    {path.duration} {t.careerPaths.months}
                   </span>
                   {path.completedBy > 0 && (
                     <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {path.completedBy} завершили
+                      {path.completedBy} {t.careerPaths.completed}
                     </span>
                   )}
                 </div>

@@ -18,7 +18,10 @@ const emptySchool = {
   name: '', description: '', cover_url: '', website: '', telegram: '', email: '',
 };
 
-const emptyCourse = { title: '', description: '', external_url: '' };
+const emptyCourse = {
+  title: '', description: '', external_url: '',
+  price: 0, price_currency: '₸', duration_weeks: 0, format: '', has_employment: false,
+};
 
 export default function AdminSchoolsPage() {
   const router = useRouter();
@@ -180,13 +183,13 @@ export default function AdminSchoolsPage() {
         {/* Course form */}
         {showCourseForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 max-h-[90vh] overflow-y-auto">
               <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Добавить курс</h2>
               <div className="space-y-3">
-                {(['title', 'description', 'external_url'] as const).map((field) => (
+                {(['title', 'external_url'] as const).map((field) => (
                   <div key={field}>
                     <label className="mb-1 block text-xs font-medium text-slate-500">
-                      {field === 'title' ? 'Название *' : field === 'description' ? 'Описание' : 'Ссылка на курс'}
+                      {field === 'title' ? 'Название *' : 'Ссылка на курс'}
                     </label>
                     <input
                       type="text"
@@ -196,6 +199,73 @@ export default function AdminSchoolsPage() {
                     />
                   </div>
                 ))}
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500">Описание</label>
+                  <textarea
+                    value={courseForm.description}
+                    onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                    rows={2}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+                {/* Price */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">Цена (0 = бесплатно)</label>
+                    <input
+                      type="number"
+                      value={courseForm.price || ''}
+                      onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">Валюта</label>
+                    <select
+                      value={courseForm.price_currency}
+                      onChange={(e) => setCourseForm({ ...courseForm, price_currency: e.target.value })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    >
+                      <option value="₸">₸ KZT</option>
+                      <option value="$">$ USD</option>
+                      <option value="сом">сом KGS</option>
+                    </select>
+                  </div>
+                </div>
+                {/* Duration + format */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">Длительность (нед.)</label>
+                    <input
+                      type="number"
+                      value={courseForm.duration_weeks || ''}
+                      onChange={(e) => setCourseForm({ ...courseForm, duration_weeks: Number(e.target.value) })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">Формат</label>
+                    <select
+                      value={courseForm.format}
+                      onChange={(e) => setCourseForm({ ...courseForm, format: e.target.value })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    >
+                      <option value="">Не указано</option>
+                      <option value="online">Онлайн</option>
+                      <option value="offline">Офлайн</option>
+                      <option value="hybrid">Гибрид</option>
+                    </select>
+                  </div>
+                </div>
+                <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={courseForm.has_employment}
+                    onChange={(e) => setCourseForm({ ...courseForm, has_employment: e.target.checked })}
+                    className="rounded"
+                  />
+                  Помогаем с трудоустройством
+                </label>
               </div>
               <div className="mt-4 flex gap-3">
                 <button onClick={handleAddCourse} disabled={saving} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60">

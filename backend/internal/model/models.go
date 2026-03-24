@@ -42,20 +42,59 @@ type Achievement struct {
 	Description string `gorm:"size:255"`
 }
 
+// CompanyOffice represents a physical office location.
+type CompanyOffice struct {
+	ID        uint   `gorm:"primaryKey" json:"id"`
+	CompanyID uint   `gorm:"index" json:"-"`
+	City      string `gorm:"size:100" json:"city"`
+	Country   string `gorm:"size:100" json:"country"`
+	Address   string `gorm:"size:255" json:"address,omitempty"`
+	IsHQ      bool   `json:"isHQ"`
+}
+
+// CompanyPhoto represents a gallery photo for a company.
+type CompanyPhoto struct {
+	ID        uint   `gorm:"primaryKey" json:"id"`
+	CompanyID uint   `gorm:"index" json:"-"`
+	URL       string `gorm:"size:512" json:"url"`
+	Caption   string `gorm:"size:255" json:"caption,omitempty"`
+	SortOrder int    `json:"sortOrder"`
+}
+
+// CompanyShowcase is a pinned highlight on the company page (internship, event, news, etc.).
+type CompanyShowcase struct {
+	ID          uint   `gorm:"primaryKey" json:"id"`
+	CompanyID   uint   `gorm:"index" json:"-"`
+	Type        string `gorm:"size:50" json:"type"` // "internship" | "event" | "vacancy" | "news"
+	Title       string `gorm:"size:255" json:"title"`
+	Description string `gorm:"type:text" json:"description,omitempty"`
+	ImageURL    string `gorm:"size:512" json:"imageURL,omitempty"`
+	LinkURL     string `gorm:"size:512" json:"linkURL,omitempty"`
+	SortOrder   int    `json:"sortOrder"`
+}
+
 // Company represents companies on platform.
 type Company struct {
-	ID            uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt     time.Time      `json:"-"`
-	UpdatedAt     time.Time      `json:"-"`
-	Name          string         `gorm:"size:255" json:"name"`
-	CoverURL      string         `gorm:"size:512" json:"coverURL,omitempty"`
-	Description   string         `gorm:"type:text" json:"description,omitempty"`
-	Stack         []Stack        `gorm:"many2many:company_stacks" json:"stack,omitempty"`
-	Tools         string         `gorm:"size:255" json:"-"`
-	Widgets       CompanyWidgets `gorm:"embedded;embeddedPrefix:widget_" json:"widgets"`
-	Contacts      ContactInfo    `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
-	Regions       []Region       `gorm:"many2many:company_regions" json:"regions,omitempty"`
-	Opportunities []Opportunity  `json:"opportunities"`
+	ID            uint            `gorm:"primaryKey" json:"id"`
+	CreatedAt     time.Time       `json:"-"`
+	UpdatedAt     time.Time       `json:"-"`
+	Name          string          `gorm:"size:255" json:"name"`
+	CoverURL      string          `gorm:"size:512" json:"coverURL,omitempty"`
+	LogoURL       string          `gorm:"size:512" json:"logoURL,omitempty"`
+	Description   string          `gorm:"type:text" json:"description,omitempty"`
+	About         string          `gorm:"type:text" json:"about,omitempty"`
+	FoundedYear   int             `json:"foundedYear,omitempty"`
+	EmployeeCount string          `gorm:"size:50" json:"employeeCount,omitempty"`
+	Industry      string          `gorm:"size:100" json:"industry,omitempty"`
+	Stack         []Stack         `gorm:"many2many:company_stacks" json:"stack,omitempty"`
+	Tools         string          `gorm:"size:255" json:"-"`
+	Widgets       CompanyWidgets  `gorm:"embedded;embeddedPrefix:widget_" json:"widgets"`
+	Contacts      ContactInfo     `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
+	Regions       []Region        `gorm:"many2many:company_regions" json:"regions,omitempty"`
+	Opportunities []Opportunity   `json:"opportunities"`
+	Offices       []CompanyOffice   `json:"offices,omitempty"`
+	Photos        []CompanyPhoto    `json:"photos,omitempty"`
+	Showcase      []CompanyShowcase `json:"showcase,omitempty"`
 }
 
 // CompanyWidgets indicates sections enabled for company profile.
@@ -75,20 +114,26 @@ type ContactInfo struct {
 
 // Opportunity groups internships and vacancies.
 type Opportunity struct {
-	ID           uint       `gorm:"primaryKey" json:"id"`
-	CreatedAt    time.Time  `json:"-"`
-	UpdatedAt    time.Time  `json:"-"`
-	CompanyID    uint       `gorm:"index" json:"-"`
-	Type         string     `gorm:"size:20" json:"type"`
-	Title        string     `gorm:"size:255" json:"title"`
-	Description  string     `gorm:"type:text" json:"description,omitempty"`
-	Requirements string     `gorm:"type:text" json:"-"`
-	ApplyURL     string     `gorm:"size:512" json:"applyURL,omitempty"`
-	Level        string     `gorm:"size:50" json:"level"`
-	StartDate    *time.Time `json:"-"`
-	EndDate      *time.Time `json:"-"`
-	Stack        []Stack    `gorm:"many2many:opportunity_stacks" json:"-"`
-	Regions      []Region   `gorm:"many2many:opportunity_regions" json:"-"`
+	ID             uint       `gorm:"primaryKey" json:"id"`
+	CreatedAt      time.Time  `json:"-"`
+	UpdatedAt      time.Time  `json:"-"`
+	CompanyID      uint       `gorm:"index" json:"-"`
+	Type           string     `gorm:"size:20" json:"type"`
+	Title          string     `gorm:"size:255" json:"title"`
+	Description    string     `gorm:"type:text" json:"description,omitempty"`
+	Requirements   string     `gorm:"type:text" json:"-"`
+	ApplyURL       string     `gorm:"size:512" json:"applyURL,omitempty"`
+	Level          string     `gorm:"size:50" json:"level"`
+	SalaryMin      int        `json:"salaryMin,omitempty"`
+	SalaryMax      int        `json:"salaryMax,omitempty"`
+	SalaryCurrency string     `gorm:"size:10" json:"salaryCurrency,omitempty"`
+	WorkFormat     string     `gorm:"size:20" json:"workFormat,omitempty"` // remote|office|hybrid
+	City           string     `gorm:"size:100" json:"city,omitempty"`
+	Deadline       *time.Time `json:"deadline,omitempty"`
+	StartDate      *time.Time `json:"-"`
+	EndDate        *time.Time `json:"-"`
+	Stack          []Stack    `gorm:"many2many:opportunity_stacks" json:"-"`
+	Regions        []Region   `gorm:"many2many:opportunity_regions" json:"-"`
 }
 
 // School represents education providers.
@@ -105,16 +150,21 @@ type School struct {
 
 // Course describes training programs.
 type Course struct {
-	ID          uint     `gorm:"primaryKey" json:"id"`
-	CreatedAt   time.Time `json:"-"`
-	UpdatedAt   time.Time `json:"-"`
-	SchoolID    uint     `gorm:"index" json:"-"`
-	Title       string   `gorm:"size:255" json:"title"`
-	Description string   `gorm:"type:text" json:"description,omitempty"`
-	Program     string   `gorm:"type:text" json:"-"`
-	ExternalURL string   `gorm:"size:512" json:"externalURL,omitempty"`
-	Stack       []Stack  `gorm:"many2many:course_stacks" json:"-"`
-	Regions     []Region `gorm:"many2many:course_regions" json:"-"`
+	ID             uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt      time.Time `json:"-"`
+	UpdatedAt      time.Time `json:"-"`
+	SchoolID       uint      `gorm:"index" json:"-"`
+	Title          string    `gorm:"size:255" json:"title"`
+	Description    string    `gorm:"type:text" json:"description,omitempty"`
+	Program        string    `gorm:"type:text" json:"-"`
+	ExternalURL    string    `gorm:"size:512" json:"externalURL,omitempty"`
+	Price          int       `json:"price,omitempty"`
+	PriceCurrency  string    `gorm:"size:10" json:"priceCurrency,omitempty"`
+	DurationWeeks  int       `json:"durationWeeks,omitempty"`
+	Format         string    `gorm:"size:20" json:"format,omitempty"` // online|offline|hybrid
+	HasEmployment  bool      `json:"hasEmployment"`
+	Stack          []Stack   `gorm:"many2many:course_stacks" json:"-"`
+	Regions        []Region  `gorm:"many2many:course_regions" json:"-"`
 }
 
 // Stack describes technology stacks.
@@ -124,6 +174,7 @@ type Stack struct {
 	UpdatedAt  time.Time `json:"-"`
 	Name       string    `gorm:"size:120;uniqueIndex" json:"name"`
 	Popularity uint      `json:"popularity"`
+	IsTrending bool      `json:"isTrending"`
 }
 
 // Region enumerates geographies.
@@ -453,6 +504,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&ConferenceEvent{},
 		&ProjectIdea{},
 		&Suggestion{},
+		&CompanyOffice{},
+		&CompanyPhoto{},
+		&CompanyShowcase{},
 	)
 }
 

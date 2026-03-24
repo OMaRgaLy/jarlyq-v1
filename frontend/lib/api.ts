@@ -12,6 +12,7 @@ export interface Stack {
   id: number;
   name: string;
   popularity: number;
+  isTrending?: boolean;
 }
 
 export interface ContactInfo {
@@ -21,11 +22,41 @@ export interface ContactInfo {
   phone?: string;
 }
 
+export interface CompanyOffice {
+  id: number;
+  city: string;
+  country: string;
+  address?: string;
+  isHQ: boolean;
+}
+
+export interface CompanyPhoto {
+  id: number;
+  url: string;
+  caption?: string;
+  sortOrder: number;
+}
+
+export interface CompanyShowcase {
+  id: number;
+  type: 'internship' | 'event' | 'vacancy' | 'news';
+  title: string;
+  description?: string;
+  imageURL?: string;
+  linkURL?: string;
+  sortOrder: number;
+}
+
 export interface Company {
   id: number;
   name: string;
   coverURL?: string;
+  logoURL?: string;
   description?: string;
+  about?: string;
+  foundedYear?: number;
+  employeeCount?: string;
+  industry?: string;
   contacts?: ContactInfo;
   widgets: {
     trainingEnabled: boolean;
@@ -33,6 +64,10 @@ export interface Company {
     vacancyEnabled: boolean;
   };
   opportunities: Opportunity[];
+  stack?: Stack[];
+  offices?: CompanyOffice[];
+  photos?: CompanyPhoto[];
+  showcase?: CompanyShowcase[];
 }
 
 export interface Opportunity {
@@ -42,6 +77,12 @@ export interface Opportunity {
   level: string;
   applyURL?: string;
   description?: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  salaryCurrency?: string;
+  workFormat?: string;
+  city?: string;
+  deadline?: string;
 }
 
 export interface School {
@@ -58,6 +99,11 @@ export interface Course {
   title: string;
   description?: string;
   externalURL?: string;
+  price?: number;
+  priceCurrency?: string;
+  durationWeeks?: number;
+  format?: string;
+  hasEmployment?: boolean;
 }
 
 export interface CertificateResponse {

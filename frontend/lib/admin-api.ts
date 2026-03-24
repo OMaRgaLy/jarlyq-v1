@@ -50,6 +50,11 @@ export interface AdminOpportunity {
   requirements: string;
   apply_url: string;
   level: string;
+  salary_min: number;
+  salary_max: number;
+  salary_currency: string;
+  work_format: string;
+  city: string;
 }
 
 export interface AdminSchool {
@@ -68,12 +73,18 @@ export interface AdminCourse {
   title: string;
   description: string;
   external_url: string;
+  price: number;
+  price_currency: string;
+  duration_weeks: number;
+  format: string;
+  has_employment: boolean;
 }
 
 export interface AdminStack {
   id: number;
   name: string;
   popularity: number;
+  is_trending: boolean;
 }
 
 // ─── API calls ───────────────────────────────────────────────────────────────
@@ -88,6 +99,11 @@ export interface AdminCompanyBody {
   name: string;
   description: string;
   cover_url: string;
+  logo_url: string;
+  about: string;
+  founded_year: number;
+  employee_count: string;
+  industry: string;
   website: string;
   telegram: string;
   email: string;
@@ -135,6 +151,6 @@ export const fetchAdminStacks = async (): Promise<AdminStack[]> => {
   const { data } = await adminApi.get('/admin/stacks');
   return data.stacks;
 };
-export const createAdminStack = (body: { name: string; popularity: number }) =>
+export const createAdminStack = (body: { name: string; popularity: number; is_trending: boolean }) =>
   adminApi.post('/admin/stacks', body);
 export const deleteAdminStack = (id: number) => adminApi.delete(`/admin/stacks/${id}`);

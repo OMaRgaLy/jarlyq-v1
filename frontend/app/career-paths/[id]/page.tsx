@@ -4,8 +4,10 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '../../../components/header';
 import { useCareerPath } from '../../../lib/hooks';
+import { useLang } from '../../../lib/lang-context';
 
 export default function CareerPathDetailPage() {
+  const { t } = useLang();
   const params = useParams();
   const id = Number(params.id);
   const { data: path, isLoading } = useCareerPath(id);
@@ -18,13 +20,13 @@ export default function CareerPathDetailPage() {
           href="/career-paths"
           className="mb-6 inline-flex text-sm text-brand hover:text-brand-dark"
         >
-          &larr; Все пути
+          {t.careerPaths.backToAll}
         </Link>
 
         {isLoading ? (
-          <p className="text-sm text-slate-500">Загружаем...</p>
+          <p className="text-sm text-slate-500">{t.careerPaths.loading}</p>
         ) : !path ? (
-          <p className="text-sm text-slate-500">Путь не найден</p>
+          <p className="text-sm text-slate-500">{t.careerPaths.pathNotFound}</p>
         ) : (
           <>
             <div className="mb-8">
@@ -36,16 +38,16 @@ export default function CareerPathDetailPage() {
                 {path.description}
               </p>
               <div className="mt-3 flex gap-4 text-sm text-slate-500 dark:text-slate-400">
-                <span>{path.duration} месяцев</span>
+                <span>{path.duration} {t.careerPaths.months}</span>
                 <span>{path.difficulty}</span>
-                {path.completedBy > 0 && <span>{path.completedBy} завершили</span>}
+                {path.completedBy > 0 && <span>{path.completedBy} {t.careerPaths.completed}</span>}
               </div>
             </div>
 
             {path.stages && path.stages.length > 0 && (
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-                  Этапы обучения
+                  {t.careerPaths.stages}
                 </h2>
                 <div className="relative">
                   <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700" />
@@ -57,10 +59,10 @@ export default function CareerPathDetailPage() {
                         <div className="rounded-xl border border-slate-200/70 bg-white p-5 dark:border-slate-700/60 dark:bg-slate-900/70">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">
-                              Этап {stage.order}
+                              {t.careerPaths.stage} {stage.order}
                             </span>
                             <span className="text-xs text-slate-500 dark:text-slate-400">
-                              {stage.durationDays} дней
+                              {stage.durationDays} {t.careerPaths.days}
                             </span>
                             {stage.badge && (
                               <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
@@ -76,7 +78,7 @@ export default function CareerPathDetailPage() {
                           </p>
                           {stage.milestone && (
                             <p className="mt-2 text-sm text-brand">
-                              Цель: {stage.milestone}
+                              {t.careerPaths.goal} {stage.milestone}
                             </p>
                           )}
                         </div>
