@@ -161,51 +161,51 @@ type PasswordResetToken struct {
 
 // CareerPath represents a structured learning path from student to junior specialist.
 type CareerPath struct {
-	ID          uint   `gorm:"primaryKey"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Title       string `gorm:"size:255"` // e.g., "Backend Developer"
-	Description string `gorm:"type:text"`
-	Icon        string `gorm:"size:50"`  // emoji or icon name
-	Duration    int    // in months
-	Difficulty  string `gorm:"size:20"`  // beginner, intermediate, advanced
-	CompletedBy uint   // how many students completed it
-	Stages      []PathStage
-	Courses     []Course `gorm:"many2many:career_path_courses"`
-	Stack       []Stack  `gorm:"many2many:career_path_stacks"`
+	ID          uint        `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time   `json:"-"`
+	UpdatedAt   time.Time   `json:"-"`
+	Title       string      `gorm:"size:255" json:"title"`
+	Description string      `gorm:"type:text" json:"description"`
+	Icon        string      `gorm:"size:50" json:"icon"`
+	Duration    int         `json:"duration"`
+	Difficulty  string      `gorm:"size:20" json:"difficulty"`
+	CompletedBy uint        `json:"completedBy"`
+	Stages      []PathStage `json:"stages,omitempty"`
+	Courses     []Course    `gorm:"many2many:career_path_courses" json:"-"`
+	Stack       []Stack     `gorm:"many2many:career_path_stacks" json:"-"`
 }
 
 // PathStage represents a single stage in a career path (2-3 months of learning).
 type PathStage struct {
-	ID            uint   `gorm:"primaryKey"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	CareerPathID  uint   `gorm:"index"`
-	Order         int    `gorm:"index"` // 1, 2, 3, ...
-	Title         string `gorm:"size:255"`
-	Description   string `gorm:"type:text"`
-	DurationDays  int
-	Milestone     string `gorm:"type:text"` // what student should achieve
-	Badge         string `gorm:"size:100"`  // badge name earned after completion
-	Courses       []Course `gorm:"many2many:path_stage_courses"`
-	Questions     []InterviewQuestion `gorm:"many2many:path_stage_questions"`
+	ID           uint                `gorm:"primaryKey" json:"id"`
+	CreatedAt    time.Time           `json:"-"`
+	UpdatedAt    time.Time           `json:"-"`
+	CareerPathID uint                `gorm:"index" json:"careerPathId"`
+	Order        int                 `gorm:"index" json:"order"`
+	Title        string              `gorm:"size:255" json:"title"`
+	Description  string              `gorm:"type:text" json:"description"`
+	DurationDays int                 `json:"durationDays"`
+	Milestone    string              `gorm:"type:text" json:"milestone"`
+	Badge        string              `gorm:"size:100" json:"badge"`
+	Courses      []Course            `gorm:"many2many:path_stage_courses" json:"-"`
+	Questions    []InterviewQuestion `gorm:"many2many:path_stage_questions" json:"-"`
 }
 
 // InterviewQuestion represents a question that might be asked during interviews.
 type InterviewQuestion struct {
-	ID               uint   `gorm:"primaryKey"`
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	Question         string `gorm:"type:text;index"` // searchable question text
-	Answer           string `gorm:"type:text"`       // detailed answer
-	Explanation      string `gorm:"type:text"`       // extra context
-	Level            string `gorm:"size:20"` // easy, medium, hard
-	Topic            string `gorm:"size:100;index"`  // Python, SQL, Design Patterns, etc.
-	TimesAsked       int    // how many times this question appeared on interviews
-	SuccessRate      int    // percentage of people who answer correctly (0-100)
-	Difficulty       int    // 1-5 scale
-	Paths            []CareerPath `gorm:"many2many:interview_question_paths"`
-	Stack            []Stack `gorm:"many2many:interview_question_stacks"`
+	ID          uint         `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time    `json:"-"`
+	UpdatedAt   time.Time    `json:"-"`
+	Question    string       `gorm:"type:text;index" json:"question"`
+	Answer      string       `gorm:"type:text" json:"answer"`
+	Explanation string       `gorm:"type:text" json:"explanation"`
+	Level       string       `gorm:"size:20" json:"level"`
+	Topic       string       `gorm:"size:100;index" json:"topic"`
+	TimesAsked  int          `json:"timesAsked"`
+	SuccessRate int          `json:"successRate"`
+	Difficulty  int          `json:"difficulty"`
+	Paths       []CareerPath `gorm:"many2many:interview_question_paths" json:"-"`
+	Stack       []Stack      `gorm:"many2many:interview_question_stacks" json:"-"`
 }
 
 // UserProgress tracks which path the student is taking and their progress.
@@ -259,39 +259,31 @@ type CompanyProfile struct {
 
 // Job represents a job posting/vacancy from a company
 type Job struct {
-	ID                uint   `gorm:"primaryKey"`
-	CreatedAt         time.Time
-	UpdatedAt         time.Time
-	CompanyID         uint   `gorm:"index"`
-	Title             string `gorm:"size:255;index"`
-	Description       string `gorm:"type:text"`
-	Level             string `gorm:"size:50;index"` // intern, junior, middle, senior, lead
-	JobType           string `gorm:"size:50"` // full-time, part-time, contract, internship
-	Location          string `gorm:"size:255"` // "Remote", "Almaty", etc
-	Countries         string `gorm:"size:255"` // "KZ,KG,UZ" - comma separated
-	SalaryMin         int    // in USD
-	SalaryMax         int    // in USD
-	SalaryCurrency    string `gorm:"size:10"` // USD, KZT, etc
-	WorkFormat        string `gorm:"size:100"` // "Remote", "Office", "Hybrid"
-
-	// Requirements
-	YearsExperience   int
-	Requirements      string `gorm:"type:text"` // JSON array of strings
-	NiceToHave        string `gorm:"type:text"` // JSON array
-	SoftSkills        string `gorm:"type:text"` // JSON array: Communication, Leadership, etc
-
-	// Tech stack
-	Stacks            []Stack `gorm:"many2many:job_stacks"`
-
-	// Application
-	ApplicationURL    string `gorm:"size:512"`
-	ApplicationEmail  string `gorm:"size:255"`
-
-	// Metadata
-	Views             int    // how many users viewed
-	Applications      int    // how many applied
-	InterviewQs       []JobInterviewQuestion
-	Reviews           []JobReview
+	ID               uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt        time.Time `json:"-"`
+	UpdatedAt        time.Time `json:"-"`
+	CompanyID        uint      `gorm:"index" json:"companyId"`
+	Title            string    `gorm:"size:255;index" json:"title"`
+	Description      string    `gorm:"type:text" json:"description"`
+	Level            string    `gorm:"size:50;index" json:"level"`
+	JobType          string    `gorm:"size:50" json:"jobType"`
+	Location         string    `gorm:"size:255" json:"location"`
+	Countries        string    `gorm:"size:255" json:"countries"`
+	SalaryMin        int       `json:"salaryMin"`
+	SalaryMax        int       `json:"salaryMax"`
+	SalaryCurrency   string    `gorm:"size:10" json:"salaryCurrency"`
+	WorkFormat       string    `gorm:"size:100" json:"workFormat"`
+	YearsExperience  int       `json:"yearsExperience"`
+	Requirements     string    `gorm:"type:text" json:"requirements"`
+	NiceToHave       string    `gorm:"type:text" json:"-"`
+	SoftSkills       string    `gorm:"type:text" json:"-"`
+	Stacks           []Stack   `gorm:"many2many:job_stacks" json:"-"`
+	ApplicationURL   string    `gorm:"size:512" json:"applicationURL,omitempty"`
+	ApplicationEmail string    `gorm:"size:255" json:"applicationEmail,omitempty"`
+	Views            int       `json:"views"`
+	Applications     int       `json:"applications"`
+	InterviewQs      []JobInterviewQuestion `json:"-"`
+	Reviews          []JobReview            `json:"-"`
 }
 
 // JobInterviewQuestion represents actual questions asked for a specific job
@@ -415,21 +407,21 @@ type ConferenceEvent struct {
 
 // ProjectIdea represents a pet-project idea for portfolio building.
 type ProjectIdea struct {
-	ID          uint      `gorm:"primaryKey"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Title       string `gorm:"size:255"`
-	Description string `gorm:"type:text"`
-	Direction   string `gorm:"size:50;index"` // backend, frontend, data-science, mobile, devops, qa, security, gamedev, ml-ai, fullstack
-	Difficulty  string `gorm:"size:20;index"` // beginner, intermediate, advanced
-	Duration    string `gorm:"size:50"`       // "1-2 недели", "2-4 недели", "1-2 месяца", "2-3 месяца"
-	TechStack   string `gorm:"type:text"`     // comma-separated: "Go, PostgreSQL, Docker"
-	Skills      string `gorm:"type:text"`     // what you'll learn, comma-separated
-	Features    string `gorm:"type:text"`     // key features to implement, one per line
-	WhyGood     string `gorm:"type:text"`     // why this is good for portfolio
-	ExampleURL  string `gorm:"size:512"`      // link to example or tutorial
-	Likes       int                           // community likes
-	CompletedBy int                           // how many built it
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time `json:"-"`
+	UpdatedAt   time.Time `json:"-"`
+	Title       string    `gorm:"size:255" json:"title"`
+	Description string    `gorm:"type:text" json:"description"`
+	Direction   string    `gorm:"size:50;index" json:"direction"`
+	Difficulty  string    `gorm:"size:20;index" json:"difficulty"`
+	Duration    string    `gorm:"size:50" json:"duration"`
+	TechStack   string    `gorm:"type:text" json:"techStack"`
+	Skills      string    `gorm:"type:text" json:"skills"`
+	Features    string    `gorm:"type:text" json:"features"`
+	WhyGood     string    `gorm:"type:text" json:"whyGood"`
+	ExampleURL  string    `gorm:"size:512" json:"exampleURL,omitempty"`
+	Likes       int       `json:"likes"`
+	CompletedBy int       `json:"completedBy"`
 }
 
 // AutoMigrate runs database migrations using GORM.
