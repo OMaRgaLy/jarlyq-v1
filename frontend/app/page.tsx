@@ -27,7 +27,7 @@ export default function Page() {
 
   const opportunities = useMemo(() =>
     companies.flatMap((company) =>
-      company.opportunities.map((opportunity) => ({
+      (company.opportunities ?? []).map((opportunity) => ({
         ...opportunity,
         company: company.name
       }))

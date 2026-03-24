@@ -5,8 +5,8 @@ interface Props {
 }
 
 export function CompanyCard({ company }: Props) {
-  const internships = company.opportunities.filter((o) => o.type === 'internship');
-  const vacancies = company.opportunities.filter((o) => o.type === 'vacancy');
+  const internships = (company.opportunities ?? []).filter((o) => o.type === 'internship');
+  const vacancies = (company.opportunities ?? []).filter((o) => o.type === 'vacancy');
 
   return (
     <article className="card flex flex-col gap-4 p-6" id={`company-${company.id}`}>
