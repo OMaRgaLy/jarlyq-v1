@@ -1221,6 +1221,26 @@ func Seed(db *gorm.DB) error {
 		return err
 	}
 
+	if err := SeedMoreCompanies(db); err != nil {
+		log.Printf("Error seeding more companies: %v", err)
+		return err
+	}
+
+	if err := SeedMoreSchools(db); err != nil {
+		log.Printf("Error seeding more schools: %v", err)
+		return err
+	}
+
+	if err := SeedInterviewQuestionsByTopic(db); err != nil {
+		log.Printf("Error seeding interview questions by topic: %v", err)
+		return err
+	}
+
+	if err := SeedAllPathStages(db); err != nil {
+		log.Printf("Error seeding all path stages: %v", err)
+		return err
+	}
+
 	log.Println("Database seeding completed successfully!")
 	return nil
 }
