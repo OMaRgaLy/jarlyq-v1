@@ -44,95 +44,95 @@ type Achievement struct {
 
 // Company represents companies on platform.
 type Company struct {
-	ID            uint `gorm:"primaryKey"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	Name          string         `gorm:"size:255"`
-	CoverURL      string         `gorm:"size:512"`
-	Description   string         `gorm:"type:text"`
-	Stack         []Stack        `gorm:"many2many:company_stacks"`
-	Tools         string         `gorm:"size:255"`
-	Widgets       CompanyWidgets `gorm:"embedded;embeddedPrefix:widget_"`
-	Contacts      ContactInfo    `gorm:"embedded;embeddedPrefix:contact_"`
-	Regions       []Region       `gorm:"many2many:company_regions"`
-	Opportunities []Opportunity
+	ID            uint           `gorm:"primaryKey" json:"id"`
+	CreatedAt     time.Time      `json:"-"`
+	UpdatedAt     time.Time      `json:"-"`
+	Name          string         `gorm:"size:255" json:"name"`
+	CoverURL      string         `gorm:"size:512" json:"coverURL,omitempty"`
+	Description   string         `gorm:"type:text" json:"description,omitempty"`
+	Stack         []Stack        `gorm:"many2many:company_stacks" json:"stack,omitempty"`
+	Tools         string         `gorm:"size:255" json:"-"`
+	Widgets       CompanyWidgets `gorm:"embedded;embeddedPrefix:widget_" json:"widgets"`
+	Contacts      ContactInfo    `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
+	Regions       []Region       `gorm:"many2many:company_regions" json:"regions,omitempty"`
+	Opportunities []Opportunity  `json:"opportunities"`
 }
 
 // CompanyWidgets indicates sections enabled for company profile.
 type CompanyWidgets struct {
-	TrainingEnabled   bool
-	InternshipEnabled bool
-	VacancyEnabled    bool
+	TrainingEnabled   bool `json:"trainingEnabled"`
+	InternshipEnabled bool `json:"internshipEnabled"`
+	VacancyEnabled    bool `json:"vacancyEnabled"`
 }
 
 // ContactInfo stores contact details.
 type ContactInfo struct {
-	Email    string `gorm:"size:255"`
-	Phone    string `gorm:"size:100"`
-	Telegram string `gorm:"size:100"`
-	Website  string `gorm:"size:255"`
+	Email    string `gorm:"size:255" json:"email,omitempty"`
+	Phone    string `gorm:"size:100" json:"phone,omitempty"`
+	Telegram string `gorm:"size:100" json:"telegram,omitempty"`
+	Website  string `gorm:"size:255" json:"website,omitempty"`
 }
 
 // Opportunity groups internships and vacancies.
 type Opportunity struct {
-	ID           uint `gorm:"primaryKey"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	CompanyID    uint   `gorm:"index"`
-	Type         string `gorm:"size:20"`
-	Title        string `gorm:"size:255"`
-	Description  string `gorm:"type:text"`
-	Requirements string `gorm:"type:text"`
-	ApplyURL     string `gorm:"size:512"`
-	Level        string `gorm:"size:50"`
-	StartDate    *time.Time
-	EndDate      *time.Time
-	Stack        []Stack  `gorm:"many2many:opportunity_stacks"`
-	Regions      []Region `gorm:"many2many:opportunity_regions"`
+	ID           uint       `gorm:"primaryKey" json:"id"`
+	CreatedAt    time.Time  `json:"-"`
+	UpdatedAt    time.Time  `json:"-"`
+	CompanyID    uint       `gorm:"index" json:"-"`
+	Type         string     `gorm:"size:20" json:"type"`
+	Title        string     `gorm:"size:255" json:"title"`
+	Description  string     `gorm:"type:text" json:"description,omitempty"`
+	Requirements string     `gorm:"type:text" json:"-"`
+	ApplyURL     string     `gorm:"size:512" json:"applyURL,omitempty"`
+	Level        string     `gorm:"size:50" json:"level"`
+	StartDate    *time.Time `json:"-"`
+	EndDate      *time.Time `json:"-"`
+	Stack        []Stack    `gorm:"many2many:opportunity_stacks" json:"-"`
+	Regions      []Region   `gorm:"many2many:opportunity_regions" json:"-"`
 }
 
 // School represents education providers.
 type School struct {
-	ID          uint `gorm:"primaryKey"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Name        string      `gorm:"size:255"`
-	CoverURL    string      `gorm:"size:512"`
-	Description string      `gorm:"type:text"`
-	Contacts    ContactInfo `gorm:"embedded;embeddedPrefix:contact_"`
-	Courses     []Course
+	ID          uint        `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time   `json:"-"`
+	UpdatedAt   time.Time   `json:"-"`
+	Name        string      `gorm:"size:255" json:"name"`
+	CoverURL    string      `gorm:"size:512" json:"coverURL,omitempty"`
+	Description string      `gorm:"type:text" json:"description,omitempty"`
+	Contacts    ContactInfo `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
+	Courses     []Course    `json:"courses"`
 }
 
 // Course describes training programs.
 type Course struct {
-	ID          uint `gorm:"primaryKey"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	SchoolID    uint     `gorm:"index"`
-	Title       string   `gorm:"size:255"`
-	Description string   `gorm:"type:text"`
-	Program     string   `gorm:"type:text"`
-	ExternalURL string   `gorm:"size:512"`
-	Stack       []Stack  `gorm:"many2many:course_stacks"`
-	Regions     []Region `gorm:"many2many:course_regions"`
+	ID          uint     `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time `json:"-"`
+	UpdatedAt   time.Time `json:"-"`
+	SchoolID    uint     `gorm:"index" json:"-"`
+	Title       string   `gorm:"size:255" json:"title"`
+	Description string   `gorm:"type:text" json:"description,omitempty"`
+	Program     string   `gorm:"type:text" json:"-"`
+	ExternalURL string   `gorm:"size:512" json:"externalURL,omitempty"`
+	Stack       []Stack  `gorm:"many2many:course_stacks" json:"-"`
+	Regions     []Region `gorm:"many2many:course_regions" json:"-"`
 }
 
 // Stack describes technology stacks.
 type Stack struct {
-	ID         uint `gorm:"primaryKey"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	Name       string `gorm:"size:120;uniqueIndex"`
-	Popularity uint
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt  time.Time `json:"-"`
+	UpdatedAt  time.Time `json:"-"`
+	Name       string    `gorm:"size:120;uniqueIndex" json:"name"`
+	Popularity uint      `json:"popularity"`
 }
 
 // Region enumerates geographies.
 type Region struct {
-	ID        uint `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Code      string `gorm:"size:20;uniqueIndex"`
-	Name      string `gorm:"size:120"`
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
+	Code      string    `gorm:"size:20;uniqueIndex" json:"code"`
+	Name      string    `gorm:"size:120" json:"name"`
 }
 
 // Certificate for validation.

@@ -36,13 +36,9 @@ export interface AdminCompany {
   id: number;
   name: string;
   description: string;
-  cover_url: string;
-  website: string;
-  telegram: string;
-  email: string;
-  training_enabled: boolean;
-  internship_enabled: boolean;
-  vacancy_enabled: boolean;
+  coverURL: string;
+  contacts: { website: string; telegram: string; email: string };
+  widgets: { trainingEnabled: boolean; internshipEnabled: boolean; vacancyEnabled: boolean };
   opportunities?: AdminOpportunity[];
 }
 

@@ -59,10 +59,11 @@ export default function AdminCompaniesPage() {
   const openEdit = (c: AdminCompany) => {
     setEditing(c);
     setForm({
-      name: c.name, description: c.description || '', cover_url: c.cover_url || '',
-      website: c.website || '', telegram: c.telegram || '', email: c.email || '',
-      training_enabled: c.training_enabled, internship_enabled: c.internship_enabled,
-      vacancy_enabled: c.vacancy_enabled,
+      name: c.name, description: c.description || '', cover_url: c.coverURL || '',
+      website: c.contacts?.website || '', telegram: c.contacts?.telegram || '', email: c.contacts?.email || '',
+      training_enabled: c.widgets?.trainingEnabled ?? false,
+      internship_enabled: c.widgets?.internshipEnabled ?? true,
+      vacancy_enabled: c.widgets?.vacancyEnabled ?? true,
     });
     setShowForm(true);
   };
@@ -124,7 +125,7 @@ export default function AdminCompaniesPage() {
                     <h3 className="font-semibold text-slate-900 dark:text-white">{c.name}</h3>
                     {c.description && <p className="mt-1 text-sm text-slate-500 line-clamp-2">{c.description}</p>}
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {c.website && <a href={c.website} target="_blank" rel="noreferrer" className="text-xs text-brand hover:underline">{c.website}</a>}
+                      {c.contacts?.website && <a href={c.contacts.website} target="_blank" rel="noreferrer" className="text-xs text-brand hover:underline">{c.contacts.website}</a>}
                     </div>
                     {/* Opportunities */}
                     {c.opportunities && c.opportunities.length > 0 && (
