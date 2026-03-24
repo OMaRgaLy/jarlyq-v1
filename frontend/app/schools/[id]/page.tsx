@@ -1,14 +1,13 @@
 'use client';
 
-import { use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
 import { useSchool } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
 
-export default function SchoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function SchoolDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { data: school, isLoading } = useSchool(Number(id));
   const { t } = useLang();
 
@@ -51,7 +50,7 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
 
         {/* Hero card */}
         <div className="card overflow-hidden">
-          {school.coverURL && (
+          {school.coverURL?.startsWith('http') && (
             <div className="relative h-52 w-full bg-slate-100 dark:bg-slate-800">
               <Image
                 src={school.coverURL}

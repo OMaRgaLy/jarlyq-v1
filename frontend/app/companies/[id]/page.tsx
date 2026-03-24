@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
@@ -36,8 +36,8 @@ function ShowcaseTypeLabel({ type, t }: { type: CompanyShowcase['type']; t: { sh
   );
 }
 
-export default function CompanyDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function CompanyDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { data: company, isLoading } = useCompany(Number(id));
   const { t } = useLang();
   const [activePhoto, setActivePhoto] = useState(0);
