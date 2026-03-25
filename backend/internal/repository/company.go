@@ -65,6 +65,7 @@ func (r *companyRepo) FindByID(ctx context.Context, id uint) (*model.Company, er
 		Preload("Opportunities").Preload("Opportunities.Stack").Preload("Opportunities.Regions").
 		Preload("Offices").Preload("Photos", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
 		Preload("Showcase", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
+		Preload("HRContacts").Preload("HRContent").
 		First(&company, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound

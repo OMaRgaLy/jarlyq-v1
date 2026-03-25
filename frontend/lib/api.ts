@@ -69,6 +69,8 @@ export interface Company {
   photos?: CompanyPhoto[];
   showcase?: CompanyShowcase[];
   reviews?: CompanyReview[];
+  hrContacts?: HRContact[];
+  hrContent?: HRContent[];
 }
 
 export interface CompanyReview {

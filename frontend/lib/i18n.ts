@@ -103,6 +103,20 @@ const dict = {
       showcaseVacancy: 'Вакансия',
       showcaseNews: 'Новость',
       learnMore: 'Узнать больше',
+      tabOverview: 'Обзор',
+      tabJobs: 'Вакансии',
+      tabTeam: 'Команда',
+      tabReviews: 'Отзывы',
+      hrContacts: 'HR-контакты',
+      hrContent: 'Материалы',
+      contentTypeArticle: 'Статья',
+      contentTypeTip: 'Совет',
+      contentTypeSpeech: 'Выступление',
+      contentTypeVideo: 'Видео',
+      connectTelegram: 'Написать в Telegram',
+      viewLinkedIn: 'LinkedIn',
+      noHRContacts: 'HR-контакты не добавлены',
+      noHRContent: 'Материалы не добавлены',
     },
     school: {
       courses: 'Курсы',
@@ -390,6 +404,20 @@ const dict = {
       showcaseVacancy: 'Vacancy',
       showcaseNews: 'News',
       learnMore: 'Learn more',
+      tabOverview: 'Overview',
+      tabJobs: 'Jobs',
+      tabTeam: 'Team',
+      tabReviews: 'Reviews',
+      hrContacts: 'HR Contacts',
+      hrContent: 'Content',
+      contentTypeArticle: 'Article',
+      contentTypeTip: 'Tip',
+      contentTypeSpeech: 'Speech',
+      contentTypeVideo: 'Video',
+      connectTelegram: 'Write on Telegram',
+      viewLinkedIn: 'LinkedIn',
+      noHRContacts: 'No HR contacts yet',
+      noHRContent: 'No content yet',
     },
     school: {
       courses: 'Courses',
@@ -677,6 +705,20 @@ const dict = {
       showcaseVacancy: 'Бос орын',
       showcaseNews: 'Жаңалық',
       learnMore: 'Толығырақ',
+      tabOverview: 'Шолу',
+      tabJobs: 'Жұмыс',
+      tabTeam: 'Команда',
+      tabReviews: 'Пікірлер',
+      hrContacts: 'HR-байланыстар',
+      hrContent: 'Материалдар',
+      contentTypeArticle: 'Мақала',
+      contentTypeTip: 'Кеңес',
+      contentTypeSpeech: 'Баяндама',
+      contentTypeVideo: 'Бейне',
+      connectTelegram: 'Telegram-да жазу',
+      viewLinkedIn: 'LinkedIn',
+      noHRContacts: 'HR-байланыстар жоқ',
+      noHRContent: 'Материалдар жоқ',
     },
     school: {
       courses: 'Курстар',
@@ -915,6 +957,10 @@ export interface Translations {
     showcase: string; founded: string; employees: string; industry: string;
     showcaseInternship: string; showcaseEvent: string; showcaseVacancy: string;
     showcaseNews: string; learnMore: string;
+    tabOverview: string; tabJobs: string; tabTeam: string; tabReviews: string;
+    hrContacts: string; hrContent: string;
+    contentTypeArticle: string; contentTypeTip: string; contentTypeSpeech: string; contentTypeVideo: string;
+    connectTelegram: string; viewLinkedIn: string; noHRContacts: string; noHRContent: string;
   };
   school: {
     courses: string; goToSite: string; details: string; noCourses: string; backToList: string;

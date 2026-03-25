@@ -136,6 +136,8 @@ type Company struct {
 	Photos        []CompanyPhoto    `json:"photos,omitempty"`
 	Showcase      []CompanyShowcase `json:"showcase,omitempty"`
 	Reviews       []CompanyReview   `json:"reviews,omitempty"`
+	HRContacts    []HRContact       `json:"hrContacts,omitempty"`
+	HRContent     []HRContent       `json:"hrContent,omitempty"`
 }
 
 // CompanyWidgets indicates sections enabled for company profile.
