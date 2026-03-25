@@ -51,7 +51,11 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 	// Stacks
 	group.GET("/stacks", handler.adminListStacks)
 	group.POST("/stacks", handler.adminCreateStack)
+	group.PUT("/stacks/:id", handler.adminUpdateStack)
 	group.DELETE("/stacks/:id", handler.adminDeleteStack)
+
+	// Users (read-only)
+	group.GET("/users", handler.adminListUsers)
 
 	// HR Contacts
 	group.POST("/companies/:id/hr-contacts", handler.adminCreateHRContact)
@@ -454,6 +458,30 @@ func (h *Handler) adminCreateStack(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"stack": stack})
 }
 
+func (h *Handler) adminUpdateStack(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	var req adminStackRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.Services.DB.Model(&model.Stack{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"name":        req.Name,
+		"popularity":  req.Popularity,
+		"is_trending": req.IsTrending,
+	}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var stack model.Stack
+	h.Services.DB.First(&stack, id)
+	c.JSON(http.StatusOK, gin.H{"stack": stack})
+}
+
 func (h *Handler) adminDeleteStack(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -465,6 +493,25 @@ func (h *Handler) adminDeleteStack(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+// ─── USERS ────────────────────────────────────────────────────────────────────
+
+func (h *Handler) adminListUsers(c *gin.Context) {
+	var users []struct {
+		ID        uint   `json:"id"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+		Email     string `json:"email"`
+		Phone     string `json:"phone"`
+		CreatedAt string `json:"created_at"`
+	}
+	h.Services.DB.Table("users").
+		Select("id, first_name, last_name, email, phone, created_at").
+		Order("created_at DESC").
+		Limit(200).
+		Scan(&users)
+	c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
 // ---- HR Contacts ----

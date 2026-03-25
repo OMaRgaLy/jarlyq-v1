@@ -153,4 +153,70 @@ export const fetchAdminStacks = async (): Promise<AdminStack[]> => {
 };
 export const createAdminStack = (body: { name: string; popularity: number; is_trending: boolean }) =>
   adminApi.post('/admin/stacks', body);
+export const updateAdminStack = (id: number, body: { name: string; popularity: number; is_trending: boolean }) =>
+  adminApi.put(`/admin/stacks/${id}`, body);
 export const deleteAdminStack = (id: number) => adminApi.delete(`/admin/stacks/${id}`);
+
+// Hackathons
+export interface AdminHackathon {
+  id: number;
+  title: string;
+  description: string;
+  organizer: string;
+  location: string;
+  is_online: boolean;
+  prize_pool: string;
+  register_url: string;
+  website_url: string;
+  tech_stack: string;
+  registration_deadline: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+}
+
+export const fetchAdminHackathons = async (): Promise<AdminHackathon[]> => {
+  const { data } = await adminApi.get('/admin/hackathons');
+  return data.hackathons ?? [];
+};
+export const createAdminHackathon = (body: Omit<AdminHackathon, 'id'>) =>
+  adminApi.post('/admin/hackathons', body);
+export const updateAdminHackathon = (id: number, body: Omit<AdminHackathon, 'id'>) =>
+  adminApi.put(`/admin/hackathons/${id}`, body);
+export const deleteAdminHackathon = (id: number) => adminApi.delete(`/admin/hackathons/${id}`);
+
+// Reviews moderation
+export interface AdminReview {
+  id: number;
+  company_id: number;
+  user_id: number;
+  author_name: string;
+  status: 'pending' | 'approved' | 'rejected';
+  is_anonymous: boolean;
+  employment_type: string;
+  pros: string;
+  cons: string;
+  overall_rating: number;
+  created_at: string;
+}
+
+export const fetchAdminReviews = async (status = 'pending'): Promise<AdminReview[]> => {
+  const { data } = await adminApi.get('/admin/reviews', { params: { status } });
+  return data.reviews ?? [];
+};
+export const approveAdminReview = (id: number) => adminApi.put(`/admin/reviews/${id}/approve`);
+export const rejectAdminReview = (id: number) => adminApi.put(`/admin/reviews/${id}/reject`);
+
+// Users
+export interface AdminUser {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  created_at: string;
+}
+export const fetchAdminUsers = async (): Promise<AdminUser[]> => {
+  const { data } = await adminApi.get('/admin/users');
+  return data.users ?? [];
+};

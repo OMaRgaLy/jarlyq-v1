@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -27,7 +27,7 @@ const levelColors: Record<string, string> = {
   senior:  'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
 };
 
-export default function SearchPage() {
+function SearchContent() {
   const { t } = useLang();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -196,5 +196,13 @@ export default function SearchPage() {
 
       </main>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense>
+      <SearchContent />
+    </Suspense>
   );
 }

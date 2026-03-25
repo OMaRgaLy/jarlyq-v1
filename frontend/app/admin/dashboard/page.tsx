@@ -3,12 +3,20 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminNav } from '../../../components/admin-nav';
-import { getAdminToken, fetchAdminCompanies, fetchAdminSchools, fetchAdminStacks } from '../../../lib/admin-api';
+import {
+  getAdminToken,
+  fetchAdminCompanies,
+  fetchAdminSchools,
+  fetchAdminStacks,
+  fetchAdminHackathons,
+  fetchAdminReviews,
+  fetchAdminUsers,
+} from '../../../lib/admin-api';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [counts, setCounts] = useState({ companies: 0, schools: 0, stacks: 0 });
+  const [counts, setCounts] = useState({ companies: 0, schools: 0, stacks: 0, hackathons: 0, reviewsPending: 0, users: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,9 +24,23 @@ export default function AdminDashboard() {
       router.push('/admin');
       return;
     }
-    Promise.all([fetchAdminCompanies(), fetchAdminSchools(), fetchAdminStacks()])
-      .then(([companies, schools, stacks]) => {
-        setCounts({ companies: companies.length, schools: schools.length, stacks: stacks.length });
+    Promise.all([
+      fetchAdminCompanies(),
+      fetchAdminSchools(),
+      fetchAdminStacks(),
+      fetchAdminHackathons(),
+      fetchAdminReviews('pending'),
+      fetchAdminUsers(),
+    ])
+      .then(([companies, schools, stacks, hackathons, reviews, users]) => {
+        setCounts({
+          companies: companies.length,
+          schools: schools.length,
+          stacks: stacks.length,
+          hackathons: hackathons.length,
+          reviewsPending: reviews.length,
+          users: users.length,
+        });
       })
       .catch(() => router.push('/admin'))
       .finally(() => setLoading(false));
@@ -27,7 +49,10 @@ export default function AdminDashboard() {
   const stats = [
     { label: 'Компании', count: counts.companies, href: '/admin/companies', emoji: '🏢' },
     { label: 'Школы', count: counts.schools, href: '/admin/schools', emoji: '🎓' },
+    { label: 'Хакатоны', count: counts.hackathons, href: '/admin/hackathons', emoji: '🏆' },
     { label: 'Стеки', count: counts.stacks, href: '/admin/stacks', emoji: '⚙️' },
+    { label: 'Отзывов (ожидает)', count: counts.reviewsPending, href: '/admin/reviews', emoji: '⭐' },
+    { label: 'Пользователей', count: counts.users, href: '/admin/users', emoji: '👤' },
   ];
 
   return (
@@ -61,13 +86,16 @@ export default function AdminDashboard() {
           <h2 className="mb-3 font-semibold text-slate-900 dark:text-white">Быстрые действия</h2>
           <div className="flex flex-wrap gap-3">
             <Link href="/admin/companies" className="rounded-xl bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark">
-              + Добавить компанию
+              + Компанию
             </Link>
             <Link href="/admin/schools" className="rounded-xl bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark">
-              + Добавить школу
+              + Школу
             </Link>
-            <Link href="/admin/stacks" className="rounded-xl bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark">
-              + Добавить стек
+            <Link href="/admin/hackathons" className="rounded-xl bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark">
+              + Хакатон
+            </Link>
+            <Link href="/admin/reviews" className="rounded-xl border border-brand/40 bg-brand/5 px-4 py-2 text-sm font-medium text-brand hover:bg-brand/10">
+              Модерация отзывов
             </Link>
           </div>
         </div>

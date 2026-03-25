@@ -7,6 +7,7 @@ import {
   getAdminToken,
   fetchAdminStacks,
   createAdminStack,
+  updateAdminStack,
   deleteAdminStack,
   AdminStack,
 } from '../../../lib/admin-api';
@@ -41,6 +42,11 @@ export default function AdminStacksPage() {
       setIsTrending(false);
       reload();
     } finally { setSaving(false); }
+  };
+
+  const handleToggleTrending = async (s: AdminStack) => {
+    await updateAdminStack(s.id, { name: s.name, popularity: s.popularity, is_trending: !s.is_trending });
+    reload();
   };
 
   const handleDelete = async (id: number) => {
@@ -112,12 +118,21 @@ export default function AdminStacksPage() {
                   </p>
                   <p className="text-xs text-slate-400">Популярность: {s.popularity}</p>
                 </div>
-                <button
-                  onClick={() => handleDelete(s.id)}
-                  className="rounded-lg px-2 py-1 text-xs text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
-                >
-                  ✕
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleToggleTrending(s)}
+                    title={s.is_trending ? 'Убрать из тренда' : 'Добавить в тренд'}
+                    className={`rounded-lg px-2 py-1 text-xs transition ${s.is_trending ? 'text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                  >
+                    🔥
+                  </button>
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    className="rounded-lg px-2 py-1 text-xs text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             ))}
             {stacks.length === 0 && <p className="col-span-3 text-slate-500">Нет стеков</p>}

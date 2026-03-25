@@ -6,10 +6,13 @@ import { clearAdminToken } from '../lib/admin-api';
 
 const links = [
   { href: '/admin/dashboard', label: '🏠 Главная' },
+  { href: '/admin/reviews', label: '⭐ Отзывы' },
   { href: '/admin/suggestions', label: '📬 Предложения' },
   { href: '/admin/companies', label: '🏢 Компании' },
   { href: '/admin/schools', label: '🎓 Школы' },
+  { href: '/admin/hackathons', label: '🏆 Хакатоны' },
   { href: '/admin/stacks', label: '⚙️ Стеки' },
+  { href: '/admin/users', label: '👤 Пользователи' },
 ];
 
 export function AdminNav() {

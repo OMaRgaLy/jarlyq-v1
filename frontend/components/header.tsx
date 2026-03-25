@@ -58,15 +58,15 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur dark:border-slate-800/60 dark:bg-slate-950/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+        <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-3">
           <Link href="/" className="text-xl font-bold text-brand">
             Jarlyq
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300 md:flex">
+          <nav className="hidden items-center justify-center gap-x-5 text-sm font-medium text-slate-600 dark:text-slate-300 md:flex">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="hover:text-brand">
+              <Link key={link.href} href={link.href} className="whitespace-nowrap hover:text-brand">
                 {link.label}
               </Link>
             ))}
@@ -115,7 +115,7 @@ export function Header() {
             {/* Suggest button */}
             <Link
               href="/suggest"
-              className="hidden rounded-full border border-brand/40 bg-brand/5 px-3 py-1.5 text-sm font-medium text-brand hover:bg-brand/10 md:flex"
+              className="hidden whitespace-nowrap rounded-full border border-brand/40 bg-brand/5 px-3 py-1.5 text-sm font-medium text-brand hover:bg-brand/10 md:flex"
             >
               + {t.nav.suggest}
             </Link>
