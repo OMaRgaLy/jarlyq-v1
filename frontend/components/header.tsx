@@ -41,7 +41,7 @@ export function Header() {
     { href: '/jobs', label: t.nav.jobs },
     { href: '/career-paths', label: t.nav.careerPaths },
     { href: '/interview', label: t.nav.interview },
-    { href: '/#companies', label: t.nav.companies },
+    { href: '/companies', label: t.nav.companies },
     { href: '/#schools', label: t.nav.schools },
   ];
 

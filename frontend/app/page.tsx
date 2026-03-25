@@ -82,9 +82,14 @@ export default function Page() {
 
         {/* Компании */}
         <section id="companies" className="space-y-4">
-          <div>
-            <h2 className="section-title">{t.home.sectionCompanies}</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionCompaniesSub}</p>
+          <div className="flex items-end justify-between">
+            <div>
+              <h2 className="section-title">{t.home.sectionCompanies}</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionCompaniesSub}</p>
+            </div>
+            <Link href="/companies" className="shrink-0 text-sm font-medium text-brand hover:underline">
+              {t.companies.viewAll}
+            </Link>
           </div>
           {companiesLoading ? (
             <div className="grid gap-6">
@@ -104,11 +109,23 @@ export default function Page() {
               </Link>
             </div>
           ) : (
-            <div className="grid gap-6">
-              {companies.map((company) => (
-                <CompanyCard key={company.id} company={company} />
-              ))}
-            </div>
+            <>
+              <div className="grid gap-6">
+                {companies.slice(0, 4).map((company) => (
+                  <CompanyCard key={company.id} company={company} />
+                ))}
+              </div>
+              {companies.length > 4 && (
+                <div className="text-center">
+                  <Link
+                    href="/companies"
+                    className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-600 shadow-sm hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                  >
+                    {t.companies.viewAll}
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </section>
 

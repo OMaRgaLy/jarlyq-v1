@@ -274,6 +274,17 @@ const dict = {
       pendingText: 'Твой отзыв на модерации',
       successText: 'Отзыв отправлен! Появится после проверки.',
     },
+    companies: {
+      title: 'Компании',
+      subtitle: 'IT-компании Казахстана, Кыргызстана и Узбекистана — стажировки, вакансии и отзывы',
+      searchPlaceholder: 'Поиск по названию или отрасли...',
+      anyFormat: 'Любой формат',
+      resetFilters: 'Сбросить фильтры',
+      found: 'Найдено',
+      empty: 'Компании не найдены',
+      emptySub: 'Попробуй изменить или сбросить фильтры',
+      viewAll: 'Все компании →',
+    },
     legal: {
       title: 'Пользовательское соглашение',
       subtitle: 'Правила использования платформы Jarlyq',
@@ -549,6 +560,17 @@ const dict = {
       ratingHidden: 'Rating shown after 10 reviews',
       pendingText: 'Your review is pending moderation',
       successText: 'Review submitted! It will appear after approval.',
+    },
+    companies: {
+      title: 'Companies',
+      subtitle: 'IT companies of Kazakhstan, Kyrgyzstan and Uzbekistan — internships, jobs and reviews',
+      searchPlaceholder: 'Search by name or industry...',
+      anyFormat: 'Any format',
+      resetFilters: 'Reset filters',
+      found: 'Found',
+      empty: 'No companies found',
+      emptySub: 'Try changing or resetting your filters',
+      viewAll: 'All companies →',
     },
     legal: {
       title: 'Terms of Service',
@@ -826,6 +848,17 @@ const dict = {
       pendingText: 'Пікіріңіз модерацияда',
       successText: 'Пікір жіберілді! Тексерілгеннен кейін пайда болады.',
     },
+    companies: {
+      title: 'Компаниялар',
+      subtitle: 'Қазақстан, Қырғызстан және Өзбекстанның IT-компаниялары — тәжірибелер, бос орындар және пікірлер',
+      searchPlaceholder: 'Атауы немесе саласы бойынша іздеу...',
+      anyFormat: 'Кез келген формат',
+      resetFilters: 'Сүзгілерді тазалау',
+      found: 'Табылды',
+      empty: 'Компаниялар табылмады',
+      emptySub: 'Сүзгілерді өзгертіп немесе тазалап көр',
+      viewAll: 'Барлық компаниялар →',
+    },
     legal: {
       title: 'Пайдаланушы келісімі',
       subtitle: 'Jarlyq платформасын пайдалану ережелері',
@@ -937,6 +970,11 @@ export interface Translations {
     workLifeBalance: string; salaryRating: string; growthRating: string; cultureRating: string;
     showAll: string; showLess: string; noReviews: string; ratingHidden: string;
     pendingText: string; successText: string;
+  };
+  companies: {
+    title: string; subtitle: string; searchPlaceholder: string;
+    anyFormat: string; resetFilters: string; found: string;
+    empty: string; emptySub: string; viewAll: string;
   };
   legal: {
     title: string; subtitle: string; lastUpdated: string;
