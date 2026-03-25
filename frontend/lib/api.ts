@@ -68,6 +68,27 @@ export interface Company {
   offices?: CompanyOffice[];
   photos?: CompanyPhoto[];
   showcase?: CompanyShowcase[];
+  reviews?: CompanyReview[];
+}
+
+export interface CompanyReview {
+  id: number;
+  companyId: number;
+  status: 'pending' | 'approved' | 'rejected';
+  isAnonymous: boolean;
+  authorName?: string;
+  createdAt: string;
+  rating: number;
+  title: string;
+  reviewText: string;
+  helpfulCount: number;
+  workLifeBalance: number;
+  salaryRating: number;
+  growthRating: number;
+  cultureRating: number;
+  employmentType?: string;
+  position?: string;
+  yearsWorked?: number;
 }
 
 export interface Opportunity {

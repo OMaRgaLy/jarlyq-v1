@@ -20,10 +20,17 @@ const dict = {
       hackathons: 'Хакатоны',
       login: 'Войти',
       logout: 'Выйти',
+      suggest: 'Предложить',
+      myProfile: 'Мой профиль',
     },
     home: {
       heroTitle: 'IT возможности\nЦентральной Азии',
       heroSubtitle: 'Найди стажировку, вакансию или курс в лучших IT-компаниях Казахстана, Кыргызстана и Узбекистана',
+      heroBadge: 'Центральная Азия • Tech',
+      heroCTA1: 'Выбрать карьерный путь →',
+      heroCTA2: 'Найти вакансию',
+      heroImageAlt: 'Команда разработчиков',
+      trendingLabel: '🔥 = в тренде',
       sectionStacks: 'Популярные технологии',
       sectionCompanies: 'Компании региона',
       sectionCompaniesSub: 'IT-компании Казахстана, Кыргызстана и Узбекистана — стажировки и вакансии',
@@ -40,6 +47,27 @@ const dict = {
       emptySch: 'Школы скоро появятся',
       emptySchSub: 'Пока нет школ по выбранному фильтру. Попробуй сбросить фильтры.',
       footer: 'Сделано для роста IT-комьюнити Центральной Азии.',
+    },
+    filterBar: {
+      stackPlaceholder: 'Технология',
+      anyStack: 'Любой стек',
+      regionPlaceholder: 'Регион',
+      anyRegion: 'Любой регион',
+      levelPlaceholder: 'Уровень',
+      anyLevel: 'Любой уровень',
+      levelIntern: 'Intern',
+      levelJunior: 'Junior',
+      levelMiddle: 'Middle',
+    },
+    onboarding: {
+      title: 'Кто ты?',
+      subtitle: 'Выбери — покажем самое нужное',
+      studentLabel: 'Студент / Школьник',
+      studentDesc: 'Хочу узнать с чего начать и какой стек учить',
+      jobseekerLabel: 'Ищу работу',
+      jobseekerDesc: 'Ищу стажировку или первую работу в IT',
+      companyLabel: 'Компания / Школа',
+      companyDesc: 'Хочу разместить вакансии и привлечь таланты',
     },
     company: {
       internships: 'Стажировки',
@@ -208,6 +236,34 @@ const dict = {
       saved: 'Сохранено!',
       saving: 'Сохраняем...',
     },
+    reviews: {
+      title: 'Отзывы сотрудников',
+      addReview: 'Оставить отзыв',
+      loginRequired: 'Войдите, чтобы оставить отзыв',
+      phoneRequired: 'Укажи номер телефона в профиле — это нужно для верификации отзывов',
+      modNotice: 'Отзыв будет опубликован после проверки модератором',
+      alreadyReviewed: 'Ты уже оставил отзыв для этой компании',
+      submitReview: 'Отправить отзыв',
+      ratingLabel: 'Общая оценка',
+      titleLabel: 'Заголовок',
+      textLabel: 'Твой отзыв',
+      anonymous: 'Опубликовать анонимно',
+      employmentType: 'Статус',
+      employmentCurrent: 'Текущий сотрудник',
+      employmentFormer: 'Бывший сотрудник',
+      position: 'Должность',
+      yearsWorked: 'Лет в компании',
+      workLifeBalance: 'Баланс работы и жизни',
+      salaryRating: 'Зарплата',
+      growthRating: 'Карьерный рост',
+      cultureRating: 'Культура',
+      showAll: 'Все отзывы',
+      showLess: 'Скрыть',
+      noReviews: 'Отзывов пока нет — стань первым!',
+      ratingHidden: 'Рейтинг появится после 10 отзывов',
+      pendingText: 'Твой отзыв на модерации',
+      successText: 'Отзыв отправлен! Появится после проверки.',
+    },
     legal: {
       title: 'Пользовательское соглашение',
       subtitle: 'Правила использования платформы Jarlyq',
@@ -230,10 +286,17 @@ const dict = {
       hackathons: 'Hackathons',
       login: 'Log in',
       logout: 'Log out',
+      suggest: 'Suggest',
+      myProfile: 'My Profile',
     },
     home: {
       heroTitle: 'IT Opportunities\nin Central Asia',
       heroSubtitle: 'Find internships, jobs, or courses at top IT companies in Kazakhstan, Kyrgyzstan and Uzbekistan',
+      heroBadge: 'Central Asia • Tech',
+      heroCTA1: 'Choose career path →',
+      heroCTA2: 'Find a job',
+      heroImageAlt: 'Developer team',
+      trendingLabel: '🔥 = trending',
       sectionStacks: 'Popular Technologies',
       sectionCompanies: 'Regional Companies',
       sectionCompaniesSub: 'IT companies from Kazakhstan, Kyrgyzstan and Uzbekistan — internships and vacancies',
@@ -250,6 +313,27 @@ const dict = {
       emptySch: 'Schools coming soon',
       emptySchSub: 'No schools match your filter. Try resetting filters.',
       footer: 'Built for the IT community of Central Asia.',
+    },
+    filterBar: {
+      stackPlaceholder: 'Technology',
+      anyStack: 'Any stack',
+      regionPlaceholder: 'Region',
+      anyRegion: 'Any region',
+      levelPlaceholder: 'Level',
+      anyLevel: 'Any level',
+      levelIntern: 'Intern',
+      levelJunior: 'Junior',
+      levelMiddle: 'Middle',
+    },
+    onboarding: {
+      title: 'Who are you?',
+      subtitle: 'Choose — we\'ll show what\'s most relevant',
+      studentLabel: 'Student',
+      studentDesc: 'Want to know where to start and which stack to learn',
+      jobseekerLabel: 'Looking for a job',
+      jobseekerDesc: 'Looking for an internship or first IT job',
+      companyLabel: 'Company / School',
+      companyDesc: 'Want to post vacancies and attract talent',
     },
     company: {
       internships: 'Internships',
@@ -418,6 +502,34 @@ const dict = {
       saved: 'Saved!',
       saving: 'Saving...',
     },
+    reviews: {
+      title: 'Employee Reviews',
+      addReview: 'Leave a review',
+      loginRequired: 'Log in to leave a review',
+      phoneRequired: 'Add a phone number to your profile — required for review verification',
+      modNotice: 'Your review will be published after moderation',
+      alreadyReviewed: 'You have already reviewed this company',
+      submitReview: 'Submit review',
+      ratingLabel: 'Overall rating',
+      titleLabel: 'Title',
+      textLabel: 'Your review',
+      anonymous: 'Post anonymously',
+      employmentType: 'Status',
+      employmentCurrent: 'Current employee',
+      employmentFormer: 'Former employee',
+      position: 'Position',
+      yearsWorked: 'Years at company',
+      workLifeBalance: 'Work-life balance',
+      salaryRating: 'Salary',
+      growthRating: 'Career growth',
+      cultureRating: 'Culture',
+      showAll: 'All reviews',
+      showLess: 'Show less',
+      noReviews: 'No reviews yet — be the first!',
+      ratingHidden: 'Rating shown after 10 reviews',
+      pendingText: 'Your review is pending moderation',
+      successText: 'Review submitted! It will appear after approval.',
+    },
     legal: {
       title: 'Terms of Service',
       subtitle: 'Jarlyq platform usage policy',
@@ -440,10 +552,17 @@ const dict = {
       hackathons: 'Хакатондар',
       login: 'Кіру',
       logout: 'Шығу',
+      suggest: 'Ұсыну',
+      myProfile: 'Менің профилім',
     },
     home: {
       heroTitle: 'Орталық Азиядағы\nIT мүмкіндіктер',
       heroSubtitle: 'Қазақстан, Қырғызстан және Өзбекстандағы үздік IT-компанияларда тәжірибе, жұмыс немесе курс тап',
+      heroBadge: 'Орталық Азия • Tech',
+      heroCTA1: 'Мансап жолын таңда →',
+      heroCTA2: 'Жұмыс табу',
+      heroImageAlt: 'Әзірлеушілер тобы',
+      trendingLabel: '🔥 = трендте',
       sectionStacks: 'Танымал технологиялар',
       sectionCompanies: 'Өңір компаниялары',
       sectionCompaniesSub: 'Қазақстан, Қырғызстан және Өзбекстанның IT-компаниялары — тәжірибелер мен бос орындар',
@@ -460,6 +579,27 @@ const dict = {
       emptySch: 'Мектептер жақында қосылады',
       emptySchSub: 'Таңдалған сүзгі бойынша мектептер жоқ. Сүзгілерді тазалап көр.',
       footer: 'Орталық Азиядағы IT-қоғамдастық үшін жасалған.',
+    },
+    filterBar: {
+      stackPlaceholder: 'Технология',
+      anyStack: 'Кез келген стек',
+      regionPlaceholder: 'Өңір',
+      anyRegion: 'Кез келген өңір',
+      levelPlaceholder: 'Деңгей',
+      anyLevel: 'Кез келген деңгей',
+      levelIntern: 'Intern',
+      levelJunior: 'Junior',
+      levelMiddle: 'Middle',
+    },
+    onboarding: {
+      title: 'Сен кімсің?',
+      subtitle: 'Таңда — ең қажеттісін көрсетеміз',
+      studentLabel: 'Студент / Оқушы',
+      studentDesc: 'Қайдан бастап, қандай стек үйренуді білгім келеді',
+      jobseekerLabel: 'Жұмыс іздеп жүрмін',
+      jobseekerDesc: 'Тәжірибе немесе IT-дегі алғашқы жұмыс іздеп жүрмін',
+      companyLabel: 'Компания / Мектеп',
+      companyDesc: 'Бос орындар орналастырып, таланттарды тарту',
     },
     company: {
       internships: 'Тәжірибелер',
@@ -628,6 +768,34 @@ const dict = {
       saved: 'Сақталды!',
       saving: 'Сақталуда...',
     },
+    reviews: {
+      title: 'Қызметкерлердің пікірлері',
+      addReview: 'Пікір қалдыру',
+      loginRequired: 'Пікір қалдыру үшін кіріңіз',
+      phoneRequired: 'Профильде телефон нөмірін көрсет — пікірлерді верификациялау үшін қажет',
+      modNotice: 'Пікіріңіз модератор тексергеннен кейін жарияланады',
+      alreadyReviewed: 'Сен бұл компания туралы пікір қалдырдың',
+      submitReview: 'Пікір жіберу',
+      ratingLabel: 'Жалпы баға',
+      titleLabel: 'Тақырып',
+      textLabel: 'Пікіріңіз',
+      anonymous: 'Анонимді жариялау',
+      employmentType: 'Мәртебе',
+      employmentCurrent: 'Қазіргі қызметкер',
+      employmentFormer: 'Бұрынғы қызметкер',
+      position: 'Лауазым',
+      yearsWorked: 'Компаниядағы жылдар',
+      workLifeBalance: 'Жұмыс-өмір балансы',
+      salaryRating: 'Жалақы',
+      growthRating: 'Мансаптық өсу',
+      cultureRating: 'Мәдениет',
+      showAll: 'Барлық пікірлер',
+      showLess: 'Жасыру',
+      noReviews: 'Әлі пікірлер жоқ — бірінші болыңыз!',
+      ratingHidden: '10 пікірден кейін рейтинг көрінеді',
+      pendingText: 'Пікіріңіз модерацияда',
+      successText: 'Пікір жіберілді! Тексерілгеннен кейін пайда болады.',
+    },
     legal: {
       title: 'Пайдаланушы келісімі',
       subtitle: 'Jarlyq платформасын пайдалану ережелері',
@@ -643,10 +811,12 @@ export interface Translations {
     jobs: string; careerPaths: string; interview: string; portfolio: string;
     guide: string; companies: string; schools: string;
     internships: string; hackathons: string;
-    login: string; logout: string;
+    login: string; logout: string; suggest: string; myProfile: string;
   };
   home: {
     heroTitle: string; heroSubtitle: string;
+    heroBadge: string; heroCTA1: string; heroCTA2: string; heroImageAlt: string;
+    trendingLabel: string;
     sectionStacks: string; sectionCompanies: string; sectionCompaniesSub: string;
     sectionSchools: string; sectionSchoolsSub: string;
     sectionOpportunities: string; sectionOpportunitiesSub: string;
@@ -654,6 +824,18 @@ export interface Translations {
     interviewBannerTitle: string; interviewBannerSub: string;
     emptyCo: string; emptyCoSub: string; emptySch: string; emptySchSub: string;
     footer: string;
+  };
+  filterBar: {
+    stackPlaceholder: string; anyStack: string;
+    regionPlaceholder: string; anyRegion: string;
+    levelPlaceholder: string; anyLevel: string;
+    levelIntern: string; levelJunior: string; levelMiddle: string;
+  };
+  onboarding: {
+    title: string; subtitle: string;
+    studentLabel: string; studentDesc: string;
+    jobseekerLabel: string; jobseekerDesc: string;
+    companyLabel: string; companyDesc: string;
   };
   company: {
     internships: string; vacancies: string; apply: string; respond: string;
@@ -710,6 +892,16 @@ export interface Translations {
     experience: string; addExperience: string; skills: string; addSkill: string;
     current: string; skillLevels: { beginner: string; intermediate: string; expert: string };
     memberSince: string; saved: string; saving: string;
+  };
+  reviews: {
+    title: string; addReview: string; loginRequired: string; phoneRequired: string;
+    modNotice: string; alreadyReviewed: string; submitReview: string;
+    ratingLabel: string; titleLabel: string; textLabel: string; anonymous: string;
+    employmentType: string; employmentCurrent: string; employmentFormer: string;
+    position: string; yearsWorked: string;
+    workLifeBalance: string; salaryRating: string; growthRating: string; cultureRating: string;
+    showAll: string; showLess: string; noReviews: string; ratingHidden: string;
+    pendingText: string; successText: string;
   };
   legal: {
     title: string; subtitle: string; lastUpdated: string;

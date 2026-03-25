@@ -1,32 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useLang } from '../lib/lang-context';
 
 const STORAGE_KEY = 'jarlyq_user_type';
 type UserType = 'student' | 'jobseeker' | 'company';
 
-const personas = [
-  {
-    type: 'student' as UserType,
-    emoji: '🎓',
-    label: 'Студент / Школьник',
-    description: 'Хочу узнать с чего начать и какой стек учить',
-  },
-  {
-    type: 'jobseeker' as UserType,
-    emoji: '💼',
-    label: 'Ищу работу',
-    description: 'Ищу стажировку или первую работу в IT',
-  },
-  {
-    type: 'company' as UserType,
-    emoji: '🏢',
-    label: 'Компания / Школа',
-    description: 'Хочу разместить вакансии и привлечь таланты',
-  },
-];
-
 export function OnboardingBanner() {
+  const { t } = useLang();
   const [dismissed, setDismissed] = useState(true); // start true to avoid flash
 
   useEffect(() => {
@@ -41,11 +22,32 @@ export function OnboardingBanner() {
 
   if (dismissed) return null;
 
+  const personas = [
+    {
+      type: 'student' as UserType,
+      emoji: '🎓',
+      label: t.onboarding.studentLabel,
+      description: t.onboarding.studentDesc,
+    },
+    {
+      type: 'jobseeker' as UserType,
+      emoji: '💼',
+      label: t.onboarding.jobseekerLabel,
+      description: t.onboarding.jobseekerDesc,
+    },
+    {
+      type: 'company' as UserType,
+      emoji: '🏢',
+      label: t.onboarding.companyLabel,
+      description: t.onboarding.companyDesc,
+    },
+  ];
+
   return (
     <section className="card p-6">
-      <h2 className="section-title mb-1">Кто ты?</h2>
+      <h2 className="section-title mb-1">{t.onboarding.title}</h2>
       <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
-        Выбери — покажем самое нужное
+        {t.onboarding.subtitle}
       </p>
       <div className="grid gap-3 sm:grid-cols-3">
         {personas.map((p) => (

@@ -67,6 +67,11 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 	group.PUT("/hackathons/:id", handler.adminUpdateHackathon)
 	group.DELETE("/hackathons/:id", handler.adminDeleteHackathon)
 
+	// Reviews moderation
+	group.GET("/reviews", handler.adminListReviews)
+	group.PUT("/reviews/:id/approve", handler.adminApproveReview)
+	group.PUT("/reviews/:id/reject", handler.adminRejectReview)
+
 	// Suggestions
 	newAdminSuggestionRoutes(group.Group("/suggestions"), handler)
 }
@@ -664,4 +669,49 @@ func (h *Handler) adminDeleteHackathon(c *gin.Context) {
 	}
 	h.Services.DB.Delete(&model.Hackathon{}, id)
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+// ─── REVIEWS ──────────────────────────────────────────────────────────────────
+
+// GET /admin/reviews?status=pending
+func (h *Handler) adminListReviews(c *gin.Context) {
+	status := c.DefaultQuery("status", "pending")
+	var reviews []model.CompanyReview
+	h.Services.DB.Where("status = ?", status).Order("created_at ASC").Find(&reviews)
+
+	// Populate author names
+	for i := range reviews {
+		var u struct {
+			FirstName string
+			LastName  string
+		}
+		h.Services.DB.Table("users").Select("first_name, last_name").Where("id = ?", reviews[i].UserID).Scan(&u)
+		if !reviews[i].IsAnonymous && u.FirstName != "" {
+			reviews[i].AuthorName = u.FirstName + " " + u.LastName
+		} else {
+			reviews[i].AuthorName = "Аноним"
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"reviews": reviews})
+}
+
+func (h *Handler) adminApproveReview(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	h.Services.DB.Model(&model.CompanyReview{}).Where("id = ?", id).Update("status", "approved")
+	c.JSON(http.StatusOK, gin.H{"status": "approved"})
+}
+
+func (h *Handler) adminRejectReview(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	h.Services.DB.Model(&model.CompanyReview{}).Where("id = ?", id).Update("status", "rejected")
+	c.JSON(http.StatusOK, gin.H{"status": "rejected"})
 }

@@ -4,8 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
-import { useCompany } from '../../../lib/hooks';
+import { useCompany, useCompanyReviews } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
+import { getUser } from '../../../lib/auth';
+import { api } from '../../../lib/api';
 import type { CompanyShowcase } from '../../../lib/api';
 
 const levelColors: Record<string, string> = {
@@ -36,11 +38,72 @@ function ShowcaseTypeLabel({ type, t }: { type: CompanyShowcase['type']; t: { sh
   );
 }
 
+function StarRating({ value, max = 5 }: { value: number; max?: number }) {
+  return (
+    <span className="flex items-center gap-0.5">
+      {Array.from({ length: max }).map((_, i) => (
+        <span key={i} className={i < Math.round(value) ? 'text-amber-400' : 'text-slate-200 dark:text-slate-700'}>★</span>
+      ))}
+    </span>
+  );
+}
+
+function SubRatingBar({ label, value }: { label: string; value: number }) {
+  if (!value) return null;
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      <span className="w-32 shrink-0 text-slate-500">{label}</span>
+      <div className="h-1.5 flex-1 rounded-full bg-slate-100 dark:bg-slate-700">
+        <div className="h-1.5 rounded-full bg-brand" style={{ width: `${(value / 5) * 100}%` }} />
+      </div>
+      <span className="w-4 text-right text-slate-600 dark:text-slate-300">{value}</span>
+    </div>
+  );
+}
+
 export default function CompanyDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const { data: company, isLoading } = useCompany(Number(id));
+  const { data: reviewsData, refetch: refetchReviews } = useCompanyReviews(Number(id));
   const { t } = useLang();
   const [activePhoto, setActivePhoto] = useState(0);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const user = typeof window !== 'undefined' ? getUser() : null;
+
+  const [form, setForm] = useState({
+    rating: 5,
+    title: '',
+    review_text: '',
+    is_anonymous: false,
+    employment_type: 'current',
+    position: '',
+    years_worked: 0,
+    work_life_balance: 0,
+    salary_rating: 0,
+    growth_rating: 0,
+    culture_rating: 0,
+  });
+
+  const handleSubmitReview = async () => {
+    setReviewError('');
+    setSubmitting(true);
+    try {
+      await api.post(`/companies/${id}/reviews`, form);
+      setReviewSubmitted(true);
+      setShowReviewForm(false);
+      refetchReviews();
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error ?? 'Error submitting review';
+      setReviewError(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -77,6 +140,10 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
   const photos = company.photos ?? [];
   const offices = company.offices ?? [];
   const showcase = company.showcase ?? [];
+  const reviews = reviewsData?.reviews ?? [];
+  const reviewTotal = reviewsData?.total ?? 0;
+  const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
+  const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
@@ -157,6 +224,13 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{company.name}</h1>
                 {company.industry && (
                   <p className="text-sm text-slate-500 dark:text-slate-400">{company.industry}</p>
+                )}
+                {/* Rating summary */}
+                {reviewTotal >= 10 && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <StarRating value={avgRating} />
+                    <span className="text-sm text-slate-500">{avgRating.toFixed(1)} · {reviewTotal} отзывов</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -375,6 +449,201 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
             {t.company.noOpportunities}
           </div>
         )}
+
+        {/* Reviews */}
+        <section className="card p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-white">{t.reviews.title}</h2>
+              {reviewTotal > 0 && reviewTotal < 10 && (
+                <p className="text-xs text-slate-400 mt-0.5">{t.reviews.ratingHidden}</p>
+              )}
+            </div>
+            {/* Add review button */}
+            {!reviewSubmitted && !showReviewForm && (
+              user ? (
+                <button
+                  onClick={() => setShowReviewForm(true)}
+                  className="rounded-lg border border-brand/40 bg-brand/5 px-3 py-1.5 text-sm font-medium text-brand hover:bg-brand/10"
+                >
+                  + {t.reviews.addReview}
+                </button>
+              ) : (
+                <p className="text-xs text-slate-400">{t.reviews.loginRequired}</p>
+              )
+            )}
+          </div>
+
+          {/* Success message */}
+          {reviewSubmitted && (
+            <div className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
+              ✓ {t.reviews.successText}
+            </div>
+          )}
+
+          {/* Review form */}
+          {showReviewForm && (
+            <div className="rounded-2xl border border-slate-200/70 bg-slate-50 p-5 space-y-4 dark:border-slate-700/60 dark:bg-slate-800/50">
+              {/* Overall rating */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">{t.reviews.ratingLabel}</label>
+                <div className="flex gap-1">
+                  {[1,2,3,4,5].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setForm(f => ({ ...f, rating: s }))}
+                      className={`text-2xl ${s <= form.rating ? 'text-amber-400' : 'text-slate-200 dark:text-slate-700'}`}
+                    >★</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">{t.reviews.titleLabel}</label>
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 dark:border-slate-700 dark:bg-slate-900"
+                  maxLength={255}
+                />
+              </div>
+
+              {/* Text */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">{t.reviews.textLabel}</label>
+                <textarea
+                  value={form.review_text}
+                  onChange={e => setForm(f => ({ ...f, review_text: e.target.value }))}
+                  rows={4}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 dark:border-slate-700 dark:bg-slate-900"
+                />
+              </div>
+
+              {/* Sub-ratings */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                {([
+                  ['work_life_balance', t.reviews.workLifeBalance],
+                  ['salary_rating', t.reviews.salaryRating],
+                  ['growth_rating', t.reviews.growthRating],
+                  ['culture_rating', t.reviews.cultureRating],
+                ] as [keyof typeof form, string][]).map(([key, label]) => (
+                  <div key={key}>
+                    <label className="mb-1 block text-xs text-slate-500">{label}</label>
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => setForm(f => ({ ...f, [key]: s }))}
+                          className={`text-lg ${s <= (form[key] as number) ? 'text-amber-400' : 'text-slate-200 dark:text-slate-700'}`}
+                        >★</button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Employment type + position */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-xs text-slate-500">{t.reviews.employmentType}</label>
+                  <select
+                    value={form.employment_type}
+                    onChange={e => setForm(f => ({ ...f, employment_type: e.target.value }))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                  >
+                    <option value="current">{t.reviews.employmentCurrent}</option>
+                    <option value="former">{t.reviews.employmentFormer}</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-slate-500">{t.reviews.position}</label>
+                  <input
+                    type="text"
+                    value={form.position}
+                    onChange={e => setForm(f => ({ ...f, position: e.target.value }))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                  />
+                </div>
+              </div>
+
+              {/* Anonymous toggle */}
+              <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.is_anonymous}
+                  onChange={e => setForm(f => ({ ...f, is_anonymous: e.target.checked }))}
+                  className="rounded"
+                />
+                {t.reviews.anonymous}
+              </label>
+
+              <p className="text-xs text-slate-400">{t.reviews.modNotice}</p>
+
+              {reviewError && (
+                <p className="text-xs text-red-500">{reviewError === 'phone number required to leave a review' ? t.reviews.phoneRequired : reviewError === 'you have already reviewed this company' ? t.reviews.alreadyReviewed : reviewError}</p>
+              )}
+
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSubmitReview}
+                  disabled={submitting || !form.title || !form.review_text}
+                  className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-50"
+                >
+                  {submitting ? '...' : t.reviews.submitReview}
+                </button>
+                <button
+                  onClick={() => { setShowReviewForm(false); setReviewError(''); }}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                >
+                  {t.profile.cancel}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Reviews list */}
+          {reviews.length === 0 ? (
+            <p className="text-sm text-slate-400">{t.reviews.noReviews}</p>
+          ) : (
+            <div className="space-y-4">
+              {displayedReviews.map((review) => (
+                <div key={review.id} className="rounded-2xl border border-slate-200/70 bg-white p-4 dark:border-slate-700/60 dark:bg-slate-900/70">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white">{review.title}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <StarRating value={review.rating} />
+                        <span className="text-xs text-slate-400">{review.authorName}</span>
+                        {review.position && <span className="text-xs text-slate-400">· {review.position}</span>}
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-xs text-slate-400">{new Date(review.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line">{review.reviewText}</p>
+                  {(review.workLifeBalance || review.salaryRating || review.growthRating || review.cultureRating) > 0 && (
+                    <div className="mt-3 space-y-1">
+                      <SubRatingBar label={t.reviews.workLifeBalance} value={review.workLifeBalance} />
+                      <SubRatingBar label={t.reviews.salaryRating} value={review.salaryRating} />
+                      <SubRatingBar label={t.reviews.growthRating} value={review.growthRating} />
+                      <SubRatingBar label={t.reviews.cultureRating} value={review.cultureRating} />
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {reviews.length > 3 && (
+                <button
+                  onClick={() => setShowAllReviews(v => !v)}
+                  className="text-sm text-brand hover:underline"
+                >
+                  {showAllReviews ? t.reviews.showLess : `${t.reviews.showAll} (${reviews.length})`}
+                </button>
+              )}
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

@@ -81,7 +81,7 @@ export function Header() {
                     key={loc.code}
                     type="button"
                     onClick={() => setLocale(loc.code as Locale)}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                    className={`min-w-[2.25rem] rounded-md px-2 py-1 text-center text-xs font-medium transition-colors ${
                       locale === loc.code
                         ? 'bg-brand text-white'
                         : 'text-slate-500 hover:text-brand dark:text-slate-400'
@@ -108,7 +108,7 @@ export function Header() {
               href="/suggest"
               className="hidden rounded-full border border-brand/40 bg-brand/5 px-3 py-1.5 text-sm font-medium text-brand hover:bg-brand/10 md:flex"
             >
-              + {locale === 'ru' ? 'Предложить' : locale === 'en' ? 'Suggest' : 'Ұсыну'}
+              + {t.nav.suggest}
             </Link>
 
             {/* Auth button */}
@@ -131,7 +131,7 @@ export function Header() {
                         className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
                       >
                         <PersonIcon />
-                        {locale === 'ru' ? 'Мой профиль' : locale === 'en' ? 'My Profile' : 'Менің профилім'}
+                        {t.nav.myProfile}
                       </Link>
                       <button
                         onClick={() => { handleLogout(); setUserMenuOpen(false); }}
@@ -186,7 +186,7 @@ export function Header() {
                     key={loc.code}
                     type="button"
                     onClick={() => { setLocale(loc.code as Locale); setMenuOpen(false); }}
-                    className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                    className={`min-w-[2.25rem] rounded-md px-2.5 py-1 text-center text-xs font-medium transition-colors ${
                       locale === loc.code
                         ? 'bg-brand text-white'
                         : 'border border-slate-200 text-slate-500 dark:border-slate-700 dark:text-slate-400'

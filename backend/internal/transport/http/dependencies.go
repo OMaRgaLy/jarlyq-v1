@@ -50,7 +50,7 @@ func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager, auth
 	v1 := router.Group("/v1")
 	newAuthRoutes(v1.Group("/auth"), handler, jwt, authRateLimiter)
 	newUserRoutes(v1.Group("/users"), handler, jwt)
-	newCompanyRoutes(v1.Group("/companies"), handler)
+	newCompanyRoutes(v1.Group("/companies"), handler, jwt)
 	newSchoolRoutes(v1.Group("/schools"), handler)
 	newStackRoutes(v1.Group("/stacks"), handler)
 	newCertificateRoutes(v1.Group("/certificates"), handler)

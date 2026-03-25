@@ -131,10 +131,11 @@ type Company struct {
 	Widgets       CompanyWidgets  `gorm:"embedded;embeddedPrefix:widget_" json:"widgets"`
 	Contacts      ContactInfo     `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
 	Regions       []Region        `gorm:"many2many:company_regions" json:"regions,omitempty"`
-	Opportunities []Opportunity   `json:"opportunities"`
+	Opportunities []Opportunity     `json:"opportunities"`
 	Offices       []CompanyOffice   `json:"offices,omitempty"`
 	Photos        []CompanyPhoto    `json:"photos,omitempty"`
 	Showcase      []CompanyShowcase `json:"showcase,omitempty"`
+	Reviews       []CompanyReview   `json:"reviews,omitempty"`
 }
 
 // CompanyWidgets indicates sections enabled for company profile.
@@ -402,27 +403,32 @@ type JobInterviewQuestion struct {
 
 // CompanyReview - отзывы о компании как работодателе
 type CompanyReview struct {
-	ID              uint   `gorm:"primaryKey"`
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-	CompanyID       uint   `gorm:"index"`
-	UserID          uint   `gorm:"index"`
-	Rating          float32 // 1-5
-	Title           string `gorm:"size:255"`
-	ReviewText      string `gorm:"type:text"`
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"-"`
+	CompanyID   uint      `gorm:"index" json:"companyId"`
+	UserID      uint      `gorm:"index" json:"-"`
+	// Status: pending | approved | rejected
+	Status      string    `gorm:"size:20;default:'pending'" json:"status"`
+	IsAnonymous bool      `json:"isAnonymous"`
+	// Author name shown on card (populated at query time, not stored)
+	AuthorName  string    `gorm:"-" json:"authorName,omitempty"`
 
-	// Details
-	WorkLifeBalance int    // 1-5
-	SalaryRating    int    // 1-5
-	GrowthRating    int    // 1-5
-	CultureRating   int    // 1-5
-	BenefitsRating  int    // 1-5
+	Rating          float32 `json:"rating"` // 1-5
+	Title           string  `gorm:"size:255" json:"title"`
+	ReviewText      string  `gorm:"type:text" json:"reviewText"`
+	HelpfulCount    int     `json:"helpfulCount"`
 
-	// Employee status
-	EmploymentType  string `gorm:"size:50"` // current, former
-	Department      string `gorm:"size:120"`
-	Position        string `gorm:"size:120"`
-	YearsWorked     int
+	// Sub-ratings 1-5
+	WorkLifeBalance int `json:"workLifeBalance"`
+	SalaryRating    int `json:"salaryRating"`
+	GrowthRating    int `json:"growthRating"`
+	CultureRating   int `json:"cultureRating"`
+
+	// Employee context
+	EmploymentType string `gorm:"size:50" json:"employmentType,omitempty"` // current|former
+	Position       string `gorm:"size:120" json:"position,omitempty"`
+	YearsWorked    int    `json:"yearsWorked,omitempty"`
 }
 
 // JobReview - отзывы о конкретной вакансии/интервью процессе

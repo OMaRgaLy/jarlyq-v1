@@ -51,7 +51,7 @@ export default function Page() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="section-title mb-0">{t.home.sectionStacks}</h2>
             {!stacksLoading && stacks.some(s => s.isTrending) && (
-              <span className="text-xs text-slate-400 dark:text-slate-500">🔥 = в тренде</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500">{t.home.trendingLabel}</span>
             )}
           </div>
           {stacksLoading ? (

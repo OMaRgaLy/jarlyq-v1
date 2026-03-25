@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea } from './api';
+import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea, CompanyReview } from './api';
 
 export const useCompany = (id: number) =>
   useQuery<Company>({
@@ -132,4 +132,15 @@ export const usePopularProjectIdeas = (limit = 10) =>
       const { data } = await api.get<{ data: ProjectIdea[] }>('/project-ideas/popular', { params: { limit } });
       return data.data;
     }
+  });
+
+
+export const useCompanyReviews = (companyId: number) =>
+  useQuery<{ reviews: CompanyReview[]; total: number }>({
+    queryKey: ['company-reviews', companyId],
+    queryFn: async () => {
+      const { data } = await api.get(`/companies/${companyId}/reviews`);
+      return data;
+    },
+    enabled: companyId > 0,
   });
