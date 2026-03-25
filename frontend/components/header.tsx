@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
-import { SunIcon, MoonIcon, HamburgerMenuIcon, Cross1Icon, PersonIcon } from '@radix-ui/react-icons';
+import { SunIcon, MoonIcon, HamburgerMenuIcon, Cross1Icon, PersonIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { AuthModal } from './auth-modal';
 import { getUser, clearAuth, AuthUser } from '../lib/auth';
 import { useLang } from '../lib/lang-context';
@@ -93,6 +93,15 @@ export function Header() {
               </div>
             )}
 
+            {/* Search */}
+            <Link
+              href="/search"
+              aria-label={t.nav.search}
+              className="rounded-full border border-slate-200/70 bg-white/50 p-2 shadow-sm hover:shadow dark:border-slate-700/60 dark:bg-slate-900/60"
+            >
+              <MagnifyingGlassIcon />
+            </Link>
+
             {/* Theme toggle */}
             <button
               type="button"
@@ -132,6 +141,13 @@ export function Header() {
                       >
                         <PersonIcon />
                         {t.nav.myProfile}
+                      </Link>
+                      <Link
+                        href={`/users/${user.id}`}
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
+                      >
+                        🌐 {t.nav.publicProfile}
                       </Link>
                       <button
                         onClick={() => { handleLogout(); setUserMenuOpen(false); }}

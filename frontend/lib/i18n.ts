@@ -22,6 +22,8 @@ const dict = {
       logout: 'Выйти',
       suggest: 'Предложить',
       myProfile: 'Мой профиль',
+      publicProfile: 'Публичный профиль',
+      search: 'Поиск',
     },
     home: {
       heroTitle: 'IT возможности\nЦентральной Азии',
@@ -236,6 +238,14 @@ const dict = {
       saved: 'Сохранено!',
       saving: 'Сохраняем...',
     },
+    search: {
+      placeholder: 'Компании, вакансии, стажировки...',
+      empty: 'Ничего не найдено',
+      companies: 'Компании',
+      schools: 'Школы',
+      opportunities: 'Вакансии и стажировки',
+      seeAll: 'Смотреть все',
+    },
     reviews: {
       title: 'Отзывы сотрудников',
       addReview: 'Оставить отзыв',
@@ -288,6 +298,8 @@ const dict = {
       logout: 'Log out',
       suggest: 'Suggest',
       myProfile: 'My Profile',
+      publicProfile: 'Public Profile',
+      search: 'Search',
     },
     home: {
       heroTitle: 'IT Opportunities\nin Central Asia',
@@ -502,6 +514,14 @@ const dict = {
       saved: 'Saved!',
       saving: 'Saving...',
     },
+    search: {
+      placeholder: 'Companies, jobs, internships...',
+      empty: 'Nothing found',
+      companies: 'Companies',
+      schools: 'Schools',
+      opportunities: 'Jobs & Internships',
+      seeAll: 'See all',
+    },
     reviews: {
       title: 'Employee Reviews',
       addReview: 'Leave a review',
@@ -554,6 +574,8 @@ const dict = {
       logout: 'Шығу',
       suggest: 'Ұсыну',
       myProfile: 'Менің профилім',
+      publicProfile: 'Жалпыға ашық профиль',
+      search: 'Іздеу',
     },
     home: {
       heroTitle: 'Орталық Азиядағы\nIT мүмкіндіктер',
@@ -768,6 +790,14 @@ const dict = {
       saved: 'Сақталды!',
       saving: 'Сақталуда...',
     },
+    search: {
+      placeholder: 'Компаниялар, бос орындар, тәжірибелер...',
+      empty: 'Ештеңе табылмады',
+      companies: 'Компаниялар',
+      schools: 'Мектептер',
+      opportunities: 'Бос орындар мен тәжірибелер',
+      seeAll: 'Барлығын көру',
+    },
     reviews: {
       title: 'Қызметкерлердің пікірлері',
       addReview: 'Пікір қалдыру',
@@ -812,6 +842,11 @@ export interface Translations {
     guide: string; companies: string; schools: string;
     internships: string; hackathons: string;
     login: string; logout: string; suggest: string; myProfile: string;
+    publicProfile: string; search: string;
+  };
+  search: {
+    placeholder: string; empty: string; companies: string;
+    schools: string; opportunities: string; seeAll: string;
   };
   home: {
     heroTitle: string; heroSubtitle: string;
