@@ -55,7 +55,7 @@ export function SchoolCard({ school }: { school: School }) {
           ))}
           {minDuration && (
             <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-              от {minDuration} {t.school.weeks}
+              {t.school.priceFrom} {minDuration} {t.school.weeks}
             </span>
           )}
           {hasEmployment && (
