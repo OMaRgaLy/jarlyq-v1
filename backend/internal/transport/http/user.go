@@ -14,21 +14,20 @@ import (
 )
 
 func newUserRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) {
-	group.Use(middleware.JWTAuth(jwt))
-	group.GET("/me", handler.getProfile)
-	group.PUT("/me", handler.updateProfile)
-	group.PUT("/me/privacy", handler.updatePrivacy)
+	// Public: view someone's profile
+	group.GET("/:uid", handler.getPublicProfile)
 
-	// Extended profile
-	group.PUT("/me/ext-profile", handler.updateExtProfile)
-
-	// Experiences
-	group.POST("/me/experiences", handler.addExperience)
-	group.DELETE("/me/experiences/:eid", handler.deleteExperience)
-
-	// Skills
-	group.POST("/me/skills", handler.addSkill)
-	group.DELETE("/me/skills/:sid", handler.deleteSkill)
+	// Authenticated routes
+	auth := group.Group("")
+	auth.Use(middleware.JWTAuth(jwt))
+	auth.GET("/me", handler.getProfile)
+	auth.PUT("/me", handler.updateProfile)
+	auth.PUT("/me/privacy", handler.updatePrivacy)
+	auth.PUT("/me/ext-profile", handler.updateExtProfile)
+	auth.POST("/me/experiences", handler.addExperience)
+	auth.DELETE("/me/experiences/:eid", handler.deleteExperience)
+	auth.POST("/me/skills", handler.addSkill)
+	auth.DELETE("/me/skills/:sid", handler.deleteSkill)
 }
 
 // ─── GET /users/me ────────────────────────────────────────────────────────────
@@ -304,6 +303,62 @@ func (h *Handler) deleteSkill(c *gin.Context) {
 	}
 	h.Services.DB.Where("id = ? AND user_id = ?", sid, id).Delete(&model.UserSkill{})
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+// ─── GET /users/:uid — public profile ─────────────────────────────────────────
+
+type publicProfileResponse struct {
+	ID        uint   `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Bio       string `json:"bio,omitempty"`
+	CreatedAt string `json:"created_at"`
+	ExtProfile  *model.UserExtProfile  `json:"ext_profile,omitempty"`
+	Experiences []model.UserExperience `json:"experiences"`
+	Skills      []model.UserSkill      `json:"skills"`
+}
+
+func (h *Handler) getPublicProfile(c *gin.Context) {
+	uid, err := strconv.ParseUint(c.Param("uid"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	var user model.User
+	if err := h.Services.DB.
+		Preload("Profile").
+		Preload("Experiences").
+		Preload("Skills").
+		Preload("Skills.Stack").
+		First(&user, uid).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	if !user.Privacy.ProfilePublic {
+		c.JSON(http.StatusForbidden, gin.H{"error": "profile is private"})
+		return
+	}
+
+	resp := publicProfileResponse{
+		ID:          user.ID,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Bio:         user.Bio,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		ExtProfile:  user.Profile,
+		Experiences: user.Experiences,
+		Skills:      user.Skills,
+	}
+	if resp.Experiences == nil {
+		resp.Experiences = []model.UserExperience{}
+	}
+	if resp.Skills == nil {
+		resp.Skills = []model.UserSkill{}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": resp})
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
