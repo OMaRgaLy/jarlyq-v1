@@ -1,213 +1,167 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import { Header } from '../components/header';
-import { Hero } from '../components/hero';
-import { FilterBar, FilterState } from '../components/filter-bar';
-import { CertificateChecker } from '../components/certificate-checker';
-import { CompanyCard } from '../components/company-card';
-import { SchoolCard } from '../components/school-card';
-import { OnboardingBanner } from '../components/onboarding-banner';
-import { CompanyCardSkeleton, SchoolCardSkeleton, StacksSkeleton } from '../components/skeleton';
-import { useCompanies, useSchools, useStacks } from '../lib/hooks';
 import { useLang } from '../lib/lang-context';
 import Link from 'next/link';
 
 export default function Page() {
-  const [filters, setFilters] = useState<FilterState>({});
   const { t } = useLang();
 
-  const { data: stacks = [], isLoading: stacksLoading } = useStacks();
-  const { data: companies = [], isLoading: companiesLoading } = useCompanies({
-    'stack_ids[]': filters.stackId ? [filters.stackId] : undefined,
-    'region_ids[]': filters.regionId ? [filters.regionId] : undefined,
-    level: filters.level
-  });
-  const { data: schools = [], isLoading: schoolsLoading } = useSchools({
-    'stack_ids[]': filters.stackId ? [filters.stackId] : undefined,
-    'region_ids[]': filters.regionId ? [filters.regionId] : undefined
-  });
-
-  const opportunities = useMemo(() =>
-    companies.flatMap((company) =>
-      (company.opportunities ?? []).map((opportunity) => ({
-        ...opportunity,
-        company: company.name,
-        companyId: company.id,
-      }))
-    ),
-  [companies]);
-
   return (
-    <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
       <Header />
-      <main className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-8">
-        <Hero />
-        <OnboardingBanner />
-        <FilterBar stacks={stacks} value={filters} onChange={setFilters} />
 
-        {/* Популярные стеки */}
-        <section id="stacks" className="card p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="section-title mb-0">{t.home.sectionStacks}</h2>
-            {!stacksLoading && stacks.some(s => s.isTrending) && (
-              <span className="text-xs text-slate-400 dark:text-slate-500">{t.home.trendingLabel}</span>
-            )}
+      <main>
+        {/* ── Hero ── */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 py-24 text-center dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+          {/* Background glow */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="h-[500px] w-[700px] rounded-full bg-brand/10 blur-3xl" />
           </div>
-          {stacksLoading ? (
-            <StacksSkeleton />
-          ) : stacks.length === 0 ? (
-            <div className="py-6 text-center">
-              <p className="text-sm text-slate-500">{t.common.loading}</p>
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-3">
-              {stacks.map((stack) => (
-                <button
-                  key={stack.id}
-                  onClick={() => setFilters(f => ({ ...f, stackId: f.stackId === String(stack.id) ? undefined : String(stack.id) }))}
-                  className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
-                    filters.stackId === String(stack.id)
-                      ? 'bg-brand text-white'
-                      : 'bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-100'
-                  }`}
-                >
-                  {stack.isTrending && <span>🔥</span>}
-                  #{stack.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
 
-        {/* Компании */}
-        <section id="companies" className="space-y-4">
-          <div className="flex items-end justify-between">
-            <div>
-              <h2 className="section-title">{t.home.sectionCompanies}</h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionCompaniesSub}</p>
+          <div className="relative mx-auto max-w-3xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
+              🌍 Where talents meet opportunities
             </div>
-            <Link href="/companies" className="shrink-0 text-sm font-medium text-brand hover:underline">
-              {t.companies.viewAll}
-            </Link>
-          </div>
-          {companiesLoading ? (
-            <div className="grid gap-6">
-              <CompanyCardSkeleton />
-              <CompanyCardSkeleton />
-            </div>
-          ) : companies.length === 0 ? (
-            <div className="card flex flex-col items-center gap-3 py-10 text-center">
-              <span className="text-4xl">🏢</span>
-              <p className="font-semibold text-slate-700 dark:text-slate-200">{t.home.emptyCo}</p>
-              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">{t.home.emptyCoSub}</p>
+            <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
+              Jarlyq
+            </h1>
+            <p className="mt-4 text-lg text-slate-300 sm:text-xl">
+              {t.home.heroSubtitle}
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
-                href="/career-paths"
-                className="mt-1 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
+                href="/internships"
+                className="rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-brand-dark"
               >
-                {t.nav.careerPaths} →
+                {t.home.heroCTA1}
+              </Link>
+              <Link
+                href="/companies"
+                className="rounded-xl border border-slate-600 bg-white/5 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                {t.home.heroCTA2}
               </Link>
             </div>
-          ) : (
-            <>
-              <div className="grid gap-6">
-                {companies.slice(0, 4).map((company) => (
-                  <CompanyCard key={company.id} company={company} />
-                ))}
+          </div>
+        </section>
+
+        {/* ── Stats ── */}
+        <section className="border-b border-slate-200/70 bg-slate-50 dark:border-slate-800/60 dark:bg-slate-900/40">
+          <div className="mx-auto grid max-w-4xl grid-cols-2 divide-x divide-y divide-slate-200/70 dark:divide-slate-800/60 md:grid-cols-4 md:divide-y-0">
+            {[
+              { num: t.home.stat1Num, label: t.home.stat1Label },
+              { num: t.home.stat2Num, label: t.home.stat2Label },
+              { num: t.home.stat3Num, label: t.home.stat3Label },
+              { num: 'AI', label: t.home.stat4Label },
+            ].map((s) => (
+              <div key={s.label} className="flex flex-col items-center py-6 text-center">
+                <span className="text-2xl font-extrabold text-brand">{s.num}</span>
+                <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">{s.label}</span>
               </div>
-              {companies.length > 4 && (
-                <div className="text-center">
-                  <Link
-                    href="/companies"
-                    className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-600 shadow-sm hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-                  >
-                    {t.companies.viewAll}
-                  </Link>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-
-        {/* Школы */}
-        <section id="schools" className="space-y-4">
-          <div>
-            <h2 className="section-title">{t.home.sectionSchools}</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionSchoolsSub}</p>
+            ))}
           </div>
-          {schoolsLoading ? (
-            <div className="grid gap-6 md:grid-cols-2">
-              <SchoolCardSkeleton />
-              <SchoolCardSkeleton />
-            </div>
-          ) : schools.length === 0 ? (
-            <div className="card flex flex-col items-center gap-3 py-10 text-center">
-              <span className="text-4xl">🎓</span>
-              <p className="font-semibold text-slate-700 dark:text-slate-200">{t.home.emptySch}</p>
-              <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">{t.home.emptySchSub}</p>
-              <Link
-                href="/interview"
-                className="mt-1 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
-              >
-                {t.nav.interview} →
-              </Link>
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2">
-              {schools.map((school) => (
-                <SchoolCard key={school.id} school={school} />
-              ))}
-            </div>
-          )}
         </section>
 
-        {/* Возможности */}
-        {opportunities.length > 0 && (
-          <section id="opportunities" className="card space-y-4 p-6">
-            <div>
-              <h2 className="section-title">{t.home.sectionOpportunities}</h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300">{t.home.sectionOpportunitiesSub}</p>
-            </div>
-            <ul className="grid gap-4 md:grid-cols-2">
-              {opportunities.map((opportunity) => (
-                <li
-                  key={`${opportunity.id}-${opportunity.company}`}
-                  className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/70"
+        {/* ── What we help with ── */}
+        <section className="px-4 py-16">
+          <div className="mx-auto max-w-5xl">
+            <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">
+              {t.home.featTitle}
+            </h2>
+            <div className="mt-10 grid gap-6 sm:grid-cols-3">
+              {[
+                { icon: '🔍', title: t.home.feat1Title, desc: t.home.feat1Desc, href: '/internships' },
+                { icon: '🏢', title: t.home.feat2Title, desc: t.home.feat2Desc, href: '/companies' },
+                { icon: '🗺️', title: t.home.feat3Title, desc: t.home.feat3Desc, href: '/career-paths' },
+              ].map((f) => (
+                <Link
+                  key={f.href}
+                  href={f.href}
+                  className="group rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-brand/40 hover:shadow-md dark:border-slate-800/60 dark:bg-slate-900"
                 >
-                  <p className="text-xs uppercase tracking-wide text-brand">
-                    {opportunity.type === 'internship' ? t.common.internship : t.common.vacancy} · {opportunity.level}
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
-                    {opportunity.title}
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {opportunity.company}
-                  </p>
-                  {opportunity.applyURL && (
-                    <a
-                      href={opportunity.applyURL}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-2 inline-flex text-xs text-brand hover:text-brand-dark"
-                    >
-                      {t.company.apply} →
-                    </a>
-                  )}
-                </li>
+                  <div className="mb-3 text-3xl">{f.icon}</div>
+                  <h3 className="text-base font-semibold text-slate-900 group-hover:text-brand dark:text-slate-50">
+                    {f.title}
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{f.desc}</p>
+                </Link>
               ))}
-            </ul>
-          </section>
-        )}
+            </div>
+          </div>
+        </section>
 
-        <CertificateChecker />
+        {/* ── Choose your path ── */}
+        <section className="bg-slate-50 px-4 py-16 dark:bg-slate-900/40">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">
+              {t.home.pathTitle}
+            </h2>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              <div className="flex flex-col justify-between rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm dark:border-slate-800/60 dark:bg-slate-900">
+                <div>
+                  <div className="mb-3 text-4xl">🎓</div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.path1Label}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path1Desc}</p>
+                </div>
+                <Link
+                  href="/internships"
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
+                >
+                  {t.home.path1CTA} →
+                </Link>
+              </div>
+
+              <div className="flex flex-col justify-between rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm dark:border-slate-800/60 dark:bg-slate-900">
+                <div>
+                  <div className="mb-3 text-4xl">💼</div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.path2Label}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path2Desc}</p>
+                </div>
+                <Link
+                  href="/jobs"
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl border border-brand px-5 py-2.5 text-sm font-semibold text-brand hover:bg-brand/5 dark:hover:bg-brand/10"
+                >
+                  {t.home.path2CTA} →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── AI teaser ── */}
+        <section className="px-4 py-16">
+          <div className="mx-auto max-w-3xl rounded-2xl bg-gradient-to-br from-brand/10 to-purple-500/10 p-10 text-center ring-1 ring-brand/20 dark:ring-brand/10">
+            <div className="mb-3 text-4xl">🤖</div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">AI Career Consultant</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+              Скоро: персональный карьерный консультант на базе Claude AI — посоветует куда подать заявку, какие навыки подтянуть, проверит резюме и сравнит с требованиями компании.
+            </p>
+            <span className="mt-5 inline-block rounded-full border border-brand/30 bg-brand/5 px-4 py-1.5 text-xs font-semibold text-brand">
+              Coming soon
+            </span>
+          </div>
+        </section>
       </main>
-      <footer className="border-t border-slate-200/70 bg-white/80 py-6 text-center text-xs text-slate-500 dark:border-slate-800/60 dark:bg-slate-950/80 dark:text-slate-400">
-        <p>© {new Date().getFullYear()} Jarlyq. {t.home.footer}</p>
-        <p className="mt-1 flex items-center justify-center gap-3">
-          <Link href="/legal" className="hover:text-brand hover:underline">{t.legal.title}</Link>
-          <Link href="/internships" className="hover:text-brand hover:underline">{t.nav.internships}</Link>
-          <Link href="/hackathons" className="hover:text-brand hover:underline">{t.nav.hackathons}</Link>
-        </p>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-slate-200/70 bg-white/80 py-8 dark:border-slate-800/60 dark:bg-slate-950/80">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div>
+              <span className="text-base font-bold text-brand">Jarlyq</span>
+              <p className="mt-1 text-xs text-slate-400">{t.home.footer}</p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+              <Link href="/internships" className="hover:text-brand">{t.nav.internships}</Link>
+              <Link href="/companies" className="hover:text-brand">{t.nav.companies}</Link>
+              <Link href="/career-paths" className="hover:text-brand">{t.nav.careerPaths}</Link>
+              <Link href="/hackathons" className="hover:text-brand">{t.nav.hackathons}</Link>
+              <Link href="/legal" className="hover:text-brand">{t.legal.title}</Link>
+            </div>
+          </div>
+          <p className="mt-6 text-center text-xs text-slate-400">© {new Date().getFullYear()} Jarlyq.</p>
+        </div>
       </footer>
     </div>
   );
