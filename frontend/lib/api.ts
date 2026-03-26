@@ -8,8 +8,16 @@ export const api = axios.create({
   baseURL,
 });
 
-// Silent refresh interceptor — runs only in browser
+// CSRF + silent refresh interceptors — run only in browser
 if (typeof window !== 'undefined') {
+  // Attach X-CSRF-Token header from cookie on every mutating request
+  api.interceptors.request.use((config) => {
+    const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+    if (match) {
+      config.headers['X-CSRF-Token'] = decodeURIComponent(match[1]);
+    }
+    return config;
+  });
   let isRefreshing = false;
   let queue: Array<(token: string) => void> = [];
 
