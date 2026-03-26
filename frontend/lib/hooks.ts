@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea, CompanyReview } from './api';
+import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea, CompanyReview, MasterProgram } from './api';
 
 export const useCompany = (id: number) =>
   useQuery<Company>({
@@ -46,6 +46,15 @@ export const useSchools = (params: Record<string, unknown>) =>
       const { data } = await api.get<{ schools: School[] }>('/schools', { params });
       return data.schools;
     }
+  });
+
+export const useMasters = (params?: { country?: string; language?: string; scholarship?: boolean }) =>
+  useQuery<MasterProgram[]>({
+    queryKey: ['masters', params],
+    queryFn: async () => {
+      const { data } = await api.get<{ programs: MasterProgram[] }>('/masters', { params });
+      return data.programs ?? [];
+    },
   });
 
 // Phase 2 hooks

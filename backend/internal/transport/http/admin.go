@@ -269,12 +269,15 @@ func (h *Handler) adminListSchools(c *gin.Context) {
 }
 
 type adminSchoolRequest struct {
-	Name        string `json:"name" binding:"required"`
-	Description string `json:"description"`
-	CoverURL    string `json:"cover_url"`
-	Website     string `json:"website"`
-	Telegram    string `json:"telegram"`
-	Email       string `json:"email"`
+	Name          string `json:"name" binding:"required"`
+	Type          string `json:"type"`
+	Country       string `json:"country"`
+	Description   string `json:"description"`
+	CoverURL      string `json:"cover_url"`
+	IsStateFunded bool   `json:"is_state_funded"`
+	Website       string `json:"website"`
+	Telegram      string `json:"telegram"`
+	Email         string `json:"email"`
 }
 
 func (h *Handler) adminCreateSchool(c *gin.Context) {
@@ -284,9 +287,12 @@ func (h *Handler) adminCreateSchool(c *gin.Context) {
 		return
 	}
 	school := &model.School{
-		Name:        req.Name,
-		Description: req.Description,
-		CoverURL:    req.CoverURL,
+		Name:          req.Name,
+		Type:          req.Type,
+		Country:       req.Country,
+		Description:   req.Description,
+		CoverURL:      req.CoverURL,
+		IsStateFunded: req.IsStateFunded,
 		Contacts: model.ContactInfo{
 			Website:  req.Website,
 			Telegram: req.Telegram,
@@ -317,8 +323,11 @@ func (h *Handler) adminUpdateSchool(c *gin.Context) {
 		return
 	}
 	school.Name = req.Name
+	school.Type = req.Type
+	school.Country = req.Country
 	school.Description = req.Description
 	school.CoverURL = req.CoverURL
+	school.IsStateFunded = req.IsStateFunded
 	school.Contacts = model.ContactInfo{
 		Website:  req.Website,
 		Telegram: req.Telegram,
@@ -347,14 +356,18 @@ func (h *Handler) adminDeleteSchool(c *gin.Context) {
 // ─── COURSES ──────────────────────────────────────────────────────────────────
 
 type adminCourseRequest struct {
-	Title          string `json:"title" binding:"required"`
-	Description    string `json:"description"`
-	ExternalURL    string `json:"external_url"`
-	Price          int    `json:"price"`
-	PriceCurrency  string `json:"price_currency"`
-	DurationWeeks  int    `json:"duration_weeks"`
-	Format         string `json:"format"`
-	HasEmployment  bool   `json:"has_employment"`
+	Title                string `json:"title" binding:"required"`
+	Description          string `json:"description"`
+	ExternalURL          string `json:"external_url"`
+	Price                int    `json:"price"`
+	PriceCurrency        string `json:"price_currency"`
+	DurationWeeks        int    `json:"duration_weeks"`
+	Format               string `json:"format"`
+	HasEmployment        bool   `json:"has_employment"`
+	Level                string `json:"level"`
+	Language             string `json:"language"`
+	ScholarshipAvailable bool   `json:"scholarship_available"`
+	ApplicationDeadline  string `json:"application_deadline"`
 }
 
 func (h *Handler) adminCreateCourse(c *gin.Context) {
@@ -369,15 +382,19 @@ func (h *Handler) adminCreateCourse(c *gin.Context) {
 		return
 	}
 	course := model.Course{
-		SchoolID:      uint(schoolID),
-		Title:         req.Title,
-		Description:   req.Description,
-		ExternalURL:   req.ExternalURL,
-		Price:         req.Price,
-		PriceCurrency: req.PriceCurrency,
-		DurationWeeks: req.DurationWeeks,
-		Format:        req.Format,
-		HasEmployment: req.HasEmployment,
+		SchoolID:             uint(schoolID),
+		Title:                req.Title,
+		Description:          req.Description,
+		ExternalURL:          req.ExternalURL,
+		Price:                req.Price,
+		PriceCurrency:        req.PriceCurrency,
+		DurationWeeks:        req.DurationWeeks,
+		Format:               req.Format,
+		HasEmployment:        req.HasEmployment,
+		Level:                req.Level,
+		Language:             req.Language,
+		ScholarshipAvailable: req.ScholarshipAvailable,
+		ApplicationDeadline:  req.ApplicationDeadline,
 	}
 	if err := h.Services.DB.Create(&course).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -398,14 +415,18 @@ func (h *Handler) adminUpdateCourse(c *gin.Context) {
 		return
 	}
 	course := model.Course{
-		Title:         req.Title,
-		Description:   req.Description,
-		ExternalURL:   req.ExternalURL,
-		Price:         req.Price,
-		PriceCurrency: req.PriceCurrency,
-		DurationWeeks: req.DurationWeeks,
-		Format:        req.Format,
-		HasEmployment: req.HasEmployment,
+		Title:                req.Title,
+		Description:          req.Description,
+		ExternalURL:          req.ExternalURL,
+		Price:                req.Price,
+		PriceCurrency:        req.PriceCurrency,
+		DurationWeeks:        req.DurationWeeks,
+		Format:               req.Format,
+		HasEmployment:        req.HasEmployment,
+		Level:                req.Level,
+		Language:             req.Language,
+		ScholarshipAvailable: req.ScholarshipAvailable,
+		ApplicationDeadline:  req.ApplicationDeadline,
 	}
 	if err := h.Services.DB.Model(&model.Course{}).Where("id = ?", id).Updates(course).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

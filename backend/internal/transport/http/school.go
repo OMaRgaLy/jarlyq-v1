@@ -9,9 +9,35 @@ import (
 	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
 )
 
+
 func newSchoolRoutes(group *gin.RouterGroup, handler *Handler) {
 	group.GET("", handler.listSchools)
 	group.GET("/:id", handler.getSchool)
+}
+
+func newMastersRoutes(group *gin.RouterGroup, handler *Handler) {
+	group.GET("", handler.listMasters)
+}
+
+func (h *Handler) listMasters(c *gin.Context) {
+	country := c.Query("country")
+	language := c.Query("language")
+	scholarship := c.Query("scholarship") == "true"
+	limit, offset := parsePagination(c)
+
+	rows, err := h.Services.Education.ListMasters(c.Request.Context(), repository.MasterFilter{
+		Country:     country,
+		Language:    language,
+		Scholarship: scholarship,
+		Limit:       limit,
+		Offset:      offset,
+	})
+	if err != nil {
+		h.Logger.Errorf("list masters: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch masters"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"programs": rows})
 }
 
 func (h *Handler) listSchools(c *gin.Context) {

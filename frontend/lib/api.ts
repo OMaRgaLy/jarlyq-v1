@@ -250,6 +250,7 @@ export interface School {
   id: number;
   name: string;
   type: 'bootcamp' | 'university' | 'state_program' | 'university_abroad';
+  country?: string;
   logoURL?: string;
   coverURL?: string;
   description?: string;
@@ -268,6 +269,29 @@ export interface Course {
   durationWeeks?: number;
   format?: string;
   hasEmployment?: boolean;
+  level?: string;
+  language?: string;
+  scholarshipAvailable?: boolean;
+  applicationDeadline?: string;
+}
+
+export interface MasterProgram {
+  courseId: number;
+  courseTitle: string;
+  description?: string;
+  externalURL?: string;
+  price?: number;
+  priceCurrency?: string;
+  durationWeeks?: number;
+  format?: string;
+  language?: string;
+  scholarshipAvailable: boolean;
+  applicationDeadline?: string;
+  schoolId: number;
+  schoolName: string;
+  schoolLogoURL?: string;
+  schoolCountry?: string;
+  schoolType?: string;
 }
 
 export interface CertificateResponse {

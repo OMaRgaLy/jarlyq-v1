@@ -25,6 +25,7 @@ type CourseRepository interface {
 	Create(ctx context.Context, course *model.Course) error
 	Update(ctx context.Context, course *model.Course) error
 	Delete(ctx context.Context, id uint) error
+	ListMasters(ctx context.Context, filter MasterFilter) ([]MasterCourseRow, error)
 }
 
 // EducationFilter filters schools/courses.
@@ -33,6 +34,35 @@ type EducationFilter struct {
 	RegionIDs []uint
 	Limit     int
 	Offset    int
+}
+
+// MasterFilter filters master programs.
+type MasterFilter struct {
+	Country     string
+	Language    string
+	Scholarship bool
+	Limit       int
+	Offset      int
+}
+
+// MasterCourseRow is a flat projection for the /masters endpoint.
+type MasterCourseRow struct {
+	CourseID             uint   `json:"courseId"`
+	CourseTitle          string `json:"courseTitle"`
+	Description          string `json:"description,omitempty"`
+	ExternalURL          string `json:"externalURL,omitempty"`
+	Price                int    `json:"price,omitempty"`
+	PriceCurrency        string `json:"priceCurrency,omitempty"`
+	DurationWeeks        int    `json:"durationWeeks,omitempty"`
+	Format               string `json:"format,omitempty"`
+	Language             string `json:"language,omitempty"`
+	ScholarshipAvailable bool   `json:"scholarshipAvailable"`
+	ApplicationDeadline  string `json:"applicationDeadline,omitempty"`
+	SchoolID             uint   `json:"schoolId"`
+	SchoolName           string `json:"schoolName"`
+	SchoolLogoURL        string `json:"schoolLogoURL,omitempty"`
+	SchoolCountry        string `json:"schoolCountry,omitempty"`
+	SchoolType           string `json:"schoolType,omitempty"`
 }
 
 type schoolRepo struct {
@@ -126,4 +156,36 @@ func (r *courseRepo) Update(ctx context.Context, course *model.Course) error {
 
 func (r *courseRepo) Delete(ctx context.Context, id uint) error {
 	return r.db.WithContext(ctx).Delete(&model.Course{}, id).Error
+}
+
+func (r *courseRepo) ListMasters(ctx context.Context, filter MasterFilter) ([]MasterCourseRow, error) {
+	query := r.db.WithContext(ctx).
+		Table("courses").
+		Select(`courses.id AS course_id, courses.title AS course_title,
+			courses.description, courses.external_url, courses.price,
+			courses.price_currency, courses.duration_weeks, courses.format,
+			courses.language, courses.scholarship_available, courses.application_deadline,
+			schools.id AS school_id, schools.name AS school_name,
+			schools.logo_url AS school_logo_url, schools.country AS school_country,
+			schools.type AS school_type`).
+		Joins("JOIN schools ON schools.id = courses.school_id").
+		Where("courses.level = ?", "master")
+
+	if filter.Country != "" {
+		query = query.Where("schools.country = ?", filter.Country)
+	}
+	if filter.Language != "" {
+		query = query.Where("courses.language = ?", filter.Language)
+	}
+	if filter.Scholarship {
+		query = query.Where("courses.scholarship_available = true")
+	}
+
+	limit := filter.Limit
+	if limit <= 0 || limit > 100 {
+		limit = 50
+	}
+
+	var rows []MasterCourseRow
+	return rows, query.Order("schools.country, schools.name").Offset(filter.Offset).Limit(limit).Scan(&rows).Error
 }

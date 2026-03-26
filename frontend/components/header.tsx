@@ -33,6 +33,7 @@ function useNavGroups() {
       items: [
         { href: '/career-paths', label: t.nav.careerPaths },
         { href: '/schools', label: t.nav.schools },
+        { href: '/masters', label: t.nav.masters },
         { href: '/interview', label: t.nav.interview },
         { href: '/hackathons', label: t.nav.hackathons },
       ],

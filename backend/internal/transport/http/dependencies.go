@@ -53,6 +53,7 @@ func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager, auth
 	newUserRoutes(v1.Group("/users"), handler, jwt)
 	newCompanyRoutes(v1.Group("/companies"), handler, jwt)
 	newSchoolRoutes(v1.Group("/schools"), handler)
+	newMastersRoutes(v1.Group("/masters"), handler)
 	newStackRoutes(v1.Group("/stacks"), handler)
 	newCertificateRoutes(v1.Group("/certificates"), handler)
 	newCareerPathRoutes(v1.Group("/career-paths"), handler)

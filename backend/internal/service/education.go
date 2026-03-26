@@ -14,15 +14,17 @@ type EducationService interface {
 	CreateSchool(ctx context.Context, school *model.School) error
 	UpdateSchool(ctx context.Context, school *model.School) error
 	DeleteSchool(ctx context.Context, id uint) error
+	ListMasters(ctx context.Context, filter repository.MasterFilter) ([]repository.MasterCourseRow, error)
 }
 
 type educationService struct {
 	schools repository.SchoolRepository
+	courses repository.CourseRepository
 }
 
 // NewEducationService returns service.
-func NewEducationService(schools repository.SchoolRepository) EducationService {
-	return &educationService{schools: schools}
+func NewEducationService(schools repository.SchoolRepository, courses repository.CourseRepository) EducationService {
+	return &educationService{schools: schools, courses: courses}
 }
 
 func (s *educationService) ListSchools(ctx context.Context, filter repository.EducationFilter) ([]model.School, error) {
@@ -43,4 +45,8 @@ func (s *educationService) UpdateSchool(ctx context.Context, school *model.Schoo
 
 func (s *educationService) DeleteSchool(ctx context.Context, id uint) error {
 	return s.schools.Delete(ctx, id)
+}
+
+func (s *educationService) ListMasters(ctx context.Context, filter repository.MasterFilter) ([]repository.MasterCourseRow, error) {
+	return s.courses.ListMasters(ctx, filter)
 }

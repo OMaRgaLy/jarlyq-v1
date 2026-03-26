@@ -72,7 +72,7 @@ func NewServices(repos *Repositories, cfg *config.Config, log logger.Logger) *Se
 	return &Services{
 		User:           userSvc,
 		Companies:      NewCompanyService(repos.Companies),
-		Education:      NewEducationService(repos.Schools),
+		Education:      NewEducationService(repos.Schools, repository.NewCourseRepository(repos.DB)),
 		Stacks:         NewStackService(repos.Stacks),
 		Certificate:    NewCertificateService(repos.Certificates),
 		CareerPath:     NewCareerPathService(careerPathRepo),

@@ -18,6 +18,7 @@ const dict = {
       schools: 'Школы',
       internships: 'Стажировки',
       hackathons: 'Хакатоны',
+      masters: 'Магистратура',
       login: 'Войти',
       logout: 'Выйти',
       suggest: 'Предложить',
@@ -146,6 +147,28 @@ const dict = {
       badgeUniversity: 'Университет',
       tabUniversitiesAbroad: 'Зарубежные ВУЗы',
       badgeUniversityAbroad: 'Зарубежный ВУЗ',
+    },
+    masters: {
+      pageTitle: 'Магистратура за рубежом',
+      pageSubtitle: 'Магистерские программы в лучших университетах мира — с фильтрами по стране, языку и стипендиям',
+      filterCountry: 'Страна',
+      filterLanguage: 'Язык обучения',
+      filterScholarship: 'Только со стипендией',
+      anyCountry: 'Любая страна',
+      anyLanguage: 'Любой язык',
+      langEn: 'Английский',
+      langDe: 'Немецкий',
+      langFr: 'Французский',
+      langRu: 'Русский',
+      apply: 'Подать заявку →',
+      deadline: 'Дедлайн подачи',
+      scholarship: '✓ Стипендия',
+      free: 'Бесплатно',
+      priceFrom: 'от',
+      perYear: '/год',
+      duration: 'нед.',
+      empty: 'Программы не найдены',
+      programs: 'программ',
     },
     interview: {
       title: 'Вопросы с собеседований',
@@ -334,6 +357,7 @@ const dict = {
       schools: 'Schools',
       internships: 'Internships',
       hackathons: 'Hackathons',
+      masters: 'Masters',
       login: 'Log in',
       logout: 'Log out',
       suggest: 'Suggest',
@@ -462,6 +486,28 @@ const dict = {
       badgeUniversity: 'University',
       tabUniversitiesAbroad: 'Universities abroad',
       badgeUniversityAbroad: 'University abroad',
+    },
+    masters: {
+      pageTitle: 'Masters abroad',
+      pageSubtitle: "Master's programs at the world's best universities — filter by country, language and scholarships",
+      filterCountry: 'Country',
+      filterLanguage: 'Language',
+      filterScholarship: 'Scholarship only',
+      anyCountry: 'Any country',
+      anyLanguage: 'Any language',
+      langEn: 'English',
+      langDe: 'German',
+      langFr: 'French',
+      langRu: 'Russian',
+      apply: 'Apply →',
+      deadline: 'Deadline',
+      scholarship: '✓ Scholarship',
+      free: 'Free',
+      priceFrom: 'from',
+      perYear: '/yr',
+      duration: 'wk.',
+      empty: 'No programs found',
+      programs: 'programs',
     },
     interview: {
       title: 'Interview Questions',
@@ -650,6 +696,7 @@ const dict = {
       schools: 'Мектептер',
       internships: 'Тәжірибелер',
       hackathons: 'Хакатондар',
+      masters: 'Магистратура',
       login: 'Кіру',
       logout: 'Шығу',
       suggest: 'Ұсыну',
@@ -778,6 +825,28 @@ const dict = {
       badgeUniversity: 'Университет',
       tabUniversitiesAbroad: 'Шетелдік ЖОО',
       badgeUniversityAbroad: 'Шетелдік ЖОО',
+    },
+    masters: {
+      pageTitle: 'Шетелдегі магистратура',
+      pageSubtitle: 'Әлемнің үздік университеттеріндегі магистрлік бағдарламалар — ел, тіл және стипендия бойынша сүзгі',
+      filterCountry: 'Ел',
+      filterLanguage: 'Оқу тілі',
+      filterScholarship: 'Тек стипендиямен',
+      anyCountry: 'Кез келген ел',
+      anyLanguage: 'Кез келген тіл',
+      langEn: 'Ағылшын',
+      langDe: 'Неміс',
+      langFr: 'Француз',
+      langRu: 'Орыс',
+      apply: 'Өтініш беру →',
+      deadline: 'Дедлайн',
+      scholarship: '✓ Стипендия',
+      free: 'Тегін',
+      priceFrom: 'бастап',
+      perYear: '/жыл',
+      duration: 'апта',
+      empty: 'Бағдарламалар табылмады',
+      programs: 'бағдарлама',
     },
     interview: {
       title: 'Сұхбат сұрақтары',
@@ -960,7 +1029,7 @@ export interface Translations {
   nav: {
     jobs: string; careerPaths: string; interview: string; portfolio: string;
     guide: string; companies: string; schools: string;
-    internships: string; hackathons: string;
+    internships: string; hackathons: string; masters: string;
     login: string; logout: string; suggest: string; myProfile: string;
     publicProfile: string; search: string; groupWork: string; groupPrep: string;
   };
@@ -1018,6 +1087,15 @@ export interface Translations {
     tabAll: string; tabStatePrograms: string; tabBootcamps: string; tabUniversities: string;
     badgeStateFunded: string; badgeBootcamp: string; badgeUniversity: string;
     tabUniversitiesAbroad: string; badgeUniversityAbroad: string;
+  };
+  masters: {
+    pageTitle: string; pageSubtitle: string;
+    filterCountry: string; filterLanguage: string; filterScholarship: string;
+    anyCountry: string; anyLanguage: string;
+    langEn: string; langDe: string; langFr: string; langRu: string;
+    apply: string; deadline: string; scholarship: string;
+    free: string; priceFrom: string; perYear: string; duration: string;
+    empty: string; programs: string;
   };
   interview: {
     title: string; subtitle: string; allLevels: string; allTopics: string; allSpecialties: string;

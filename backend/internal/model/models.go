@@ -183,13 +183,14 @@ type Opportunity struct {
 }
 
 // School represents education providers.
-// Type: "bootcamp" | "university" | "state_program"
+// Type: "bootcamp" | "university" | "state_program" | "university_abroad"
 type School struct {
 	ID             uint        `gorm:"primaryKey" json:"id"`
 	CreatedAt      time.Time   `json:"-"`
 	UpdatedAt      time.Time   `json:"-"`
 	Name           string      `gorm:"size:255" json:"name"`
 	Type           string      `gorm:"size:40;default:'bootcamp'" json:"type"`
+	Country        string      `gorm:"size:100" json:"country,omitempty"`
 	LogoURL        string      `gorm:"size:512" json:"logoURL,omitempty"`
 	CoverURL       string      `gorm:"size:512" json:"coverURL,omitempty"`
 	Description    string      `gorm:"type:text" json:"description,omitempty"`
@@ -199,22 +200,27 @@ type School struct {
 }
 
 // Course describes training programs.
+// Level: "bachelor"|"master"|"phd"|"course"|"bootcamp"
 type Course struct {
-	ID             uint      `gorm:"primaryKey" json:"id"`
-	CreatedAt      time.Time `json:"-"`
-	UpdatedAt      time.Time `json:"-"`
-	SchoolID       uint      `gorm:"index" json:"-"`
-	Title          string    `gorm:"size:255" json:"title"`
-	Description    string    `gorm:"type:text" json:"description,omitempty"`
-	Program        string    `gorm:"type:text" json:"-"`
-	ExternalURL    string    `gorm:"size:512" json:"externalURL,omitempty"`
-	Price          int       `json:"price,omitempty"`
-	PriceCurrency  string    `gorm:"size:10" json:"priceCurrency,omitempty"`
-	DurationWeeks  int       `json:"durationWeeks,omitempty"`
-	Format         string    `gorm:"size:20" json:"format,omitempty"` // online|offline|hybrid
-	HasEmployment  bool      `json:"hasEmployment"`
-	Stack          []Stack   `gorm:"many2many:course_stacks" json:"-"`
-	Regions        []Region  `gorm:"many2many:course_regions" json:"-"`
+	ID                   uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt            time.Time `json:"-"`
+	UpdatedAt            time.Time `json:"-"`
+	SchoolID             uint      `gorm:"index" json:"-"`
+	Title                string    `gorm:"size:255" json:"title"`
+	Description          string    `gorm:"type:text" json:"description,omitempty"`
+	Program              string    `gorm:"type:text" json:"-"`
+	ExternalURL          string    `gorm:"size:512" json:"externalURL,omitempty"`
+	Price                int       `json:"price,omitempty"`
+	PriceCurrency        string    `gorm:"size:10" json:"priceCurrency,omitempty"`
+	DurationWeeks        int       `json:"durationWeeks,omitempty"`
+	Format               string    `gorm:"size:20" json:"format,omitempty"` // online|offline|hybrid
+	HasEmployment        bool      `json:"hasEmployment"`
+	Level                string    `gorm:"size:30;index" json:"level,omitempty"`
+	Language             string    `gorm:"size:10" json:"language,omitempty"` // en|ru|de|fr|kk
+	ScholarshipAvailable bool      `json:"scholarshipAvailable"`
+	ApplicationDeadline  string    `gorm:"size:100" json:"applicationDeadline,omitempty"` // e.g. "1 декабря" / "Rolling"
+	Stack                []Stack   `gorm:"many2many:course_stacks" json:"-"`
+	Regions              []Region  `gorm:"many2many:course_regions" json:"-"`
 }
 
 // Stack describes technology stacks.
