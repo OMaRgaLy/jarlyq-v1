@@ -249,7 +249,7 @@ export interface UserSkill {
 export interface School {
   id: number;
   name: string;
-  type: 'bootcamp' | 'university' | 'state_program';
+  type: 'bootcamp' | 'university' | 'state_program' | 'university_abroad';
   logoURL?: string;
   coverURL?: string;
   description?: string;

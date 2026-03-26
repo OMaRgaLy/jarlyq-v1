@@ -7,7 +7,7 @@ import { useSchools } from '../../lib/hooks';
 import { useLang } from '../../lib/lang-context';
 import { School } from '../../lib/api';
 
-type Tab = 'all' | 'state_program' | 'bootcamp' | 'university';
+type Tab = 'all' | 'state_program' | 'bootcamp' | 'university' | 'university_abroad';
 
 function SchoolCard({ school }: { school: School }) {
   const { t } = useLang();
@@ -23,6 +23,8 @@ function SchoolCard({ school }: { school: School }) {
       ? { label: t.school.badgeStateFunded, cls: 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' }
       : school.type === 'university'
       ? { label: t.school.badgeUniversity, cls: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' }
+      : school.type === 'university_abroad'
+      ? { label: t.school.badgeUniversityAbroad, cls: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' }
       : { label: t.school.badgeBootcamp, cls: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' };
 
   return (
@@ -82,6 +84,7 @@ export default function SchoolsPage() {
     { key: 'state_program', label: t.school.tabStatePrograms },
     { key: 'bootcamp', label: t.school.tabBootcamps },
     { key: 'university', label: t.school.tabUniversities },
+    { key: 'university_abroad', label: t.school.tabUniversitiesAbroad },
   ];
 
   const filtered =
@@ -92,6 +95,7 @@ export default function SchoolsPage() {
     state_program: schools.filter((s) => s.type === 'state_program').length,
     bootcamp: schools.filter((s) => s.type === 'bootcamp').length,
     university: schools.filter((s) => s.type === 'university').length,
+    university_abroad: schools.filter((s) => s.type === 'university_abroad').length,
   };
 
   return (
@@ -181,6 +185,21 @@ export default function SchoolsPage() {
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {filtered.filter((s) => s.type === 'university').map((s) => (
+                    <SchoolCard key={s.id} school={s} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Then universities abroad */}
+            {tab === 'all' && counts.university_abroad > 0 && (
+              <div className="mb-8">
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                  {t.school.tabUniversitiesAbroad}
+                </h2>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {filtered.filter((s) => s.type === 'university_abroad').map((s) => (
                     <SchoolCard key={s.id} school={s} />
                   ))}
                 </div>

@@ -144,6 +144,8 @@ const dict = {
       badgeStateFunded: 'Бесплатно · от государства',
       badgeBootcamp: 'Частная школа',
       badgeUniversity: 'Университет',
+      tabUniversitiesAbroad: 'Зарубежные ВУЗы',
+      badgeUniversityAbroad: 'Зарубежный ВУЗ',
     },
     interview: {
       title: 'Вопросы с собеседований',
@@ -458,6 +460,8 @@ const dict = {
       badgeStateFunded: 'Free · state-funded',
       badgeBootcamp: 'Private school',
       badgeUniversity: 'University',
+      tabUniversitiesAbroad: 'Universities abroad',
+      badgeUniversityAbroad: 'University abroad',
     },
     interview: {
       title: 'Interview Questions',
@@ -772,6 +776,8 @@ const dict = {
       badgeStateFunded: 'Тегін · мемлекеттік',
       badgeBootcamp: 'Жеке мектеп',
       badgeUniversity: 'Университет',
+      tabUniversitiesAbroad: 'Шетелдік ЖОО',
+      badgeUniversityAbroad: 'Шетелдік ЖОО',
     },
     interview: {
       title: 'Сұхбат сұрақтары',
@@ -1011,6 +1017,7 @@ export interface Translations {
     pageTitle: string; pageSubtitle: string;
     tabAll: string; tabStatePrograms: string; tabBootcamps: string; tabUniversities: string;
     badgeStateFunded: string; badgeBootcamp: string; badgeUniversity: string;
+    tabUniversitiesAbroad: string; badgeUniversityAbroad: string;
   };
   interview: {
     title: string; subtitle: string; allLevels: string; allTopics: string; allSpecialties: string;
