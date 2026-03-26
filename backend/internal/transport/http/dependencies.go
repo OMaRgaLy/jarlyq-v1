@@ -16,6 +16,7 @@ type Handler struct {
 	Services *service.Services
 	Config   *config.Config
 	Logger   logger.Logger
+	JWT      auth.Manager
 }
 
 // NewRepositories builds repository set.
@@ -41,8 +42,8 @@ func NewServices(repos *service.Repositories, cfg *config.Config, log logger.Log
 }
 
 // NewHandler constructs handler.
-func NewHandler(services *service.Services, cfg *config.Config, log logger.Logger) *Handler {
-	return &Handler{Services: services, Config: cfg, Logger: log}
+func NewHandler(services *service.Services, cfg *config.Config, log logger.Logger, jwt auth.Manager) *Handler {
+	return &Handler{Services: services, Config: cfg, Logger: log, JWT: jwt}
 }
 
 // RegisterRoutes sets up endpoints.

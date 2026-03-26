@@ -14,6 +14,7 @@ func newAuthRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager, a
 	group.POST("/register", authRateLimiter, handler.register)
 	group.POST("/login", authRateLimiter, handler.login)
 	group.POST("/google", authRateLimiter, handler.googleOAuth)
+	group.POST("/refresh", authRateLimiter, handler.refreshToken)
 	group.POST("/password/forgot", authRateLimiter, handler.forgotPassword)
 	group.POST("/password/reset", authRateLimiter, handler.resetPassword)
 }
@@ -147,6 +148,44 @@ func (h *Handler) resetPassword(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "password reset"})
+}
+
+type refreshRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+func (h *Handler) refreshToken(c *gin.Context) {
+	var req refreshRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "refresh_token required"})
+		return
+	}
+	claims, err := h.JWT.ParseRefreshToken(req.RefreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired refresh token"})
+		return
+	}
+	// Verify user still exists
+	var user model.User
+	if err := h.Services.DB.First(&user, claims.UserID).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+		return
+	}
+	accessToken, err := h.JWT.GenerateAccessToken(user.ID, user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+	refreshToken, err := h.JWT.GenerateRefreshToken(user.ID, user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+	c.JSON(http.StatusOK, authResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		User:         mapUser(&user),
+	})
 }
 
 func mapUser(user *model.User) authUserResponse {

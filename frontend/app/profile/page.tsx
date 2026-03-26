@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '../../components/header';
 import { api } from '../../lib/api';
-import { getToken, getUser, saveAuth } from '../../lib/auth';
+import { getToken, getRefreshToken, getUser, saveAuth } from '../../lib/auth';
 import { useLang } from '../../lib/lang-context';
 import type { Stack, UserExperience, UserSkill, UserExtProfile } from '../../lib/api';
 
@@ -92,7 +92,7 @@ export default function ProfilePage() {
     try {
       const { data } = await api.put<{ user: { first_name: string; last_name: string } }>('/users/me', form);
       const cached = getUser();
-      if (cached) saveAuth(getToken()!, { ...cached, first_name: data.user.first_name, last_name: data.user.last_name });
+      if (cached) saveAuth(getToken()!, getRefreshToken() ?? '', { ...cached, first_name: data.user.first_name, last_name: data.user.last_name });
       await api.put('/users/me/ext-profile', extForm);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

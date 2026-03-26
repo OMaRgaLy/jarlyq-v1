@@ -21,6 +21,7 @@ type Manager interface {
 	GenerateAccessToken(userID uint, email string) (string, error)
 	GenerateRefreshToken(userID uint, email string) (string, error)
 	ParseToken(token string) (*Claims, error)
+	ParseRefreshToken(token string) (*Claims, error)
 }
 
 // JWTManager implements Manager.
@@ -65,14 +66,23 @@ func (m *JWTManager) generateToken(userID uint, email string, secret []byte, ttl
 	return token.SignedString(secret)
 }
 
-// ParseToken validates JWT and returns claims.
+// ParseToken validates an access JWT and returns claims.
 func (m *JWTManager) ParseToken(tokenStr string) (*Claims, error) {
+	return m.parseWithSecret(tokenStr, m.accessSecret)
+}
+
+// ParseRefreshToken validates a refresh JWT and returns claims.
+func (m *JWTManager) ParseRefreshToken(tokenStr string) (*Claims, error) {
+	return m.parseWithSecret(tokenStr, m.refreshSecret)
+}
+
+func (m *JWTManager) parseWithSecret(tokenStr string, secret []byte) (*Claims, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return m.accessSecret, nil
+		return secret, nil
 	})
 	if err != nil {
 		return nil, err

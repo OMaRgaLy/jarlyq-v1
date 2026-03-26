@@ -8,6 +8,61 @@ export const api = axios.create({
   baseURL,
 });
 
+// Silent refresh interceptor — runs only in browser
+if (typeof window !== 'undefined') {
+  let isRefreshing = false;
+  let queue: Array<(token: string) => void> = [];
+
+  api.interceptors.response.use(
+    (res) => res,
+    async (error) => {
+      const original = error.config;
+
+      // Only intercept 401s that aren't the refresh endpoint itself
+      if (error.response?.status !== 401 || original._retry || original.url?.includes('/auth/')) {
+        return Promise.reject(error);
+      }
+
+      const { getRefreshToken, saveAuth, clearAuth } = await import('./auth');
+      const refreshToken = getRefreshToken();
+
+      if (!refreshToken) {
+        clearAuth();
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        // Queue requests while refresh is in flight
+        return new Promise((resolve) => {
+          queue.push((token) => {
+            original.headers['Authorization'] = `Bearer ${token}`;
+            resolve(api(original));
+          });
+        });
+      }
+
+      original._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await axios.post(`${baseURL}/auth/refresh`, { refresh_token: refreshToken });
+        saveAuth(data.access_token, data.refresh_token, data.user);
+        api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
+        queue.forEach((cb) => cb(data.access_token));
+        queue = [];
+        original.headers['Authorization'] = `Bearer ${data.access_token}`;
+        return api(original);
+      } catch {
+        clearAuth();
+        queue = [];
+        return Promise.reject(error);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+  );
+}
+
 export interface Stack {
   id: number;
   name: string;

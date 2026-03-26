@@ -83,10 +83,11 @@ func New(cfg *config.Config) (*Server, error) {
 
 	repoSet := httptransport.NewRepositories(db)
 	services := httptransport.NewServices(repoSet, cfg, log)
-	handler := httptransport.NewHandler(services, cfg, log)
+	jwtManager := auth.NewJWTManager(cfg)
+	handler := httptransport.NewHandler(services, cfg, log, jwtManager)
 
 	api := engine.Group("/api")
-	httptransport.RegisterRoutes(api, handler, auth.NewJWTManager(cfg), authLimiter)
+	httptransport.RegisterRoutes(api, handler, jwtManager, authLimiter)
 
 	if cfg.SwaggerEnabled {
 		engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
