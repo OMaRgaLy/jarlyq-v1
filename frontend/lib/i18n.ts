@@ -24,6 +24,8 @@ const dict = {
       myProfile: 'Мой профиль',
       publicProfile: 'Публичный профиль',
       search: 'Поиск',
+      groupWork: 'Найти работу',
+      groupPrep: 'Подготовка',
     },
     home: {
       heroTitle: 'IT возможности\nЦентральной Азии',
@@ -325,6 +327,8 @@ const dict = {
       myProfile: 'My Profile',
       publicProfile: 'Public Profile',
       search: 'Search',
+      groupWork: 'Find Work',
+      groupPrep: 'Preparation',
     },
     home: {
       heroTitle: 'IT Opportunities\nin Central Asia',
@@ -626,6 +630,8 @@ const dict = {
       myProfile: 'Менің профилім',
       publicProfile: 'Жалпыға ашық профиль',
       search: 'Іздеу',
+      groupWork: 'Жұмыс табу',
+      groupPrep: 'Дайындық',
     },
     home: {
       heroTitle: 'Орталық Азиядағы\nIT мүмкіндіктер',
@@ -917,7 +923,7 @@ export interface Translations {
     guide: string; companies: string; schools: string;
     internships: string; hackathons: string;
     login: string; logout: string; suggest: string; myProfile: string;
-    publicProfile: string; search: string;
+    publicProfile: string; search: string; groupWork: string; groupPrep: string;
   };
   search: {
     placeholder: string; empty: string; companies: string;
