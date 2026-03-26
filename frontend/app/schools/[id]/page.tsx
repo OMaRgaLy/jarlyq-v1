@@ -32,7 +32,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
         <Header />
         <main className="mx-auto max-w-4xl px-4 py-8">
           <p className="text-slate-500">{t.common.notFound}</p>
-          <Link href="/#schools" className="mt-4 inline-block text-sm text-brand hover:underline">
+          <Link href="/schools" className="mt-4 inline-block text-sm text-brand hover:underline">
             {t.school.backToList}
           </Link>
         </main>
@@ -44,7 +44,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
     <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
       <Header />
       <main className="mx-auto max-w-4xl px-4 py-8 space-y-6">
-        <Link href="/#schools" className="inline-flex text-sm text-brand hover:underline">
+        <Link href="/schools" className="inline-flex text-sm text-brand hover:underline">
           {t.school.backToList}
         </Link>
 

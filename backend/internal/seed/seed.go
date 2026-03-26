@@ -1256,6 +1256,11 @@ func Seed(db *gorm.DB) error {
 		return err
 	}
 
+	if err := SeedStateProgramsAndUniversities(db); err != nil {
+		log.Printf("Error seeding state programs and universities: %v", err)
+		return err
+	}
+
 	log.Println("Database seeding completed successfully!")
 	return nil
 }

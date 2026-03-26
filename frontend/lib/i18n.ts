@@ -135,6 +135,15 @@ const dict = {
       hybrid: 'Гибрид',
       weeks: 'нед.',
       hasEmployment: 'Трудоустройство',
+      pageTitle: 'Школы и университеты',
+      pageSubtitle: 'Частные буткемпы, государственные программы и университеты — всё для старта в IT',
+      tabAll: 'Все',
+      tabStatePrograms: 'Госпрограммы',
+      tabBootcamps: 'Школы и буткемпы',
+      tabUniversities: 'Университеты',
+      badgeStateFunded: 'Бесплатно · от государства',
+      badgeBootcamp: 'Частная школа',
+      badgeUniversity: 'Университет',
     },
     interview: {
       title: 'Вопросы с собеседований',
@@ -440,6 +449,15 @@ const dict = {
       hybrid: 'Hybrid',
       weeks: 'wk.',
       hasEmployment: 'Job placement',
+      pageTitle: 'Schools & Universities',
+      pageSubtitle: 'Bootcamps, state programs and universities — everything to start in IT',
+      tabAll: 'All',
+      tabStatePrograms: 'State programs',
+      tabBootcamps: 'Schools & bootcamps',
+      tabUniversities: 'Universities',
+      badgeStateFunded: 'Free · state-funded',
+      badgeBootcamp: 'Private school',
+      badgeUniversity: 'University',
     },
     interview: {
       title: 'Interview Questions',
@@ -745,6 +763,15 @@ const dict = {
       hybrid: 'Гибрид',
       weeks: 'апта',
       hasEmployment: 'Жұмысқа орналасу',
+      pageTitle: 'Мектептер және университеттер',
+      pageSubtitle: 'IT-ге кіру үшін буткемптер, мемлекеттік бағдарламалар және университеттер',
+      tabAll: 'Барлығы',
+      tabStatePrograms: 'Мемлекеттік бағдарламалар',
+      tabBootcamps: 'Мектептер мен буткемптер',
+      tabUniversities: 'Университеттер',
+      badgeStateFunded: 'Тегін · мемлекеттік',
+      badgeBootcamp: 'Жеке мектеп',
+      badgeUniversity: 'Университет',
     },
     interview: {
       title: 'Сұхбат сұрақтары',
@@ -981,6 +1008,9 @@ export interface Translations {
     courses: string; goToSite: string; details: string; noCourses: string; backToList: string;
     priceFrom: string; free: string; online: string; offline: string; hybrid: string;
     weeks: string; hasEmployment: string;
+    pageTitle: string; pageSubtitle: string;
+    tabAll: string; tabStatePrograms: string; tabBootcamps: string; tabUniversities: string;
+    badgeStateFunded: string; badgeBootcamp: string; badgeUniversity: string;
   };
   interview: {
     title: string; subtitle: string; allLevels: string; allTopics: string; allSpecialties: string;

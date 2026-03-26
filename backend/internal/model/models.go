@@ -183,15 +183,19 @@ type Opportunity struct {
 }
 
 // School represents education providers.
+// Type: "bootcamp" | "university" | "state_program"
 type School struct {
-	ID          uint        `gorm:"primaryKey" json:"id"`
-	CreatedAt   time.Time   `json:"-"`
-	UpdatedAt   time.Time   `json:"-"`
-	Name        string      `gorm:"size:255" json:"name"`
-	CoverURL    string      `gorm:"size:512" json:"coverURL,omitempty"`
-	Description string      `gorm:"type:text" json:"description,omitempty"`
-	Contacts    ContactInfo `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
-	Courses     []Course    `json:"courses"`
+	ID             uint        `gorm:"primaryKey" json:"id"`
+	CreatedAt      time.Time   `json:"-"`
+	UpdatedAt      time.Time   `json:"-"`
+	Name           string      `gorm:"size:255" json:"name"`
+	Type           string      `gorm:"size:40;default:'bootcamp'" json:"type"`
+	LogoURL        string      `gorm:"size:512" json:"logoURL,omitempty"`
+	CoverURL       string      `gorm:"size:512" json:"coverURL,omitempty"`
+	Description    string      `gorm:"type:text" json:"description,omitempty"`
+	IsStateFunded  bool        `json:"isStateFunded"`
+	Contacts       ContactInfo `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
+	Courses        []Course    `json:"courses"`
 }
 
 // Course describes training programs.

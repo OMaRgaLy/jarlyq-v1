@@ -249,8 +249,11 @@ export interface UserSkill {
 export interface School {
   id: number;
   name: string;
+  type: 'bootcamp' | 'university' | 'state_program';
+  logoURL?: string;
   coverURL?: string;
   description?: string;
+  isStateFunded: boolean;
   contacts?: ContactInfo;
   courses: Course[];
 }
