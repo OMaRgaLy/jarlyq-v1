@@ -100,7 +100,7 @@ export default function Page() {
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
               <div className="flex flex-col justify-between rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm dark:border-slate-800/60 dark:bg-slate-900">
                 <div>
-                  <div className="mb-3 text-4xl">🎓</div>
+                  <div className="mb-3 text-4xl">🔍</div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.path1Label}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path1Desc}</p>
                 </div>
@@ -108,21 +108,21 @@ export default function Page() {
                   href="/internships"
                   className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
                 >
-                  {t.home.path1CTA} →
+                  {t.home.path1CTA}
                 </Link>
               </div>
 
               <div className="flex flex-col justify-between rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm dark:border-slate-800/60 dark:bg-slate-900">
                 <div>
-                  <div className="mb-3 text-4xl">💼</div>
+                  <div className="mb-3 text-4xl">🎓</div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.path2Label}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path2Desc}</p>
                 </div>
                 <Link
-                  href="/jobs"
+                  href="/schools"
                   className="mt-6 inline-flex w-full items-center justify-center rounded-xl border border-brand px-5 py-2.5 text-sm font-semibold text-brand hover:bg-brand/5 dark:hover:bg-brand/10"
                 >
-                  {t.home.path2CTA} →
+                  {t.home.path2CTA}
                 </Link>
               </div>
             </div>

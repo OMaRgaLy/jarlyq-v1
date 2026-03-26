@@ -28,28 +28,30 @@ const dict = {
       groupPrep: 'Подготовка',
     },
     home: {
-      heroTitle: 'IT возможности\nЦентральной Азии',
-      heroSubtitle: 'Найди стажировку, вакансию или курс в лучших IT-компаниях Казахстана, Кыргызстана и Узбекистана',
-      heroBadge: 'Центральная Азия • Tech',
-      heroCTA1: 'Выбрать карьерный путь →',
-      heroCTA2: 'Найти вакансию',
-      heroImageAlt: 'Команда разработчиков',
-      trendingLabel: '🔥 = в тренде',
-      sectionStacks: 'Популярные технологии',
-      sectionCompanies: 'Компании региона',
-      sectionCompaniesSub: 'IT-компании Казахстана, Кыргызстана и Узбекистана — стажировки и вакансии',
-      sectionSchools: 'Школы и курсы',
-      sectionSchoolsSub: 'Курсы и буткемпы для входа в IT — с сертификатами и трудоустройством',
-      sectionOpportunities: 'Актуальные возможности',
-      sectionOpportunitiesSub: 'Стажировки и вакансии с быстрым откликом',
-      careerBannerTitle: 'Построй карьерный путь',
-      careerBannerSub: 'Пошаговые треки от Junior до Senior',
-      interviewBannerTitle: 'Подготовься к собеседованию',
-      interviewBannerSub: 'Реальные вопросы с ответами',
-      emptyCo: 'Компании скоро появятся',
-      emptyCoSub: 'Пока данных нет — попробуй изменить фильтры или посмотри карьерные пути',
-      emptySch: 'Школы скоро появятся',
-      emptySchSub: 'Пока нет школ по выбранному фильтру. Попробуй сбросить фильтры.',
+      heroSubtitle: 'Платформа для поиска стажировок и вакансий в IT-компаниях СНГ и EMEA. Найди компанию по своему стеку технологий.',
+      heroCTA1: 'Найти стажировку',
+      heroCTA2: 'Смотреть компании',
+      featTitle: 'Чем мы помогаем',
+      feat1Title: 'Стажировки и вакансии',
+      feat1Desc: 'Актуальные позиции в IT-компаниях Казахстана, Кыргызстана, Узбекистана и стран EMEA',
+      feat2Title: 'Компании по стеку',
+      feat2Desc: 'Выбери технологию — покажем все компании которые с ней работают и открытые позиции',
+      feat3Title: 'Карьерные пути',
+      feat3Desc: 'Пошаговые треки от Junior до Senior по каждому IT-направлению',
+      pathTitle: 'Для кого Jarlyq?',
+      path1Label: 'Ищу работу или стажировку',
+      path1Desc: 'Хочешь устроиться в IT-компанию? Стажировки, вакансии и компании региона — в одном месте.',
+      path1CTA: 'Смотреть возможности →',
+      path2Label: 'Школьник / поступаю в ВУЗ',
+      path2Desc: 'Только начинаешь путь в IT? Найди школы, курсы и университеты для входа в профессию.',
+      path2CTA: 'Школы и ВУЗы →',
+      stat1Num: '150+',
+      stat1Label: 'компаний',
+      stat2Num: '300+',
+      stat2Label: 'позиций',
+      stat3Num: '50+',
+      stat3Label: 'технологий',
+      stat4Label: 'СНГ и EMEA',
       footer: 'Сделано для роста IT-комьюнити Центральной Азии.',
     },
     filterBar: {
@@ -331,28 +333,30 @@ const dict = {
       groupPrep: 'Preparation',
     },
     home: {
-      heroTitle: 'IT Opportunities\nin Central Asia',
-      heroSubtitle: 'Find internships, jobs, or courses at top IT companies in Kazakhstan, Kyrgyzstan and Uzbekistan',
-      heroBadge: 'Central Asia • Tech',
-      heroCTA1: 'Choose career path →',
-      heroCTA2: 'Find a job',
-      heroImageAlt: 'Developer team',
-      trendingLabel: '🔥 = trending',
-      sectionStacks: 'Popular Technologies',
-      sectionCompanies: 'Regional Companies',
-      sectionCompaniesSub: 'IT companies from Kazakhstan, Kyrgyzstan and Uzbekistan — internships and vacancies',
-      sectionSchools: 'Schools & Courses',
-      sectionSchoolsSub: 'Bootcamps and courses to break into IT — with certificates and job placement',
-      sectionOpportunities: 'Open Opportunities',
-      sectionOpportunitiesSub: 'Internships and vacancies with quick apply',
-      careerBannerTitle: 'Build Your Career Path',
-      careerBannerSub: 'Step-by-step tracks from Junior to Senior',
-      interviewBannerTitle: 'Prepare for Interviews',
-      interviewBannerSub: 'Real questions with answers',
-      emptyCo: 'Companies coming soon',
-      emptyCoSub: 'No data yet — try changing filters or explore career paths',
-      emptySch: 'Schools coming soon',
-      emptySchSub: 'No schools match your filter. Try resetting filters.',
+      heroSubtitle: 'Platform for finding internships and jobs at IT companies across CIS and EMEA. Find companies by your tech stack.',
+      heroCTA1: 'Find Internship',
+      heroCTA2: 'Browse Companies',
+      featTitle: 'What we offer',
+      feat1Title: 'Internships & Jobs',
+      feat1Desc: 'Open positions at IT companies in Kazakhstan, Kyrgyzstan, Uzbekistan and EMEA',
+      feat2Title: 'Companies by Stack',
+      feat2Desc: 'Pick a technology — we show all companies that use it and their open roles',
+      feat3Title: 'Career Paths',
+      feat3Desc: 'Step-by-step tracks from Junior to Senior for every IT direction',
+      pathTitle: 'Who is Jarlyq for?',
+      path1Label: 'Looking for work or internship',
+      path1Desc: 'Want to join an IT company? Internships, jobs and companies of the region — all in one place.',
+      path1CTA: 'Browse opportunities →',
+      path2Label: 'Schoolkid / applying to university',
+      path2Desc: 'Just starting your journey in IT? Find schools, courses and universities to enter the profession.',
+      path2CTA: 'Schools & universities →',
+      stat1Num: '150+',
+      stat1Label: 'companies',
+      stat2Num: '300+',
+      stat2Label: 'positions',
+      stat3Num: '50+',
+      stat3Label: 'technologies',
+      stat4Label: 'CIS & EMEA',
       footer: 'Built for the IT community of Central Asia.',
     },
     filterBar: {
@@ -634,28 +638,30 @@ const dict = {
       groupPrep: 'Дайындық',
     },
     home: {
-      heroTitle: 'Орталық Азиядағы\nIT мүмкіндіктер',
-      heroSubtitle: 'Қазақстан, Қырғызстан және Өзбекстандағы үздік IT-компанияларда тәжірибе, жұмыс немесе курс тап',
-      heroBadge: 'Орталық Азия • Tech',
-      heroCTA1: 'Мансап жолын таңда →',
-      heroCTA2: 'Жұмыс табу',
-      heroImageAlt: 'Әзірлеушілер тобы',
-      trendingLabel: '🔥 = трендте',
-      sectionStacks: 'Танымал технологиялар',
-      sectionCompanies: 'Өңір компаниялары',
-      sectionCompaniesSub: 'Қазақстан, Қырғызстан және Өзбекстанның IT-компаниялары — тәжірибелер мен бос орындар',
-      sectionSchools: 'Мектептер мен курстар',
-      sectionSchoolsSub: 'IT-ға кіру үшін курстар мен буткемптер — сертификаттар және жұмысқа орналасу',
-      sectionOpportunities: 'Өзекті мүмкіндіктер',
-      sectionOpportunitiesSub: 'Жылдам өтінім беруге болатын тәжірибелер мен бос орындар',
-      careerBannerTitle: 'Мансап жолын құр',
-      careerBannerSub: 'Junior-дан Senior-ға дейін қадамдық трек',
-      interviewBannerTitle: 'Сұхбатқа дайындал',
-      interviewBannerSub: 'Жауаптары бар нақты сұрақтар',
-      emptyCo: 'Компаниялар жақында қосылады',
-      emptyCoSub: 'Әзірге деректер жоқ — сүзгілерді өзгертіп көр немесе мансап жолдарын қара',
-      emptySch: 'Мектептер жақында қосылады',
-      emptySchSub: 'Таңдалған сүзгі бойынша мектептер жоқ. Сүзгілерді тазалап көр.',
+      heroSubtitle: 'IT-компанияларда тәжірибе мен жұмыс іздеуге арналған платформа. Технология стегі бойынша компанияңды тап.',
+      heroCTA1: 'Тәжірибе табу',
+      heroCTA2: 'Компанияларды қарау',
+      featTitle: 'Біз немен көмектесеміз',
+      feat1Title: 'Тәжірибе және жұмыс',
+      feat1Desc: 'Қазақстан, Қырғызстан, Өзбекстан және EMEA елдеріндегі IT-компаниялардағы ашық позициялар',
+      feat2Title: 'Стек бойынша компаниялар',
+      feat2Desc: 'Технологияны таңда — оны пайдаланатын барлық компанияларды және ашық позицияларды көрсетеміз',
+      feat3Title: 'Мансап жолдары',
+      feat3Desc: 'Әр IT-бағыт бойынша Junior-дан Senior-ға дейін қадамдық трек',
+      pathTitle: 'Jarlyq кімге арналған?',
+      path1Label: 'Жұмыс немесе тәжірибе іздеймін',
+      path1Desc: 'IT-компанияға орналасқың келе ме? Өңірдің тәжірибелері, жұмыстары және компаниялары — бір жерде.',
+      path1CTA: 'Мүмкіндіктерді қарау →',
+      path2Label: 'Оқушы / ЖОО-ға түсемін',
+      path2Desc: 'IT-ға жаңа бастап жатырсың ба? Мамандыққа кіру үшін мектептер, курстар мен университеттер тап.',
+      path2CTA: 'Мектептер және ЖОО →',
+      stat1Num: '150+',
+      stat1Label: 'компания',
+      stat2Num: '300+',
+      stat2Label: 'позиция',
+      stat3Num: '50+',
+      stat3Label: 'технология',
+      stat4Label: 'ТМД және EMEA',
       footer: 'Орталық Азиядағы IT-қоғамдастық үшін жасалған.',
     },
     filterBar: {
@@ -930,15 +936,18 @@ export interface Translations {
     schools: string; opportunities: string; seeAll: string;
   };
   home: {
-    heroTitle: string; heroSubtitle: string;
-    heroBadge: string; heroCTA1: string; heroCTA2: string; heroImageAlt: string;
-    trendingLabel: string;
-    sectionStacks: string; sectionCompanies: string; sectionCompaniesSub: string;
-    sectionSchools: string; sectionSchoolsSub: string;
-    sectionOpportunities: string; sectionOpportunitiesSub: string;
-    careerBannerTitle: string; careerBannerSub: string;
-    interviewBannerTitle: string; interviewBannerSub: string;
-    emptyCo: string; emptyCoSub: string; emptySch: string; emptySchSub: string;
+    heroSubtitle: string; heroCTA1: string; heroCTA2: string;
+    featTitle: string;
+    feat1Title: string; feat1Desc: string;
+    feat2Title: string; feat2Desc: string;
+    feat3Title: string; feat3Desc: string;
+    pathTitle: string;
+    path1Label: string; path1Desc: string; path1CTA: string;
+    path2Label: string; path2Desc: string; path2CTA: string;
+    stat1Num: string; stat1Label: string;
+    stat2Num: string; stat2Label: string;
+    stat3Num: string; stat3Label: string;
+    stat4Label: string;
     footer: string;
   };
   filterBar: {
