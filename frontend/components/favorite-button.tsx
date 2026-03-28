@@ -4,7 +4,7 @@ import { useIsFavorite, useToggleFavorite } from '../lib/hooks';
 import { getToken } from '../lib/auth';
 
 interface FavoriteButtonProps {
-  entityType: 'company' | 'opportunity' | 'school';
+  entityType: 'company' | 'opportunity' | 'school' | 'job' | 'course';
   entityId: number;
   className?: string;
 }

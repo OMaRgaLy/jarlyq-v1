@@ -243,7 +243,7 @@ function InternshipCard({
         </div>
         <div className="min-w-0">
           <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">{item.companyName}</p>
-          <p className="truncate font-semibold text-slate-900 dark:text-white">{item.title}</p>
+          <Link href={`/internships/${item.id}`} className="truncate font-semibold text-slate-900 hover:text-brand dark:text-white">{item.title}</Link>
         </div>
       </div>
 

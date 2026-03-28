@@ -12,6 +12,7 @@ import (
 
 func newInternshipRoutes(group *gin.RouterGroup, handler *Handler) {
 	group.GET("", handler.listInternships)
+	group.GET("/:id", handler.getInternship)
 }
 
 // listInternships returns all opportunities of type "internship"
@@ -56,4 +57,34 @@ func (h *Handler) listInternships(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"internships": results})
+}
+
+func (h *Handler) getInternship(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	type internshipDetail struct {
+		model.Opportunity
+		CompanyName    string `json:"companyName"`
+		CompanyLogoURL string `json:"companyLogoURL"`
+		CompanyID      uint   `json:"companyId"`
+	}
+
+	var result internshipDetail
+	err = h.Services.DB.
+		Table("opportunities").
+		Select("opportunities.*, companies.name as company_name, companies.logo_url as company_logo_url, companies.id as company_id").
+		Joins("LEFT JOIN companies ON companies.id = opportunities.company_id").
+		Where("opportunities.id = ? AND opportunities.type = ?", id, "internship").
+		Scan(&result).Error
+
+	if err != nil || result.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "internship not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"internship": result})
 }

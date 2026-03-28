@@ -43,9 +43,9 @@ function ProgramCard({ p }: { p: MasterProgram }) {
       </div>
 
       {/* Program title */}
-      <h3 className="text-sm font-semibold leading-snug text-slate-900 dark:text-slate-50">
+      <Link href={`/masters/${p.courseId}`} className="text-sm font-semibold leading-snug text-slate-900 hover:text-brand dark:text-slate-50">
         {p.courseTitle}
-      </h3>
+      </Link>
 
       {/* Description */}
       {p.description && (

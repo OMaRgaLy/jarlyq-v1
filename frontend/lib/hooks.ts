@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea, CompanyReview, MasterProgram, UserFavorite } from './api';
+import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea, CompanyReview, MasterProgram, InternshipItem, UserFavorite } from './api';
 
 export const useCompany = (id: number) =>
   useQuery<Company>({
@@ -17,6 +17,36 @@ export const useSchool = (id: number) =>
     queryFn: async () => {
       const { data } = await api.get<{ school: School }>(`/schools/${id}`);
       return data.school;
+    },
+    enabled: id > 0,
+  });
+
+export const useInternship = (id: number) =>
+  useQuery<InternshipItem>({
+    queryKey: ['internship', id],
+    queryFn: async () => {
+      const { data } = await api.get<{ internship: InternshipItem }>(`/internships/${id}`);
+      return data.internship;
+    },
+    enabled: id > 0,
+  });
+
+export const useJob = (id: number) =>
+  useQuery<Job>({
+    queryKey: ['job', id],
+    queryFn: async () => {
+      const { data } = await api.get<{ data: Job }>(`/jobs/${id}`);
+      return data.data;
+    },
+    enabled: id > 0,
+  });
+
+export const useMasterProgram = (id: number) =>
+  useQuery<MasterProgram>({
+    queryKey: ['master', id],
+    queryFn: async () => {
+      const { data } = await api.get<{ program: MasterProgram }>(`/masters/${id}`);
+      return data.program;
     },
     enabled: id > 0,
   });

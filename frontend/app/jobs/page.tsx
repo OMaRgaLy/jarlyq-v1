@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Header } from '../../components/header';
 import { useJobs } from '../../lib/hooks';
 import { useLang } from '../../lib/lang-context';
@@ -75,9 +76,9 @@ export default function JobsPage() {
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white">
+                    <Link href={`/jobs/${job.id}`} className="font-semibold text-slate-900 hover:text-brand dark:text-white">
                       {job.title}
-                    </h3>
+                    </Link>
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       {job.location} &middot; {job.workFormat} &middot; {job.jobType}
                     </p>

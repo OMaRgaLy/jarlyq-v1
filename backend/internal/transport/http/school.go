@@ -17,6 +17,7 @@ func newSchoolRoutes(group *gin.RouterGroup, handler *Handler) {
 
 func newMastersRoutes(group *gin.RouterGroup, handler *Handler) {
 	group.GET("", handler.listMasters)
+	group.GET("/:id", handler.getMasterProgram)
 }
 
 func (h *Handler) listMasters(c *gin.Context) {
@@ -38,6 +39,35 @@ func (h *Handler) listMasters(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"programs": rows})
+}
+
+func (h *Handler) getMasterProgram(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	var row repository.MasterCourseRow
+	err = h.Services.DB.
+		Table("courses").
+		Select(`courses.id AS course_id, courses.title AS course_title,
+			courses.description, courses.external_url, courses.price,
+			courses.price_currency, courses.duration_weeks, courses.format,
+			courses.language, courses.scholarship_available, courses.application_deadline,
+			schools.id AS school_id, schools.name AS school_name,
+			schools.logo_url AS school_logo_url, schools.country AS school_country,
+			schools.type AS school_type`).
+		Joins("JOIN schools ON schools.id = courses.school_id").
+		Where("courses.id = ? AND courses.level = ?", id, "master").
+		Scan(&row).Error
+
+	if err != nil || row.CourseID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "program not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"program": row})
 }
 
 func (h *Handler) listSchools(c *gin.Context) {
