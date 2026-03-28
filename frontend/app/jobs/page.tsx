@@ -97,7 +97,7 @@ export default function JobsPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">{v.companyName}</p>
-                      <Link href={`/internships/${v.id}`} className="truncate font-semibold text-slate-900 hover:text-brand dark:text-white">
+                      <Link href={`/jobs/${v.id}`} className="truncate font-semibold text-slate-900 hover:text-brand dark:text-white">
                         {v.title}
                       </Link>
                     </div>

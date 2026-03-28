@@ -21,9 +21,7 @@ function useNavLinks() {
     { href: '/jobs', label: t.nav.jobs },
     { href: '/companies', label: t.nav.companies },
     { href: '/schools', label: t.nav.schools },
-    { href: '/masters', label: t.nav.masters },
     { href: '/career-paths', label: t.nav.careerPaths },
-    { href: '/hackathons', label: t.nav.hackathons },
   ];
 }
 

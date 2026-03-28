@@ -32,11 +32,11 @@ export const useInternship = (id: number) =>
   });
 
 export const useJob = (id: number) =>
-  useQuery<Job>({
+  useQuery<InternshipItem>({
     queryKey: ['job', id],
     queryFn: async () => {
-      const { data } = await api.get<{ data: Job }>(`/jobs/${id}`);
-      return data.data;
+      const { data } = await api.get<{ opportunity: InternshipItem }>(`/internships/${id}`);
+      return data.opportunity;
     },
     enabled: id > 0,
   });

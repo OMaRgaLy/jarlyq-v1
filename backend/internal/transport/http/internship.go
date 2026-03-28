@@ -78,7 +78,7 @@ func (h *Handler) getInternship(c *gin.Context) {
 		Table("opportunities").
 		Select("opportunities.*, companies.name as company_name, companies.logo_url as company_logo_url, companies.id as company_id").
 		Joins("LEFT JOIN companies ON companies.id = opportunities.company_id").
-		Where("opportunities.id = ? AND opportunities.type = ?", id, "internship").
+		Where("opportunities.id = ?", id).
 		Scan(&result).Error
 
 	if err != nil || result.ID == 0 {
@@ -86,5 +86,5 @@ func (h *Handler) getInternship(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"internship": result})
+	c.JSON(http.StatusOK, gin.H{"internship": result, "opportunity": result})
 }
