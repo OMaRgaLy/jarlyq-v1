@@ -35,6 +35,7 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 
 	// Opportunities
 	group.POST("/companies/:id/opportunities", handler.adminCreateOpportunity)
+	group.PUT("/opportunities/:id", handler.adminUpdateOpportunity)
 	group.DELETE("/opportunities/:id", handler.adminDeleteOpportunity)
 
 	// Schools
@@ -118,6 +119,7 @@ type adminCompanyRequest struct {
 	TrainingEnabled   bool `json:"training_enabled"`
 	InternshipEnabled bool `json:"internship_enabled"`
 	VacancyEnabled    bool `json:"vacancy_enabled"`
+	IsVerified        bool `json:"is_verified"`
 }
 
 func (h *Handler) adminCreateCompany(c *gin.Context) {
@@ -145,6 +147,7 @@ func (h *Handler) adminCreateCompany(c *gin.Context) {
 			InternshipEnabled: req.InternshipEnabled,
 			VacancyEnabled:    req.VacancyEnabled,
 		},
+		IsVerified: req.IsVerified,
 	}
 	if err := h.Services.Companies.Create(c.Request.Context(), company); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -187,6 +190,7 @@ func (h *Handler) adminUpdateCompany(c *gin.Context) {
 		InternshipEnabled: req.InternshipEnabled,
 		VacancyEnabled:    req.VacancyEnabled,
 	}
+	company.IsVerified = req.IsVerified
 	if err := h.Services.Companies.Update(c.Request.Context(), company); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -210,17 +214,21 @@ func (h *Handler) adminDeleteCompany(c *gin.Context) {
 // ─── OPPORTUNITIES ────────────────────────────────────────────────────────────
 
 type adminOpportunityRequest struct {
-	Type           string `json:"type" binding:"required"`
-	Title          string `json:"title" binding:"required"`
-	Description    string `json:"description"`
-	Requirements   string `json:"requirements"`
-	ApplyURL       string `json:"apply_url"`
-	Level          string `json:"level"`
-	SalaryMin      int    `json:"salary_min"`
-	SalaryMax      int    `json:"salary_max"`
-	SalaryCurrency string `json:"salary_currency"`
-	WorkFormat     string `json:"work_format"`
-	City           string `json:"city"`
+	Type           string  `json:"type" binding:"required"`
+	Title          string  `json:"title" binding:"required"`
+	Description    string  `json:"description"`
+	Requirements   string  `json:"requirements"`
+	ApplyURL       string  `json:"apply_url"`
+	Level          string  `json:"level"`
+	SalaryMin      int     `json:"salary_min"`
+	SalaryMax      int     `json:"salary_max"`
+	SalaryCurrency string  `json:"salary_currency"`
+	WorkFormat     string  `json:"work_format"`
+	City           string  `json:"city"`
+	Deadline       *string `json:"deadline"`
+	IsYearRound    bool    `json:"is_year_round"`
+	IsVerified     bool    `json:"is_verified"`
+	Source         string  `json:"source"`
 }
 
 func (h *Handler) adminCreateOpportunity(c *gin.Context) {
@@ -247,12 +255,64 @@ func (h *Handler) adminCreateOpportunity(c *gin.Context) {
 		SalaryCurrency: req.SalaryCurrency,
 		WorkFormat:     req.WorkFormat,
 		City:           req.City,
+		IsYearRound:    req.IsYearRound,
+		IsVerified:     req.IsVerified,
+		Source:         req.Source,
+	}
+	if req.Deadline != nil {
+		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
+			opp.Deadline = &t
+		}
 	}
 	if err := h.Services.DB.Create(&opp).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"opportunity": opp})
+}
+
+func (h *Handler) adminUpdateOpportunity(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	var opp model.Opportunity
+	if err := h.Services.DB.First(&opp, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "opportunity not found"})
+		return
+	}
+	var req adminOpportunityRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	opp.Type = req.Type
+	opp.Title = req.Title
+	opp.Description = req.Description
+	opp.Requirements = req.Requirements
+	opp.ApplyURL = req.ApplyURL
+	opp.Level = req.Level
+	opp.SalaryMin = req.SalaryMin
+	opp.SalaryMax = req.SalaryMax
+	opp.SalaryCurrency = req.SalaryCurrency
+	opp.WorkFormat = req.WorkFormat
+	opp.City = req.City
+	opp.IsYearRound = req.IsYearRound
+	opp.IsVerified = req.IsVerified
+	opp.Source = req.Source
+	if req.Deadline != nil {
+		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
+			opp.Deadline = &t
+		}
+	} else {
+		opp.Deadline = nil
+	}
+	if err := h.Services.DB.Save(&opp).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"opportunity": opp})
 }
 
 func (h *Handler) adminDeleteOpportunity(c *gin.Context) {

@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -205,6 +206,14 @@ func (h *Handler) dashboardCreateOpportunity(c *gin.Context) {
 		SalaryCurrency: req.SalaryCurrency,
 		WorkFormat:     req.WorkFormat,
 		City:           req.City,
+		IsYearRound:    req.IsYearRound,
+		IsVerified:     req.IsVerified,
+		Source:         req.Source,
+	}
+	if req.Deadline != nil {
+		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
+			opp.Deadline = &t
+		}
 	}
 	if err := h.Services.DB.Create(&opp).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -245,6 +254,16 @@ func (h *Handler) dashboardUpdateOpportunity(c *gin.Context) {
 	opp.SalaryCurrency = req.SalaryCurrency
 	opp.WorkFormat = req.WorkFormat
 	opp.City = req.City
+	opp.IsYearRound = req.IsYearRound
+	opp.IsVerified = req.IsVerified
+	opp.Source = req.Source
+	if req.Deadline != nil {
+		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
+			opp.Deadline = &t
+		}
+	} else {
+		opp.Deadline = nil
+	}
 	if err := h.Services.DB.Save(&opp).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

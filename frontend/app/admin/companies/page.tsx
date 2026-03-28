@@ -10,6 +10,7 @@ import {
   updateAdminCompany,
   deleteAdminCompany,
   createAdminOpportunity,
+  updateAdminOpportunity,
   deleteAdminOpportunity,
   AdminCompany,
   AdminOpportunity,
@@ -20,6 +21,7 @@ const emptyCompany = {
   founded_year: 0, employee_count: '', industry: '',
   website: '', telegram: '', email: '',
   training_enabled: false, internship_enabled: true, vacancy_enabled: true,
+  is_verified: false,
 };
 
 interface OppForm {
@@ -34,11 +36,16 @@ interface OppForm {
   salary_currency: string;
   work_format: string;
   city: string;
+  deadline: string | null;
+  is_year_round: boolean;
+  is_verified: boolean;
+  source: string;
 }
 
 const emptyOpp: OppForm = {
   type: 'internship', title: '', description: '', requirements: '', apply_url: '', level: 'intern',
   salary_min: 0, salary_max: 0, salary_currency: '₸', work_format: '', city: '',
+  deadline: null, is_year_round: false, is_verified: false, source: 'admin',
 };
 
 export default function AdminCompaniesPage() {
@@ -52,6 +59,7 @@ export default function AdminCompaniesPage() {
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
   const [oppForm, setOppForm] = useState<OppForm>(emptyOpp);
   const [showOppForm, setShowOppForm] = useState(false);
+  const [editingOppId, setEditingOppId] = useState<number | null>(null);
 
   const reload = useCallback(() => {
     fetchAdminCompanies().then(setCompanies).catch(() => router.push('/admin'));
@@ -81,6 +89,7 @@ export default function AdminCompaniesPage() {
       training_enabled: c.widgets?.trainingEnabled ?? false,
       internship_enabled: c.widgets?.internshipEnabled ?? true,
       vacancy_enabled: c.widgets?.vacancyEnabled ?? true,
+      is_verified: c.isVerified ?? false,
     });
     setShowForm(true);
   };
@@ -103,17 +112,44 @@ export default function AdminCompaniesPage() {
     reload();
   };
 
-  const handleAddOpp = async () => {
-    if (!selectedCompanyId) return;
+  const handleSaveOpp = async () => {
     setSaving(true);
     try {
-      await createAdminOpportunity(selectedCompanyId, oppForm);
+      if (editingOppId) {
+        await updateAdminOpportunity(editingOppId, oppForm);
+      } else if (selectedCompanyId) {
+        await createAdminOpportunity(selectedCompanyId, oppForm);
+      }
       setShowOppForm(false);
       setOppForm(emptyOpp);
+      setEditingOppId(null);
       reload();
     } finally {
       setSaving(false);
     }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const openEditOpp = (o: any) => {
+    setEditingOppId(o.id);
+    setOppForm({
+      type: o.type,
+      title: o.title,
+      description: o.description || '',
+      requirements: o.requirements || '',
+      apply_url: o.applyURL || o.apply_url || '',
+      level: o.level || 'intern',
+      salary_min: o.salaryMin ?? o.salary_min ?? 0,
+      salary_max: o.salaryMax ?? o.salary_max ?? 0,
+      salary_currency: o.salaryCurrency || o.salary_currency || '₸',
+      work_format: o.workFormat || o.work_format || '',
+      city: o.city || '',
+      deadline: o.deadline ? (typeof o.deadline === 'string' ? o.deadline.slice(0, 10) : null) : null,
+      is_year_round: o.isYearRound ?? o.is_year_round ?? false,
+      is_verified: o.isVerified ?? o.is_verified ?? false,
+      source: o.source || 'admin',
+    });
+    setShowOppForm(true);
   };
 
   const handleDeleteOpp = async (id: number) => {
@@ -139,7 +175,10 @@ export default function AdminCompaniesPage() {
               <div key={c.id} className="rounded-2xl border border-slate-200/70 bg-white p-5 dark:border-slate-700/60 dark:bg-slate-900">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 dark:text-white">{c.name}</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">
+                      {c.name}
+                      {c.isVerified && <span className="ml-2 inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900/30 dark:text-green-400">✓ Верифицировано</span>}
+                    </h3>
                     {c.description && <p className="mt-1 text-sm text-slate-500 line-clamp-2">{c.description}</p>}
                     <div className="mt-2 flex flex-wrap gap-2">
                       {c.contacts?.website && <a href={c.contacts.website} target="_blank" rel="noreferrer" className="text-xs text-brand hover:underline">{c.contacts.website}</a>}
@@ -152,7 +191,9 @@ export default function AdminCompaniesPage() {
                             <span className="text-xs font-medium text-brand">{o.type === 'internship' ? 'Стажировка' : 'Вакансия'}</span>
                             <span className="text-xs text-slate-600 dark:text-slate-300">{o.title}</span>
                             <span className="text-xs text-slate-400">{o.level}</span>
-                            <button onClick={() => handleDeleteOpp(o.id)} className="ml-auto text-xs text-red-400 hover:text-red-600">✕</button>
+                            {(o as any).isVerified && <span className="text-xs text-green-500">✓</span>}
+                            <button onClick={() => openEditOpp(o)} className="ml-auto text-xs text-brand hover:underline">Ред.</button>
+                            <button onClick={() => handleDeleteOpp(o.id)} className="text-xs text-red-400 hover:text-red-600">✕</button>
                           </div>
                         ))}
                       </div>
@@ -160,7 +201,7 @@ export default function AdminCompaniesPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => { setSelectedCompanyId(c.id); setShowOppForm(true); }}
+                      onClick={() => { setSelectedCompanyId(c.id); setEditingOppId(null); setOppForm(emptyOpp); setShowOppForm(true); }}
                       className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300"
                     >
                       + Вакансия
@@ -226,8 +267,8 @@ export default function AdminCompaniesPage() {
                     )}
                   </div>
                 ))}
-                <div className="flex gap-4">
-                  {(['training_enabled', 'internship_enabled', 'vacancy_enabled'] as const).map((key) => (
+                <div className="flex flex-wrap gap-4">
+                  {(['training_enabled', 'internship_enabled', 'vacancy_enabled', 'is_verified'] as const).map((key) => (
                     <label key={key} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                       <input
                         type="checkbox"
@@ -235,7 +276,7 @@ export default function AdminCompaniesPage() {
                         onChange={(e) => setForm({ ...form, [key]: e.target.checked })}
                         className="rounded"
                       />
-                      {key === 'training_enabled' ? 'Обучение' : key === 'internship_enabled' ? 'Стажировки' : 'Вакансии'}
+                      {key === 'training_enabled' ? 'Обучение' : key === 'internship_enabled' ? 'Стажировки' : key === 'vacancy_enabled' ? 'Вакансии' : '✓ Верифицировано'}
                     </label>
                   ))}
                 </div>
@@ -255,8 +296,10 @@ export default function AdminCompaniesPage() {
         {/* Opportunity form modal */}
         {showOppForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900">
-              <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Добавить вакансию/стажировку</h2>
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 max-h-[90vh] overflow-y-auto">
+              <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
+                {editingOppId ? 'Редактировать' : 'Добавить'} вакансию/стажировку
+              </h2>
               <div className="space-y-3">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-slate-500">Тип</label>
@@ -357,12 +400,43 @@ export default function AdminCompaniesPage() {
                     ))}
                   </select>
                 </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500">Дедлайн</label>
+                  <input
+                    type="date"
+                    value={oppForm.deadline || ''}
+                    onChange={(e) => setOppForm({ ...oppForm, deadline: e.target.value || null })}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500">Источник</label>
+                  <select
+                    value={oppForm.source}
+                    onChange={(e) => setOppForm({ ...oppForm, source: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="oss-data">OSS Data</option>
+                    <option value="partner">Partner</option>
+                  </select>
+                </div>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" checked={oppForm.is_year_round} onChange={(e) => setOppForm({ ...oppForm, is_year_round: e.target.checked })} className="rounded" />
+                    Круглогодичная
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" checked={oppForm.is_verified} onChange={(e) => setOppForm({ ...oppForm, is_verified: e.target.checked })} className="rounded" />
+                    Верифицировано
+                  </label>
+                </div>
               </div>
               <div className="mt-4 flex gap-3">
-                <button onClick={handleAddOpp} disabled={saving} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60">
-                  {saving ? 'Добавляем...' : 'Добавить'}
+                <button onClick={handleSaveOpp} disabled={saving} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60">
+                  {saving ? 'Сохраняем...' : editingOppId ? 'Сохранить' : 'Добавить'}
                 </button>
-                <button onClick={() => setShowOppForm(false)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm dark:border-slate-700">
+                <button onClick={() => { setShowOppForm(false); setEditingOppId(null); }} className="rounded-xl border border-slate-200 px-4 py-2 text-sm dark:border-slate-700">
                   Отмена
                 </button>
               </div>

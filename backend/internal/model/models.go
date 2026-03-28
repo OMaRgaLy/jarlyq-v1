@@ -141,6 +141,7 @@ type Company struct {
 	Offices       []CompanyOffice   `json:"offices,omitempty"`
 	Photos        []CompanyPhoto    `json:"photos,omitempty"`
 	Showcase      []CompanyShowcase `json:"showcase,omitempty"`
+	IsVerified    bool              `json:"isVerified"`
 	Reviews       []CompanyReview   `json:"reviews,omitempty"`
 	HRContacts    []HRContact       `json:"hrContacts,omitempty"`
 	HRContent     []HRContent       `json:"hrContent,omitempty"`

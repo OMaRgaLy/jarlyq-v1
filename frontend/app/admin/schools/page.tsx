@@ -15,7 +15,8 @@ import {
 } from '../../../lib/admin-api';
 
 const emptySchool = {
-  name: '', description: '', cover_url: '', website: '', telegram: '', email: '',
+  name: '', type: 'bootcamp' as string, country: '', description: '', cover_url: '',
+  is_state_funded: false, website: '', telegram: '', email: '',
 };
 
 const emptyCourse = {
@@ -48,7 +49,12 @@ export default function AdminSchoolsPage() {
   const openCreate = () => { setEditing(null); setForm(emptySchool); setShowForm(true); };
   const openEdit = (s: AdminSchool) => {
     setEditing(s);
-    setForm({ name: s.name, description: s.description || '', cover_url: s.cover_url || '', website: s.website || '', telegram: s.telegram || '', email: s.email || '' });
+    setForm({
+      name: s.name, type: (s as any).type || 'bootcamp', country: (s as any).country || '',
+      description: s.description || '', cover_url: s.cover_url || '',
+      is_state_funded: (s as any).isStateFunded ?? (s as any).is_state_funded ?? false,
+      website: s.website || '', telegram: s.telegram || '', email: s.email || '',
+    });
     setShowForm(true);
   };
 
@@ -102,7 +108,11 @@ export default function AdminSchoolsPage() {
               <div key={s.id} className="rounded-2xl border border-slate-200/70 bg-white p-5 dark:border-slate-700/60 dark:bg-slate-900">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 dark:text-white">{s.name}</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">
+                      {s.name}
+                      {(s as any).type && <span className="ml-2 inline-block rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400">{(s as any).type}</span>}
+                      {((s as any).isStateFunded || (s as any).is_state_funded) && <span className="ml-1 inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs text-green-600 dark:bg-green-900/30 dark:text-green-400">Гос.</span>}
+                    </h3>
                     {s.description && <p className="mt-1 text-sm text-slate-500 line-clamp-2">{s.description}</p>}
                     {s.courses && s.courses.length > 0 && (
                       <div className="mt-3 space-y-1">
@@ -145,28 +155,48 @@ export default function AdminSchoolsPage() {
                 {editing ? 'Изменить школу' : 'Добавить школу'}
               </h2>
               <div className="space-y-3">
-                {(['name', 'description', 'cover_url', 'website', 'telegram', 'email'] as const).map((field) => (
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500">Название *</label>
+                  <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">Тип</label>
+                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                      <option value="bootcamp">Буткемп</option>
+                      <option value="university">Университет</option>
+                      <option value="state_program">Гос. программа</option>
+                      <option value="university_abroad">Зарубежный ВУЗ</option>
+                      <option value="prep_service">Подготовка к ВУЗу</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">Страна</label>
+                    <input type="text" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })}
+                      placeholder="Казахстан"
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500">Описание</label>
+                  <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+                </div>
+                {(['cover_url', 'website', 'telegram', 'email'] as const).map((field) => (
                   <div key={field}>
                     <label className="mb-1 block text-xs font-medium text-slate-500">
-                      {field === 'name' ? 'Название *' : field === 'description' ? 'Описание' : field === 'cover_url' ? 'URL обложки' : field === 'website' ? 'Сайт' : field === 'telegram' ? 'Telegram' : 'Email'}
+                      {field === 'cover_url' ? 'URL обложки' : field === 'website' ? 'Сайт' : field === 'telegram' ? 'Telegram' : 'Email'}
                     </label>
-                    {field === 'description' ? (
-                      <textarea
-                        value={form[field]}
-                        onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                        rows={3}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        value={form[field]}
-                        onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                      />
-                    )}
+                    <input type="text" value={form[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
                   </div>
                 ))}
+                <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                  <input type="checkbox" checked={form.is_state_funded} onChange={(e) => setForm({ ...form, is_state_funded: e.target.checked })} className="rounded" />
+                  Государственное финансирование
+                </label>
               </div>
               <div className="mt-4 flex gap-3">
                 <button onClick={handleSave} disabled={saving} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60">

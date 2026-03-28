@@ -39,6 +39,7 @@ export interface AdminCompany {
   coverURL: string;
   contacts: { website: string; telegram: string; email: string };
   widgets: { trainingEnabled: boolean; internshipEnabled: boolean; vacancyEnabled: boolean };
+  isVerified: boolean;
   opportunities?: AdminOpportunity[];
 }
 
@@ -55,13 +56,20 @@ export interface AdminOpportunity {
   salary_currency: string;
   work_format: string;
   city: string;
+  deadline: string | null;
+  is_year_round: boolean;
+  is_verified: boolean;
+  source: string;
 }
 
 export interface AdminSchool {
   id: number;
   name: string;
+  type: string;
+  country: string;
   description: string;
   cover_url: string;
+  is_state_funded: boolean;
   website: string;
   telegram: string;
   email: string;
@@ -110,6 +118,7 @@ export interface AdminCompanyBody {
   training_enabled: boolean;
   internship_enabled: boolean;
   vacancy_enabled: boolean;
+  is_verified: boolean;
 }
 
 // Companies
@@ -126,6 +135,8 @@ export const deleteAdminCompany = (id: number) => adminApi.delete(`/admin/compan
 // Opportunities
 export const createAdminOpportunity = (companyId: number, body: Omit<AdminOpportunity, 'id'>) =>
   adminApi.post(`/admin/companies/${companyId}/opportunities`, body);
+export const updateAdminOpportunity = (id: number, body: Omit<AdminOpportunity, 'id'>) =>
+  adminApi.put(`/admin/opportunities/${id}`, body);
 export const deleteAdminOpportunity = (id: number) => adminApi.delete(`/admin/opportunities/${id}`);
 
 // Schools
