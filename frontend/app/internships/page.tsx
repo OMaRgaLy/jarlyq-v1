@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../components/header';
+import { Footer } from '../../components/footer';
 import { api, InternshipItem, HRContact, HRContent, Company } from '../../lib/api';
 import { useLang } from '../../lib/lang-context';
 
@@ -73,9 +74,9 @@ export default function InternshipsPage() {
   const seasonal = internships.filter(i => !i.isYearRound);
 
   return (
-    <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-slate-100/60 dark:bg-slate-950">
       <Header />
-      <main className="mx-auto max-w-6xl px-4 py-8">
+      <main className="flex-1 mx-auto max-w-6xl px-4 py-8">
         {/* Hero */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t.internships.title}</h1>
@@ -216,6 +217,7 @@ export default function InternshipsPage() {
           </section>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

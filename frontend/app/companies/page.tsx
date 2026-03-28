@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Header } from '../../components/header';
+import { Footer } from '../../components/footer';
 import { CompanyCard } from '../../components/company-card';
 import { CompanyCardSkeleton } from '../../components/skeleton';
 import { useCompanies, useStacks } from '../../lib/hooks';
@@ -48,9 +49,9 @@ export default function CompaniesPage() {
   }, [companies, search, workFormat]);
 
   return (
-    <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-slate-100/60 dark:bg-slate-950">
       <Header />
-      <main className="mx-auto max-w-6xl px-4 py-8">
+      <main className="flex-1 mx-auto max-w-6xl px-4 py-8">
 
         {/* Hero */}
         <div className="mb-8">
@@ -158,6 +159,7 @@ export default function CompaniesPage() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

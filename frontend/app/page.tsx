@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Header } from '../components/header';
+import { Footer } from '../components/footer';
 import { useLang } from '../lib/lang-context';
 import Link from 'next/link';
 import { getToken } from '../lib/auth';
@@ -37,10 +38,10 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
       <Header />
 
-      <main>
+      <main className="flex-1">
         {/* ── Hero ── */}
         <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 py-24 text-center dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
           {/* Background glow */}
@@ -203,26 +204,7 @@ export default function Page() {
           </div>
         </section>
       </main>
-
-      {/* ── Footer ── */}
-      <footer className="border-t border-slate-200/70 bg-white/80 py-8 dark:border-slate-800/60 dark:bg-slate-950/80">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
-            <div>
-              <span className="text-base font-bold text-brand">Jarlyq</span>
-              <p className="mt-1 text-xs text-slate-400">{t.home.footer}</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-              <Link href="/internships" className="hover:text-brand">{t.nav.internships}</Link>
-              <Link href="/companies" className="hover:text-brand">{t.nav.companies}</Link>
-              <Link href="/career-paths" className="hover:text-brand">{t.nav.careerPaths}</Link>
-              <Link href="/hackathons" className="hover:text-brand">{t.nav.hackathons}</Link>
-              <Link href="/legal" className="hover:text-brand">{t.legal.title}</Link>
-            </div>
-          </div>
-          <p className="mt-6 text-center text-xs text-slate-400">© {new Date().getFullYear()} Jarlyq.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

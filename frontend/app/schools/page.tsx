@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Header } from '../../components/header';
+import { Footer } from '../../components/footer';
 import { useSchools } from '../../lib/hooks';
 import { useLang } from '../../lib/lang-context';
 import { School } from '../../lib/api';
@@ -99,7 +100,7 @@ export default function SchoolsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <Header />
 
       {/* Page header */}
@@ -132,7 +133,7 @@ export default function SchoolsPage() {
         </div>
       </div>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">
+      <main className="flex-1 mx-auto max-w-5xl px-4 py-8">
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -215,6 +216,7 @@ export default function SchoolsPage() {
           </>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

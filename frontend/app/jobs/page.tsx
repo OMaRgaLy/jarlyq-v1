@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../components/header';
+import { Footer } from '../../components/footer';
 import { api, InternshipItem } from '../../lib/api';
 import { useLang } from '../../lib/lang-context';
 
@@ -45,9 +46,9 @@ export default function JobsPage() {
   }, [city, format]);
 
   return (
-    <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-slate-100/60 dark:bg-slate-950">
       <Header />
-      <main className="mx-auto max-w-6xl px-4 py-8">
+      <main className="flex-1 mx-auto max-w-6xl px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t.jobs.title}</h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400">{t.jobs.subtitle}</p>
@@ -133,6 +134,7 @@ export default function JobsPage() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 }
