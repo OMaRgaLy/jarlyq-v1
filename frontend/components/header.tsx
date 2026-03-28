@@ -12,76 +12,19 @@ import { getUser, clearAuth, AuthUser } from '../lib/auth';
 import { useLang } from '../lib/lang-context';
 import { LOCALES, Locale } from '../lib/i18n';
 
-// ─── Nav groups ──────────────────────────────────────────────────────────────
+// ─── Nav links (flat, no dropdowns — stable across languages) ────────────────
 
-function useNavGroups() {
+function useNavLinks() {
   const { t } = useLang();
   return [
-    {
-      label: t.nav.groupWork,
-      items: [
-        { href: '/internships', label: t.nav.internships },
-        { href: '/jobs', label: t.nav.jobs },
-      ],
-    },
-    {
-      label: t.nav.companies,
-      href: '/companies',
-    },
-    {
-      label: t.nav.groupPrep,
-      items: [
-        { href: '/career-paths', label: t.nav.careerPaths },
-        { href: '/schools', label: t.nav.schools },
-        { href: '/masters', label: t.nav.masters },
-        { href: '/interview', label: t.nav.interview },
-        { href: '/hackathons', label: t.nav.hackathons },
-      ],
-    },
-  ] as const;
-}
-
-// ─── Desktop dropdown ─────────────────────────────────────────────────────────
-
-function NavDropdown({ label, items }: { label: string; items: readonly { href: string; label: string }[] }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-brand dark:text-slate-300 dark:hover:bg-slate-800"
-      >
-        {label}
-        <ChevronDownIcon className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-      </button>
-
-      {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 min-w-[180px] rounded-xl border border-slate-200/70 bg-white py-1 shadow-lg dark:border-slate-700/60 dark:bg-slate-900">
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+    { href: '/internships', label: t.nav.internships },
+    { href: '/jobs', label: t.nav.jobs },
+    { href: '/companies', label: t.nav.companies },
+    { href: '/schools', label: t.nav.schools },
+    { href: '/masters', label: t.nav.masters },
+    { href: '/career-paths', label: t.nav.careerPaths },
+    { href: '/hackathons', label: t.nav.hackathons },
+  ];
 }
 
 // ─── Main header ──────────────────────────────────────────────────────────────
@@ -90,13 +33,12 @@ export function Header() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileOpenGroup, setMobileOpenGroup] = useState<number | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useLang();
-  const navGroups = useNavGroups();
+  const navLinks = useNavLinks();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -133,21 +75,17 @@ export function Header() {
             Jarlyq
           </Link>
 
-          {/* ── Desktop nav (flex-1, centered) ── */}
-          <nav className="hidden flex-1 items-center justify-center gap-1 md:flex">
-            {navGroups.map((group) =>
-              'href' in group ? (
-                <Link
-                  key={group.href}
-                  href={group.href}
-                  className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-brand dark:text-slate-300 dark:hover:bg-slate-800"
-                >
-                  {group.label}
-                </Link>
-              ) : (
-                <NavDropdown key={group.label} label={group.label} items={group.items} />
-              )
-            )}
+          {/* ── Desktop nav (flex-1, centered, scrollable if needed) ── */}
+          <nav className="hidden flex-1 items-center justify-center gap-0.5 overflow-x-auto md:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-brand dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           {/* ── Right actions (flex-none, fixed min-width = no layout shift) ── */}
@@ -257,44 +195,17 @@ export function Header() {
           <div className="border-t border-slate-200/60 bg-white dark:border-slate-800/60 dark:bg-slate-950 md:hidden">
             <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800">
 
-              {/* Nav groups accordion */}
-              {navGroups.map((group, i) =>
-                'href' in group ? (
-                  <Link
-                    key={group.href}
-                    href={group.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="px-5 py-3.5 text-sm font-medium text-slate-700 hover:text-brand dark:text-slate-200"
-                  >
-                    {group.label}
-                  </Link>
-                ) : (
-                  <div key={group.label}>
-                    <button
-                      type="button"
-                      onClick={() => setMobileOpenGroup(mobileOpenGroup === i ? null : i)}
-                      className="flex w-full items-center justify-between px-5 py-3.5 text-sm font-medium text-slate-700 dark:text-slate-200"
-                    >
-                      {group.label}
-                      <ChevronDownIcon className={`transition-transform ${mobileOpenGroup === i ? 'rotate-180' : ''}`} />
-                    </button>
-                    {mobileOpenGroup === i && (
-                      <div className="bg-slate-50 dark:bg-slate-900">
-                        {group.items.map((item) => (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setMenuOpen(false)}
-                            className="block px-8 py-2.5 text-sm text-slate-600 hover:text-brand dark:text-slate-300"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              )}
+              {/* Nav links */}
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="px-5 py-3 text-sm font-medium text-slate-700 hover:text-brand dark:text-slate-200"
+                >
+                  {link.label}
+                </Link>
+              ))}
 
               {/* Lang + auth row */}
               <div className="flex items-center justify-between px-5 py-3">
