@@ -39,6 +39,7 @@ type authUserResponse struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Theme     string `json:"theme"`
+	Role      string `json:"role"`
 }
 
 func (h *Handler) register(c *gin.Context) {
@@ -171,12 +172,12 @@ func (h *Handler) refreshToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
 		return
 	}
-	accessToken, err := h.JWT.GenerateAccessToken(user.ID, user.Email)
+	accessToken, err := h.JWT.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
-	refreshToken, err := h.JWT.GenerateRefreshToken(user.ID, user.Email)
+	refreshToken, err := h.JWT.GenerateRefreshToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
@@ -192,11 +193,16 @@ func mapUser(user *model.User) authUserResponse {
 	if user == nil {
 		return authUserResponse{}
 	}
+	role := user.Role
+	if role == "" {
+		role = "user"
+	}
 	return authUserResponse{
 		ID:        user.ID,
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Theme:     user.Theme,
+		Role:      role,
 	}
 }

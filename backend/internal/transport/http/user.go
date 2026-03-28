@@ -28,6 +28,8 @@ func newUserRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) {
 	auth.DELETE("/me/experiences/:eid", handler.deleteExperience)
 	auth.POST("/me/skills", handler.addSkill)
 	auth.DELETE("/me/skills/:sid", handler.deleteSkill)
+	auth.PUT("/me/preferred-stacks", handler.setPreferredStacks)
+	auth.GET("/me/preferred-stacks", handler.getPreferredStacks)
 }
 
 // ─── GET /users/me ────────────────────────────────────────────────────────────
@@ -48,9 +50,11 @@ type fullProfileResponse struct {
 		TelegramPrivate bool `json:"telegram_private"`
 		EmailPrivate    bool `json:"email_private"`
 	} `json:"privacy"`
-	ExtProfile  *model.UserExtProfile `json:"ext_profile,omitempty"`
-	Experiences []model.UserExperience `json:"experiences"`
-	Skills      []model.UserSkill      `json:"skills"`
+	ExtProfile      *model.UserExtProfile `json:"ext_profile,omitempty"`
+	Experiences     []model.UserExperience `json:"experiences"`
+	Skills          []model.UserSkill      `json:"skills"`
+	PreferredStacks []model.Stack          `json:"preferred_stacks"`
+	Role            string                 `json:"role"`
 }
 
 func (h *Handler) getProfile(c *gin.Context) {
@@ -61,6 +65,7 @@ func (h *Handler) getProfile(c *gin.Context) {
 		Preload("Experiences").
 		Preload("Skills").
 		Preload("Skills.Stack").
+		Preload("PreferredStacks").
 		First(&user, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
@@ -76,9 +81,17 @@ func (h *Handler) getProfile(c *gin.Context) {
 		Bio:         user.Bio,
 		Theme:       user.Theme,
 		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		ExtProfile:  user.Profile,
-		Experiences: user.Experiences,
-		Skills:      user.Skills,
+		ExtProfile:      user.Profile,
+		Experiences:     user.Experiences,
+		Skills:          user.Skills,
+		PreferredStacks: user.PreferredStacks,
+		Role:            user.Role,
+	}
+	if resp.Role == "" {
+		resp.Role = "user"
+	}
+	if resp.PreferredStacks == nil {
+		resp.PreferredStacks = []model.Stack{}
 	}
 	resp.Privacy.ProfilePublic = user.Privacy.ProfilePublic
 	resp.Privacy.PhonePrivate = user.Privacy.PhonePrivate
@@ -359,6 +372,51 @@ func (h *Handler) getPublicProfile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"user": resp})
+}
+
+// ─── PREFERRED STACKS ────────────────────────────────────────────────────────
+
+func (h *Handler) setPreferredStacks(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	var req struct {
+		StackIDs []uint `json:"stack_ids" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if len(req.StackIDs) > 10 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "max 10 stacks"})
+		return
+	}
+
+	var user model.User
+	if err := h.Services.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	var stacks []model.Stack
+	if len(req.StackIDs) > 0 {
+		h.Services.DB.Where("id IN ?", req.StackIDs).Find(&stacks)
+	}
+	h.Services.DB.Model(&user).Association("PreferredStacks").Replace(stacks)
+
+	c.JSON(http.StatusOK, gin.H{"stacks": stacks})
+}
+
+func (h *Handler) getPreferredStacks(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	var user model.User
+	if err := h.Services.DB.Preload("PreferredStacks").First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	stacks := user.PreferredStacks
+	if stacks == nil {
+		stacks = []model.Stack{}
+	}
+	c.JSON(http.StatusOK, gin.H{"stacks": stacks})
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────

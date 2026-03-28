@@ -377,6 +377,29 @@ export interface Job {
   applications: number;
 }
 
+// Favorites
+export interface UserFavorite {
+  id: number;
+  createdAt: string;
+  entityType: 'company' | 'opportunity' | 'school';
+  entityId: number;
+}
+
+// Owner Requests
+export interface OwnerRequest {
+  id: number;
+  createdAt: string;
+  userId: number;
+  entityType: 'company' | 'school' | 'partner';
+  entityId: number;
+  message?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  adminNotes?: string;
+  userEmail?: string;
+  userName?: string;
+  entityName?: string;
+}
+
 // Phase 2: Project Ideas for Portfolio
 export interface ProjectIdea {
   id: number;

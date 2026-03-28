@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
+import { JsonLd, educationalOrgJsonLd } from '../../../components/json-ld';
+import { FavoriteButton } from '../../../components/favorite-button';
 import { useSchool } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
 
@@ -43,6 +45,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
   return (
     <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
       <Header />
+      <JsonLd data={educationalOrgJsonLd(school)} />
       <main className="mx-auto max-w-4xl px-4 py-8 space-y-6">
         <Link href="/schools" className="inline-flex text-sm text-brand hover:underline">
           {t.school.backToList}
@@ -64,7 +67,10 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
           )}
 
           <div className="p-6">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{school.name}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{school.name}</h1>
+              <FavoriteButton entityType="school" entityId={school.id} />
+            </div>
 
             {school.description && (
               <p className="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">{school.description}</p>

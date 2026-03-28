@@ -9,6 +9,7 @@ export interface AuthUser {
   email: string;
   first_name: string;
   last_name: string;
+  role: string; // "user" | "company_owner" | "school_owner" | "partner" | "admin"
 }
 
 export function saveAuth(accessToken: string, refreshToken: string, user: AuthUser) {

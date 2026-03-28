@@ -27,6 +27,8 @@ interface FullProfile {
   ext_profile?: UserExtProfile;
   experiences: UserExperience[];
   skills: UserSkill[];
+  preferred_stacks: Stack[];
+  role: string;
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -54,6 +56,9 @@ export default function ProfilePage() {
   // New skill form
   const [showSkillForm, setShowSkillForm] = useState(false);
   const [skillForm, setSkillForm] = useState({ stack_id: 0, level: 'beginner' });
+  // Preferred stacks
+  const [preferredStackIds, setPreferredStackIds] = useState<number[]>([]);
+  const [savingStacks, setSavingStacks] = useState(false);
 
   const loadProfile = useCallback(async () => {
     const token = getToken();
@@ -68,6 +73,7 @@ export default function ProfilePage() {
         telegram: data.user.telegram || '',
         bio: data.user.bio || '',
       });
+      setPreferredStackIds((data.user.preferred_stacks ?? []).map(s => s.id));
       const ep = data.user.ext_profile;
       setExtForm({
         city: ep?.city || '',
@@ -142,6 +148,23 @@ export default function ProfilePage() {
   const handleDeleteSkill = async (sid: number) => {
     await api.delete(`/users/me/skills/${sid}`);
     loadProfile();
+  };
+
+  const togglePreferredStack = (id: number) => {
+    setPreferredStackIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 10 ? [...prev, id] : prev,
+    );
+  };
+
+  const [stacksSaved, setStacksSaved] = useState(false);
+  const handleSaveStacks = async () => {
+    setSavingStacks(true);
+    try {
+      await api.put('/users/me/preferred-stacks', { stack_ids: preferredStackIds });
+      setStacksSaved(true);
+      setTimeout(() => setStacksSaved(false), 3000);
+    } catch { /* ignore */ }
+    finally { setSavingStacks(false); }
   };
 
   const levelLabel = (l: string) =>
@@ -437,6 +460,37 @@ export default function ProfilePage() {
               ))}
             </div>
           )}
+        </section>
+
+        {/* Preferred Stacks */}
+        <section className="card p-6 space-y-4">
+          <SectionTitle>{t.profile.preferredStacks}</SectionTitle>
+          <p className="text-xs text-slate-400">{t.profile.preferredStacksHint}</p>
+          <div className="flex flex-wrap gap-2">
+            {stacks.map(s => {
+              const selected = preferredStackIds.includes(s.id);
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => togglePreferredStack(s.id)}
+                  className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                    selected
+                      ? 'bg-brand text-white'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                  }`}
+                >
+                  {s.name}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={handleSaveStacks}
+            disabled={savingStacks}
+            className={`rounded-xl px-5 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-50 ${stacksSaved ? 'bg-green-600' : 'bg-brand hover:bg-brand-dark'}`}
+          >
+            {stacksSaved ? t.profile.stacksSaved : savingStacks ? t.profile.saving : t.profile.saveStacks}
+          </button>
         </section>
 
         {/* Member since */}

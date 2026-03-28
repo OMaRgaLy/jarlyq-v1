@@ -214,6 +214,10 @@ export function Header() {
                         className="flex items-center gap-2 px-4 py-2 text-sm text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800">
                         🌐 {t.nav.publicProfile}
                       </Link>
+                      <Link href="/dashboard" onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800">
+                        {t.dashboard.title}
+                      </Link>
                       <Link href="/suggest" onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 text-sm text-brand hover:bg-brand/5">
                         + {t.nav.suggest}

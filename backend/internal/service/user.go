@@ -128,11 +128,11 @@ func (s *userService) Register(ctx context.Context, input RegisterInput) (*AuthR
 		return nil, err
 	}
 
-	access, err := s.jwt.GenerateAccessToken(user.ID, user.Email)
+	access, err := s.jwt.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
-	refresh, err := s.jwt.GenerateRefreshToken(user.ID, user.Email)
+	refresh, err := s.jwt.GenerateRefreshToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
@@ -157,11 +157,11 @@ func (s *userService) Login(ctx context.Context, email, password string) (*AuthR
 		return nil, errors.New("invalid credentials")
 	}
 
-	access, err := s.jwt.GenerateAccessToken(user.ID, user.Email)
+	access, err := s.jwt.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
-	refresh, err := s.jwt.GenerateRefreshToken(user.ID, user.Email)
+	refresh, err := s.jwt.GenerateRefreshToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
@@ -190,11 +190,11 @@ func (s *userService) GoogleOAuth(ctx context.Context, token string) (*AuthResul
 		}
 	}
 
-	access, err := s.jwt.GenerateAccessToken(user.ID, user.Email)
+	access, err := s.jwt.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
-	refresh, err := s.jwt.GenerateRefreshToken(user.ID, user.Email)
+	refresh, err := s.jwt.GenerateRefreshToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}

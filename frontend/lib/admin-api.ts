@@ -214,9 +214,55 @@ export interface AdminUser {
   last_name: string;
   email: string;
   phone: string;
+  role: string;
+  company_id: number | null;
+  school_id: number | null;
   created_at: string;
 }
 export const fetchAdminUsers = async (): Promise<AdminUser[]> => {
   const { data } = await adminApi.get('/admin/users');
   return data.users ?? [];
+};
+
+// Owner Requests
+export interface AdminOwnerRequest {
+  id: number;
+  createdAt: string;
+  userId: number;
+  entityType: string;
+  entityId: number;
+  message: string;
+  status: string;
+  adminNotes: string;
+  userEmail: string;
+  userName: string;
+  entityName: string;
+}
+export const fetchAdminOwnerRequests = async (status = 'pending'): Promise<AdminOwnerRequest[]> => {
+  const { data } = await adminApi.get('/admin/owner-requests', { params: { status } });
+  return data.requests ?? [];
+};
+export const approveOwnerRequest = (id: number) => adminApi.put(`/admin/owner-requests/${id}/approve`);
+export const rejectOwnerRequest = (id: number, notes?: string) =>
+  adminApi.put(`/admin/owner-requests/${id}/reject`, { notes });
+
+// User role management
+export const setUserRole = (userId: number, body: { role: string; company_id?: number; school_id?: number }) =>
+  adminApi.put(`/admin/users/${userId}/role`, body);
+
+// Audit Log
+export interface AuditLogEntry {
+  id: number;
+  created_at: string;
+  user_id: number;
+  user_email: string;
+  action: string;
+  entity: string;
+  entity_id: number;
+  details?: string;
+  ip?: string;
+}
+export const fetchAuditLog = async (page = 1, entity?: string, action?: string): Promise<{ logs: AuditLogEntry[]; total: number }> => {
+  const { data } = await adminApi.get('/admin/audit-log', { params: { page, entity, action } });
+  return { logs: data.logs ?? [], total: data.total ?? 0 };
 };

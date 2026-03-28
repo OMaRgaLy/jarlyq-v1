@@ -25,7 +25,7 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 	authMw := middleware.JWTAuth(jwt)
 	adminMw := middleware.AdminOnly()
 
-	group.Use(authMw, adminMw)
+	group.Use(authMw, adminMw, middleware.AuditLog(handler.Services.DB))
 
 	// Companies
 	group.GET("/companies", handler.adminListCompanies)
@@ -78,6 +78,17 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 
 	// Suggestions
 	newAdminSuggestionRoutes(group.Group("/suggestions"), handler)
+
+	// Owner requests
+	group.GET("/owner-requests", handler.adminListOwnerRequests)
+	group.PUT("/owner-requests/:id/approve", handler.adminApproveOwnerRequest)
+	group.PUT("/owner-requests/:id/reject", handler.adminRejectOwnerRequest)
+
+	// User role management
+	group.PUT("/users/:id/role", handler.adminSetUserRole)
+
+	// Audit log
+	group.GET("/audit-log", handler.adminListAuditLog)
 }
 
 // ─── COMPANIES ────────────────────────────────────────────────────────────────
@@ -525,10 +536,13 @@ func (h *Handler) adminListUsers(c *gin.Context) {
 		LastName  string `json:"last_name"`
 		Email     string `json:"email"`
 		Phone     string `json:"phone"`
+		Role      string `json:"role"`
+		CompanyID *uint  `json:"company_id"`
+		SchoolID  *uint  `json:"school_id"`
 		CreatedAt string `json:"created_at"`
 	}
 	h.Services.DB.Table("users").
-		Select("id, first_name, last_name, email, phone, created_at").
+		Select("id, first_name, last_name, email, phone, role, company_id, school_id, created_at").
 		Order("created_at DESC").
 		Limit(200).
 		Scan(&users)
@@ -782,4 +796,139 @@ func (h *Handler) adminRejectReview(c *gin.Context) {
 	}
 	h.Services.DB.Model(&model.CompanyReview{}).Where("id = ?", id).Update("status", "rejected")
 	c.JSON(http.StatusOK, gin.H{"status": "rejected"})
+}
+
+// ─── OWNER REQUESTS ──────────────────────────────────────────────────────────
+
+func (h *Handler) adminListOwnerRequests(c *gin.Context) {
+	status := c.DefaultQuery("status", "pending")
+	var requests []model.OwnerRequest
+	h.Services.DB.Where("status = ?", status).Order("created_at ASC").Find(&requests)
+
+	// Populate user and entity names
+	for i := range requests {
+		var u struct {
+			Email     string
+			FirstName string
+			LastName  string
+		}
+		h.Services.DB.Table("users").Select("email, first_name, last_name").Where("id = ?", requests[i].UserID).Scan(&u)
+		requests[i].UserEmail = u.Email
+		requests[i].UserName = u.FirstName + " " + u.LastName
+
+		switch requests[i].EntityType {
+		case "company":
+			var name string
+			h.Services.DB.Table("companies").Select("name").Where("id = ?", requests[i].EntityID).Scan(&name)
+			requests[i].EntityName = name
+		case "school":
+			var name string
+			h.Services.DB.Table("schools").Select("name").Where("id = ?", requests[i].EntityID).Scan(&name)
+			requests[i].EntityName = name
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"requests": requests})
+}
+
+func (h *Handler) adminApproveOwnerRequest(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	var req model.OwnerRequest
+	if err := h.Services.DB.First(&req, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "request not found"})
+		return
+	}
+	if req.Status != "pending" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "request already processed"})
+		return
+	}
+
+	// Update request status
+	h.Services.DB.Model(&req).Update("status", "approved")
+
+	// Assign role and entity to user
+	updates := map[string]interface{}{}
+	switch req.EntityType {
+	case "company":
+		updates["role"] = "company_owner"
+		updates["company_id"] = req.EntityID
+	case "school":
+		updates["role"] = "school_owner"
+		updates["school_id"] = req.EntityID
+	case "partner":
+		updates["role"] = "partner"
+	}
+	h.Services.DB.Model(&model.User{}).Where("id = ?", req.UserID).Updates(updates)
+
+	c.JSON(http.StatusOK, gin.H{"status": "approved"})
+}
+
+func (h *Handler) adminRejectOwnerRequest(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	var input struct {
+		Notes string `json:"notes"`
+	}
+	c.ShouldBindJSON(&input)
+
+	result := h.Services.DB.Model(&model.OwnerRequest{}).Where("id = ? AND status = 'pending'", id).Updates(map[string]interface{}{
+		"status":      "rejected",
+		"admin_notes": input.Notes,
+	})
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "request not found or already processed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "rejected"})
+}
+
+// ─── USER ROLE MANAGEMENT ───────────────────────────────────────────────────
+
+type setRoleRequest struct {
+	Role      string `json:"role" binding:"required"`
+	CompanyID *uint  `json:"company_id"`
+	SchoolID  *uint  `json:"school_id"`
+}
+
+func (h *Handler) adminSetUserRole(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	var req setRoleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validRoles := map[string]bool{"user": true, "company_owner": true, "school_owner": true, "partner": true, "admin": true}
+	if !validRoles[req.Role] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid role"})
+		return
+	}
+
+	updates := map[string]interface{}{"role": req.Role}
+	if req.CompanyID != nil {
+		updates["company_id"] = *req.CompanyID
+	}
+	if req.SchoolID != nil {
+		updates["school_id"] = *req.SchoolID
+	}
+
+	result := h.Services.DB.Model(&model.User{}).Where("id = ?", id).Updates(updates)
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "role updated"})
 }

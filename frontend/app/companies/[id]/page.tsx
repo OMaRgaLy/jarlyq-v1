@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
+import { JsonLd, organizationJsonLd, jobPostingJsonLd } from '../../../components/json-ld';
+import { FavoriteButton } from '../../../components/favorite-button';
 import { useCompany, useCompanyReviews } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
 import { getUser } from '../../../lib/auth';
@@ -202,6 +204,10 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
   return (
     <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950">
       <Header />
+      <JsonLd data={organizationJsonLd(company)} />
+      {[...internships, ...vacancies].slice(0, 5).map(opp => (
+        <JsonLd key={`ld-${opp.id}`} data={jobPostingJsonLd(opp, company.name)} />
+      ))}
       <main className="mx-auto max-w-5xl px-4 py-8 space-y-6">
         <Link href="/companies" className="inline-flex text-sm text-brand hover:underline">
           {t.company.backToList}
@@ -260,7 +266,10 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{company.name}</h1>
+                    <div className="flex items-center gap-3">
+                      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{company.name}</h1>
+                      <FavoriteButton entityType="company" entityId={company.id} />
+                    </div>
                     {company.industry && (
                       <p className="text-sm text-slate-500 dark:text-slate-400">{company.industry}</p>
                     )}

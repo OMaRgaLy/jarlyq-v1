@@ -12,7 +12,9 @@ const links = [
   { href: '/admin/schools', label: '🎓 Школы' },
   { href: '/admin/hackathons', label: '🏆 Хакатоны' },
   { href: '/admin/stacks', label: '⚙️ Стеки' },
+  { href: '/admin/owner-requests', label: '🔑 Заявки на роль' },
   { href: '/admin/users', label: '👤 Пользователи' },
+  { href: '/admin/audit-log', label: '📋 Журнал действий' },
 ];
 
 export function AdminNav() {

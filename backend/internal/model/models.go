@@ -22,7 +22,13 @@ type User struct {
 	Theme         string `gorm:"size:20"`
 	EmailVerified bool
 	TermsAccepted bool
-	Achievements  []Achievement
+	// Role-based access: "user", "company_owner", "school_owner", "partner", "admin"
+	Role      string `gorm:"size:30;default:'user'"`
+	CompanyID *uint  `gorm:"index"` // set when role=company_owner
+	SchoolID  *uint  `gorm:"index"` // set when role=school_owner
+	// Preferred stacks for personalized recommendations
+	PreferredStacks []Stack `gorm:"many2many:user_preferred_stacks"`
+	Achievements    []Achievement
 	Privacy       PrivacySettings    `gorm:"embedded;embeddedPrefix:privacy_"`
 	Profile       *UserExtProfile    `gorm:"foreignKey:UserID"`
 	Experiences   []UserExperience   `gorm:"foreignKey:UserID"`
@@ -536,6 +542,45 @@ type ProjectIdea struct {
 	CompletedBy int       `json:"completedBy"`
 }
 
+// UserFavorite represents a bookmarked entity (company, opportunity, school).
+type UserFavorite struct {
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UserID     uint      `gorm:"uniqueIndex:udx_user_fav" json:"-"`
+	EntityType string    `gorm:"size:30;uniqueIndex:udx_user_fav" json:"entityType"` // "company", "opportunity", "school"
+	EntityID   uint      `gorm:"uniqueIndex:udx_user_fav" json:"entityId"`
+}
+
+// OwnerRequest represents a request from a user to become a company/school/partner owner.
+type OwnerRequest struct {
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"-"`
+	UserID     uint      `gorm:"index" json:"userId"`
+	EntityType string    `gorm:"size:30" json:"entityType"` // "company", "school", "partner"
+	EntityID   uint      `json:"entityId"`
+	Message    string    `gorm:"type:text" json:"message,omitempty"` // e.g. "Я HR в Kaspi"
+	Status     string    `gorm:"size:20;default:'pending'" json:"status"` // pending|approved|rejected
+	AdminNotes string    `gorm:"type:text" json:"adminNotes,omitempty"`
+	// Populated at query time
+	UserEmail  string `gorm:"-" json:"userEmail,omitempty"`
+	UserName   string `gorm:"-" json:"userName,omitempty"`
+	EntityName string `gorm:"-" json:"entityName,omitempty"`
+}
+
+// AuditLog records admin/owner actions for accountability.
+type AuditLog struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UserID    uint      `gorm:"index" json:"user_id"`
+	UserEmail string    `gorm:"size:255" json:"user_email"`
+	Action    string    `gorm:"size:50" json:"action"`  // create, update, delete, approve, reject
+	Entity    string    `gorm:"size:50" json:"entity"`  // company, school, opportunity, course, user, owner_request
+	EntityID  uint      `json:"entity_id"`
+	Details   string    `gorm:"type:text" json:"details,omitempty"`
+	IP        string    `gorm:"size:45" json:"ip,omitempty"`
+}
+
 // AutoMigrate runs database migrations using GORM.
 func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
@@ -574,6 +619,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&UserExtProfile{},
 		&UserExperience{},
 		&UserSkill{},
+		&OwnerRequest{},
+		&UserFavorite{},
+		&AuditLog{},
 	)
 }
 

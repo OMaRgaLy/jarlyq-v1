@@ -1,11 +1,40 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Header } from '../components/header';
 import { useLang } from '../lib/lang-context';
 import Link from 'next/link';
+import { getToken } from '../lib/auth';
+import { api } from '../lib/api';
+import type { Stack } from '../lib/api';
+
+interface RecommendedCompany {
+  id: number;
+  name: string;
+  logoURL?: string;
+  industry?: string;
+  stack?: Stack[];
+}
 
 export default function Page() {
   const { t } = useLang();
+  const [recommended, setRecommended] = useState<RecommendedCompany[]>([]);
+
+  useEffect(() => {
+    if (!getToken()) return;
+    (async () => {
+      try {
+        const { data: stackData } = await api.get<{ stacks: Stack[] }>('/users/me/preferred-stacks');
+        if (!stackData.stacks?.length) return;
+        const stackIds = new Set(stackData.stacks.map(s => s.id));
+        const { data: compData } = await api.get<{ companies: RecommendedCompany[] }>('/companies');
+        const matched = (compData.companies ?? []).filter(c =>
+          (c.stack ?? []).some(s => stackIds.has(s.id)),
+        );
+        setRecommended(matched.slice(0, 6));
+      } catch { /* not logged in or error */ }
+    })();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
@@ -62,6 +91,37 @@ export default function Page() {
             ))}
           </div>
         </section>
+
+        {/* ── For You (personalized) ── */}
+        {recommended.length > 0 && (
+          <section className="px-4 py-12">
+            <div className="mx-auto max-w-5xl">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.forYouTitle}</h2>
+              <p className="mt-1 text-sm text-slate-500">{t.home.forYouSub}</p>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {recommended.map(c => (
+                  <Link
+                    key={c.id}
+                    href={`/companies/${c.id}`}
+                    className="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md dark:border-slate-800/60 dark:bg-slate-900"
+                  >
+                    {c.logoURL ? (
+                      <img src={c.logoURL} alt={c.name} className="h-10 w-10 rounded-lg object-cover" />
+                    ) : (
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10 text-brand font-bold">
+                        {c.name[0]}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold text-slate-900 dark:text-white">{c.name}</p>
+                      {c.industry && <p className="truncate text-xs text-slate-400">{c.industry}</p>}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ── What we help with ── */}
         <section className="px-4 py-16">

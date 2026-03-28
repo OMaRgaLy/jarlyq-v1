@@ -13,13 +13,14 @@ import (
 type Claims struct {
 	UserID uint   `json:"user_id"`
 	Email  string `json:"email"`
+	Role   string `json:"role,omitempty"`
 	jwt.RegisteredClaims
 }
 
 // Manager handles JWT operations.
 type Manager interface {
-	GenerateAccessToken(userID uint, email string) (string, error)
-	GenerateRefreshToken(userID uint, email string) (string, error)
+	GenerateAccessToken(userID uint, email, role string) (string, error)
+	GenerateRefreshToken(userID uint, email, role string) (string, error)
 	ParseToken(token string) (*Claims, error)
 	ParseRefreshToken(token string) (*Claims, error)
 }
@@ -43,19 +44,20 @@ func NewJWTManager(cfg *config.Config) Manager {
 }
 
 // GenerateAccessToken returns access JWT.
-func (m *JWTManager) GenerateAccessToken(userID uint, email string) (string, error) {
-	return m.generateToken(userID, email, m.accessSecret, m.accessTTL)
+func (m *JWTManager) GenerateAccessToken(userID uint, email, role string) (string, error) {
+	return m.generateToken(userID, email, role, m.accessSecret, m.accessTTL)
 }
 
 // GenerateRefreshToken returns refresh JWT.
-func (m *JWTManager) GenerateRefreshToken(userID uint, email string) (string, error) {
-	return m.generateToken(userID, email, m.refreshSecret, m.refreshTTL)
+func (m *JWTManager) GenerateRefreshToken(userID uint, email, role string) (string, error) {
+	return m.generateToken(userID, email, role, m.refreshSecret, m.refreshTTL)
 }
 
-func (m *JWTManager) generateToken(userID uint, email string, secret []byte, ttl time.Duration) (string, error) {
+func (m *JWTManager) generateToken(userID uint, email, role string, secret []byte, ttl time.Duration) (string, error) {
 	claims := &Claims{
 		UserID: userID,
 		Email:  email,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ttl)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

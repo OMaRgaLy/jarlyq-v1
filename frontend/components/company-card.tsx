@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Company } from '../lib/api';
 import { useLang } from '../lib/lang-context';
+import { FavoriteButton } from './favorite-button';
 
 interface Props {
   company: Company;
@@ -55,12 +56,15 @@ export function CompanyCard({ company }: Props) {
             <p className="text-xs text-slate-400 dark:text-slate-500">{company.industry}</p>
           )}
         </div>
-        <Link
-          href={`/companies/${company.id}`}
-          className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300"
-        >
-          {t.company.details}
-        </Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <FavoriteButton entityType="company" entityId={company.id} />
+          <Link
+            href={`/companies/${company.id}`}
+            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300"
+          >
+            {t.company.details}
+          </Link>
+        </div>
       </div>
 
       {/* Stack tags */}

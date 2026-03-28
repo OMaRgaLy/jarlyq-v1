@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { School } from '../lib/api';
 import { useLang } from '../lib/lang-context';
+import { FavoriteButton } from './favorite-button';
 
 export function SchoolCard({ school }: { school: School }) {
   const { t } = useLang();
@@ -37,12 +38,15 @@ export function SchoolCard({ school }: { school: School }) {
             <p className="mt-1 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">{school.description}</p>
           )}
         </div>
-        <Link
-          href={`/schools/${school.id}`}
-          className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300"
-        >
-          {t.school.details}
-        </Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <FavoriteButton entityType="school" entityId={school.id} />
+          <Link
+            href={`/schools/${school.id}`}
+            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300"
+          >
+            {t.school.details}
+          </Link>
+        </div>
       </div>
 
       {/* Meta pills */}

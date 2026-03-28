@@ -54,6 +54,8 @@ const dict = {
       stat3Label: 'технологий',
       stat4Label: 'СНГ и EMEA',
       footer: 'Сделано для роста IT-комьюнити Центральной Азии.',
+      forYouTitle: 'Подобрали для тебя',
+      forYouSub: 'Компании, которые используют твой стек',
     },
     filterBar: {
       stackPlaceholder: 'Технология',
@@ -289,6 +291,10 @@ const dict = {
       memberSince: 'Участник с',
       saved: 'Сохранено!',
       saving: 'Сохраняем...',
+      preferredStacks: 'Предпочитаемые технологии',
+      preferredStacksHint: 'Выбери до 10 технологий — мы покажем подходящие компании и вакансии',
+      saveStacks: 'Сохранить стек',
+      stacksSaved: 'Стек сохранён!',
     },
     search: {
       placeholder: 'Компании, вакансии, стажировки...',
@@ -344,6 +350,32 @@ const dict = {
       acceptCheckbox: 'Я принимаю условия Пользовательского соглашения',
       acceptRequired: 'Необходимо принять условия соглашения',
     },
+    dashboard: {
+      title: 'Панель управления',
+      myCompany: 'Моя компания',
+      mySchool: 'Моя школа',
+      requestRole: 'Запросить доступ',
+      requestSent: 'Заявка отправлена',
+      requestPending: 'Заявка на рассмотрении',
+      requestApproved: 'Заявка одобрена',
+      requestRejected: 'Заявка отклонена',
+      noAccess: 'У вас нет прав для управления компанией или школой',
+      requestAccess: 'Хотите управлять страницей компании или школы? Отправьте заявку.',
+      editCompany: 'Редактировать компанию',
+      editSchool: 'Редактировать школу',
+      opportunities: 'Вакансии и стажировки',
+      courses: 'Курсы',
+      addOpportunity: 'Добавить вакансию',
+      addCourse: 'Добавить курс',
+      save: 'Сохранить',
+      saved: 'Сохранено',
+      delete: 'Удалить',
+      entityType: 'Тип',
+      selectCompany: 'Выберите компанию',
+      selectSchool: 'Выберите школу',
+      message: 'Сообщение (кто вы в компании/школе)',
+      send: 'Отправить заявку',
+    },
   },
 
   en: {
@@ -393,6 +425,8 @@ const dict = {
       stat3Label: 'technologies',
       stat4Label: 'CIS & EMEA',
       footer: 'Built for the IT community of Central Asia.',
+      forYouTitle: 'Picked for you',
+      forYouSub: 'Companies that use your stack',
     },
     filterBar: {
       stackPlaceholder: 'Technology',
@@ -628,6 +662,10 @@ const dict = {
       memberSince: 'Member since',
       saved: 'Saved!',
       saving: 'Saving...',
+      preferredStacks: 'Preferred technologies',
+      preferredStacksHint: 'Pick up to 10 technologies — we\'ll show relevant companies and jobs',
+      saveStacks: 'Save stack',
+      stacksSaved: 'Stack saved!',
     },
     search: {
       placeholder: 'Companies, jobs, internships...',
@@ -683,6 +721,32 @@ const dict = {
       acceptCheckbox: 'I accept the Terms of Service',
       acceptRequired: 'You must accept the Terms of Service',
     },
+    dashboard: {
+      title: 'Dashboard',
+      myCompany: 'My Company',
+      mySchool: 'My School',
+      requestRole: 'Request Access',
+      requestSent: 'Request sent',
+      requestPending: 'Request pending',
+      requestApproved: 'Request approved',
+      requestRejected: 'Request rejected',
+      noAccess: 'You don\'t have permissions to manage a company or school',
+      requestAccess: 'Want to manage a company or school page? Submit a request.',
+      editCompany: 'Edit Company',
+      editSchool: 'Edit School',
+      opportunities: 'Jobs & Internships',
+      courses: 'Courses',
+      addOpportunity: 'Add opportunity',
+      addCourse: 'Add course',
+      save: 'Save',
+      saved: 'Saved',
+      delete: 'Delete',
+      entityType: 'Type',
+      selectCompany: 'Select company',
+      selectSchool: 'Select school',
+      message: 'Message (your role at the company/school)',
+      send: 'Submit request',
+    },
   },
 
   kk: {
@@ -732,6 +796,8 @@ const dict = {
       stat3Label: 'технология',
       stat4Label: 'ТМД және EMEA',
       footer: 'Орталық Азиядағы IT-қоғамдастық үшін жасалған.',
+      forYouTitle: 'Сенге арналған',
+      forYouSub: 'Сенің стегіңді қолданатын компаниялар',
     },
     filterBar: {
       stackPlaceholder: 'Технология',
@@ -967,6 +1033,10 @@ const dict = {
       memberSince: 'Мүше болған',
       saved: 'Сақталды!',
       saving: 'Сақталуда...',
+      preferredStacks: 'Таңдаулы технологиялар',
+      preferredStacksHint: '10-ға дейін технологияны таңдаңыз — сәйкес компаниялар мен вакансияларды көрсетеміз',
+      saveStacks: 'Стекті сақтау',
+      stacksSaved: 'Стек сақталды!',
     },
     search: {
       placeholder: 'Компаниялар, бос орындар, тәжірибелер...',
@@ -1022,6 +1092,32 @@ const dict = {
       acceptCheckbox: 'Мен Пайдаланушы келісімін қабылдаймын',
       acceptRequired: 'Келісімді қабылдау қажет',
     },
+    dashboard: {
+      title: 'Басқару панелі',
+      myCompany: 'Менің компаниям',
+      mySchool: 'Менің мектебім',
+      requestRole: 'Рұқсат сұрау',
+      requestSent: 'Өтінім жіберілді',
+      requestPending: 'Өтінім қаралуда',
+      requestApproved: 'Өтінім мақұлданды',
+      requestRejected: 'Өтінім қабылданбады',
+      noAccess: 'Сізде компания немесе мектепті басқару құқығы жоқ',
+      requestAccess: 'Компания немесе мектеп бетін басқарғыңыз келе ме? Өтінім жіберіңіз.',
+      editCompany: 'Компанияны өңдеу',
+      editSchool: 'Мектепті өңдеу',
+      opportunities: 'Бос орындар мен тағылымдамалар',
+      courses: 'Курстар',
+      addOpportunity: 'Бос орын қосу',
+      addCourse: 'Курс қосу',
+      save: 'Сақтау',
+      saved: 'Сақталды',
+      delete: 'Жою',
+      entityType: 'Түрі',
+      selectCompany: 'Компанияны таңдаңыз',
+      selectSchool: 'Мектепті таңдаңыз',
+      message: 'Хабарлама (компаниядағы/мектептегі рөліңіз)',
+      send: 'Өтінім жіберу',
+    },
   },
 } as const;
 
@@ -1051,6 +1147,7 @@ export interface Translations {
     stat3Num: string; stat3Label: string;
     stat4Label: string;
     footer: string;
+    forYouTitle: string; forYouSub: string;
   };
   filterBar: {
     stackPlaceholder: string; anyStack: string;
@@ -1136,6 +1233,7 @@ export interface Translations {
     experience: string; addExperience: string; skills: string; addSkill: string;
     current: string; skillLevels: { beginner: string; intermediate: string; expert: string };
     memberSince: string; saved: string; saving: string;
+    preferredStacks: string; preferredStacksHint: string; saveStacks: string; stacksSaved: string;
   };
   reviews: {
     title: string; addReview: string; loginRequired: string; phoneRequired: string;
@@ -1155,6 +1253,18 @@ export interface Translations {
   legal: {
     title: string; subtitle: string; lastUpdated: string;
     acceptCheckbox: string; acceptRequired: string;
+  };
+  dashboard: {
+    title: string; myCompany: string; mySchool: string;
+    requestRole: string; requestSent: string; requestPending: string;
+    requestApproved: string; requestRejected: string;
+    noAccess: string; requestAccess: string;
+    editCompany: string; editSchool: string;
+    opportunities: string; courses: string;
+    addOpportunity: string; addCourse: string;
+    save: string; saved: string; delete: string;
+    entityType: string; selectCompany: string; selectSchool: string;
+    message: string; send: string;
   };
 }
 

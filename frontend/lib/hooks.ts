@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea, CompanyReview, MasterProgram } from './api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api, Company, School, Stack, CareerPath, InterviewQuestion, Job, ProjectIdea, CompanyReview, MasterProgram, UserFavorite } from './api';
 
 export const useCompany = (id: number) =>
   useQuery<Company>({
@@ -143,6 +143,49 @@ export const usePopularProjectIdeas = (limit = 10) =>
     }
   });
 
+
+// Favorites
+export const useFavorites = (type?: string) =>
+  useQuery<UserFavorite[]>({
+    queryKey: ['favorites', type],
+    queryFn: async () => {
+      const { data } = await api.get<{ favorites: UserFavorite[] }>('/favorites', { params: type ? { type } : {} });
+      return data.favorites ?? [];
+    },
+  });
+
+export const useIsFavorite = (entityType: string, entityId: number) =>
+  useQuery<boolean>({
+    queryKey: ['favorite-check', entityType, entityId],
+    queryFn: async () => {
+      const { data } = await api.get<{ isFavorite: boolean }>(`/favorites/check/${entityType}/${entityId}`);
+      return data.isFavorite;
+    },
+    enabled: entityId > 0,
+  });
+
+export const useToggleFavorite = () => {
+  const qc = useQueryClient();
+  const add = useMutation({
+    mutationFn: async ({ entityType, entityId }: { entityType: string; entityId: number }) => {
+      await api.post('/favorites', { entity_type: entityType, entity_id: entityId });
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['favorites'] });
+      qc.setQueryData(['favorite-check', vars.entityType, vars.entityId], true);
+    },
+  });
+  const remove = useMutation({
+    mutationFn: async ({ entityType, entityId }: { entityType: string; entityId: number }) => {
+      await api.delete(`/favorites/${entityType}/${entityId}`);
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['favorites'] });
+      qc.setQueryData(['favorite-check', vars.entityType, vars.entityId], false);
+    },
+  });
+  return { add, remove };
+};
 
 export const useCompanyReviews = (companyId: number) =>
   useQuery<{ reviews: CompanyReview[]; total: number }>({
