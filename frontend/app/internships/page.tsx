@@ -21,9 +21,14 @@ function deadlineDays(deadline?: string) {
   if (!deadline) return null;
   const d = new Date(deadline);
   const diff = Math.ceil((d.getTime() - Date.now()) / 86400000);
-  if (diff < 0) return null;
+  if (diff < 0) return 'expired';
   if (diff === 0) return 'сегодня';
   return `${diff} дн.`;
+}
+
+function isExpired(deadline?: string) {
+  if (!deadline) return false;
+  return new Date(deadline).getTime() < Date.now();
 }
 
 export default function InternshipsPage() {
@@ -158,7 +163,7 @@ export default function InternshipsPage() {
                   <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">📅 Сезонные</h2>
                 )}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {seasonal.map(item => (
+                  {[...seasonal].sort((a, b) => (isExpired(a.deadline) ? 1 : 0) - (isExpired(b.deadline) ? 1 : 0)).map(item => (
                     <InternshipCard key={item.id} item={item} t={t} formatLabel={formatLabel} />
                   ))}
                 </div>
@@ -233,7 +238,7 @@ function InternshipCard({
   const daysLeft = deadlineDays(item.deadline);
 
   return (
-    <article className="flex flex-col gap-3 rounded-2xl border border-slate-200/70 bg-white p-5 transition hover:shadow-md dark:border-slate-700/60 dark:bg-slate-900">
+    <article className={`flex flex-col gap-3 rounded-2xl border border-slate-200/70 bg-white p-5 transition hover:shadow-md dark:border-slate-700/60 dark:bg-slate-900 ${daysLeft === 'expired' ? 'opacity-60' : ''}`}>
       {/* Header */}
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-base font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -278,11 +283,15 @@ function InternshipCard({
         <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
           {salary || (item.salaryMin === 0 ? t.internships.unpaid : '')}
         </span>
-        {daysLeft && (
+        {daysLeft === 'expired' ? (
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-400 dark:bg-slate-800">
+            Завершено
+          </span>
+        ) : daysLeft ? (
           <span className="text-xs text-red-500">
             {t.internships.deadline}: {daysLeft}
           </span>
-        )}
+        ) : null}
       </div>
 
       {/* Actions */}
