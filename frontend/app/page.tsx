@@ -20,6 +20,7 @@ interface RecommendedCompany {
 export default function Page() {
   const { t } = useLang();
   const [recommended, setRecommended] = useState<RecommendedCompany[]>([]);
+  const isLoggedIn = !!getToken();
 
   useEffect(() => {
     if (!getToken()) return;
@@ -43,59 +44,116 @@ export default function Page() {
 
       <main className="flex-1">
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 py-24 text-center dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-          {/* Background glow */}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-[500px] w-[700px] rounded-full bg-brand/10 blur-3xl" />
+        <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 px-4 pb-32 pt-20 dark:from-slate-950 dark:to-slate-900">
+          {/* Decorative elements */}
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-1/4 top-20 h-72 w-72 rounded-full bg-brand/8 blur-3xl" />
+            <div className="absolute right-1/4 bottom-10 h-96 w-96 rounded-full bg-purple-500/6 blur-3xl" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(0,0,0,0.3)_100%)]" />
           </div>
 
-          <div className="relative mx-auto max-w-3xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
-              🌍 Where talents meet opportunities
+          <div className="relative mx-auto max-w-4xl text-center">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-light">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
+              </span>
+              IT career platform for Central Asia
             </div>
-            <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
+            <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl">
               Jarlyq
             </h1>
-            <p className="mt-4 text-lg text-slate-300 sm:text-xl">
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">
               {t.home.heroSubtitle}
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/internships"
-                className="rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-brand-dark"
-              >
-                {t.home.heroCTA1}
-              </Link>
-              <Link
-                href="/companies"
-                className="rounded-xl border border-slate-600 bg-white/5 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
-              >
-                {t.home.heroCTA2}
-              </Link>
-            </div>
+          </div>
+        </section>
+
+        {/* ── Two Paths (overlapping hero) ── */}
+        <section className="relative -mt-20 px-4 pb-16">
+          <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2">
+            {/* Path 1: Job Seekers */}
+            <Link
+              href="/for/job-seekers"
+              className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-8 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900"
+            >
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-brand/20 to-purple-500/20 blur-2xl transition-all group-hover:scale-150" />
+              <div className="relative">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand/10 to-indigo-500/10 text-3xl">
+                  💼
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {t.home.path1Label}
+                </h2>
+                <p className="mt-3 leading-relaxed text-slate-500 dark:text-slate-400">
+                  {t.home.path1Desc}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {[t.forPath.sectionInternships, t.forPath.sectionJobs, t.forPath.sectionCompanies, t.forPath.sectionCareerPaths].map(tag => (
+                    <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-6 inline-flex items-center gap-2 font-semibold text-brand transition group-hover:gap-3">
+                  {t.home.path1CTA}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                </div>
+              </div>
+            </Link>
+
+            {/* Path 2: Students */}
+            <Link
+              href="/for/students"
+              className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-8 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900"
+            >
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 blur-2xl transition-all group-hover:scale-150" />
+              <div className="relative">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 text-3xl">
+                  🎓
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {t.home.path2Label}
+                </h2>
+                <p className="mt-3 leading-relaxed text-slate-500 dark:text-slate-400">
+                  {t.home.path2Desc}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {[t.forPath.sectionSchools, t.forPath.sectionUniversities, t.forPath.sectionMasters, t.forPath.sectionCareerPaths].map(tag => (
+                    <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-6 inline-flex items-center gap-2 font-semibold text-emerald-600 transition group-hover:gap-3 dark:text-emerald-400">
+                  {t.home.path2CTA}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                </div>
+              </div>
+            </Link>
           </div>
         </section>
 
         {/* ── Stats ── */}
-        <section className="border-b border-slate-200/70 bg-slate-50 dark:border-slate-800/60 dark:bg-slate-900/40">
-          <div className="mx-auto grid max-w-4xl grid-cols-2 divide-x divide-y divide-slate-200/70 dark:divide-slate-800/60 md:grid-cols-4 md:divide-y-0">
+        <section className="border-y border-slate-200/70 bg-slate-50/80 dark:border-slate-800/60 dark:bg-slate-900/30">
+          <div className="mx-auto grid max-w-4xl grid-cols-2 md:grid-cols-4">
             {[
               { num: t.home.stat1Num, label: t.home.stat1Label },
               { num: t.home.stat2Num, label: t.home.stat2Label },
               { num: t.home.stat3Num, label: t.home.stat3Label },
               { num: 'AI', label: t.home.stat4Label },
-            ].map((s) => (
-              <div key={s.label} className="flex flex-col items-center py-6 text-center">
-                <span className="text-2xl font-extrabold text-brand">{s.num}</span>
+            ].map((s, i) => (
+              <div key={s.label} className={`flex flex-col items-center py-8 text-center ${i > 0 ? 'border-l border-slate-200/70 dark:border-slate-800/60' : ''}`}>
+                <span className="text-3xl font-extrabold text-brand">{s.num}</span>
                 <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">{s.label}</span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ── For You (personalized) ── */}
+        {/* ── For You (personalized — logged in only) ── */}
         {recommended.length > 0 && (
-          <section className="px-4 py-12">
+          <section className="px-4 py-14">
             <div className="mx-auto max-w-5xl">
               <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.forYouTitle}</h2>
               <p className="mt-1 text-sm text-slate-500">{t.home.forYouSub}</p>
@@ -124,81 +182,50 @@ export default function Page() {
           </section>
         )}
 
-        {/* ── What we help with ── */}
-        <section className="px-4 py-16">
-          <div className="mx-auto max-w-5xl">
-            <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">
-              {t.home.featTitle}
-            </h2>
-            <div className="mt-10 grid gap-6 sm:grid-cols-3">
-              {[
-                { icon: '🔍', title: t.home.feat1Title, desc: t.home.feat1Desc, href: '/internships' },
-                { icon: '🏢', title: t.home.feat2Title, desc: t.home.feat2Desc, href: '/companies' },
-                { icon: '🗺️', title: t.home.feat3Title, desc: t.home.feat3Desc, href: '/career-paths' },
-              ].map((f) => (
-                <Link
-                  key={f.href}
-                  href={f.href}
-                  className="group rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-brand/40 hover:shadow-md dark:border-slate-800/60 dark:bg-slate-900"
-                >
-                  <div className="mb-3 text-3xl">{f.icon}</div>
-                  <h3 className="text-base font-semibold text-slate-900 group-hover:text-brand dark:text-slate-50">
-                    {f.title}
-                  </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{f.desc}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Choose your path ── */}
-        <section className="bg-slate-50 px-4 py-16 dark:bg-slate-900/40">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">
-              {t.home.pathTitle}
-            </h2>
-            <div className="mt-10 grid gap-6 sm:grid-cols-2">
-              <div className="flex flex-col justify-between rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm dark:border-slate-800/60 dark:bg-slate-900">
-                <div>
-                  <div className="mb-3 text-4xl">🔍</div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.path1Label}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path1Desc}</p>
+        {/* ── Registration CTA (not logged in) ── */}
+        {!isLoggedIn && (
+          <section className="px-4 py-14">
+            <div className="mx-auto max-w-4xl">
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-10 sm:p-14">
+                <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand/15 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
+                <div className="relative flex flex-col items-center text-center sm:flex-row sm:text-left">
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-white sm:text-3xl">{t.forPath.whyRegister}</h2>
+                    <ul className="mt-5 space-y-2 text-sm text-slate-300">
+                      {[t.forPath.benefit1, t.forPath.benefit2, t.forPath.benefit3, t.forPath.benefit4].map((b, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/20 text-xs text-brand">✓</span>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mt-8 shrink-0 sm:ml-10 sm:mt-0">
+                    <Link
+                      href="/profile"
+                      className="inline-flex rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-slate-100"
+                    >
+                      {t.forPath.ctaRegister}
+                    </Link>
+                  </div>
                 </div>
-                <Link
-                  href="/for/job-seekers"
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
-                >
-                  {t.home.path1CTA}
-                </Link>
-              </div>
-
-              <div className="flex flex-col justify-between rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm dark:border-slate-800/60 dark:bg-slate-900">
-                <div>
-                  <div className="mb-3 text-4xl">🎓</div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.path2Label}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path2Desc}</p>
-                </div>
-                <Link
-                  href="/for/students"
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl border border-brand px-5 py-2.5 text-sm font-semibold text-brand hover:bg-brand/5 dark:hover:bg-brand/10"
-                >
-                  {t.home.path2CTA}
-                </Link>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* ── AI teaser ── */}
-        <section className="px-4 py-16">
-          <div className="mx-auto max-w-3xl rounded-2xl bg-gradient-to-br from-brand/10 to-purple-500/10 p-10 text-center ring-1 ring-brand/20 dark:ring-brand/10">
-            <div className="mb-3 text-4xl">🤖</div>
+        <section className="px-4 py-14">
+          <div className="mx-auto max-w-3xl rounded-3xl border border-slate-200/70 bg-gradient-to-br from-brand/5 to-purple-500/5 p-10 text-center dark:border-slate-800/60">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand/10 to-purple-500/10 text-3xl">
+              🤖
+            </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">AI Career Consultant</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-              Скоро: персональный карьерный консультант на базе Claude AI — посоветует куда подать заявку, какие навыки подтянуть, проверит резюме и сравнит с требованиями компании.
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+              Скоро: персональный карьерный консультант на базе Claude AI — посоветует куда подать заявку, какие навыки подтянуть, проверит резюме.
             </p>
-            <span className="mt-5 inline-block rounded-full border border-brand/30 bg-brand/5 px-4 py-1.5 text-xs font-semibold text-brand">
+            <span className="mt-5 inline-block rounded-full border border-brand/20 bg-brand/5 px-4 py-1.5 text-xs font-semibold text-brand">
               Coming soon
             </span>
           </div>
