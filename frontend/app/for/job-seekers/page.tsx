@@ -4,50 +4,52 @@ import Link from 'next/link';
 import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
 import { getToken } from '../../../lib/auth';
+import { useLang } from '../../../lib/lang-context';
 
 export default function ForJobSeekersPage() {
   const isLoggedIn = !!getToken();
+  const { t } = useLang();
 
   const sections = [
     {
       icon: '🔍', href: '/internships',
-      title: 'Стажировки',
-      desc: 'Пока другие скролят ленту — заявка уже отправлена. Актуальные стажировки в IT-компаниях региона с дедлайнами, зарплатами и форматом работы.',
+      title: t.forPath.sectionInternships,
+      desc: t.forPath.jobSeekersInternshipsDesc,
       gradient: 'from-indigo-500 to-blue-600',
       bg: 'bg-indigo-50/80 dark:bg-indigo-950/20',
-      tags: ['20+ компаний', 'Дедлайны', 'Фильтры по городу'],
+      tags: t.forPath.jobSeekersTagInternships.split(','),
     },
     {
       icon: '💼', href: '/jobs',
-      title: 'Вакансии',
-      desc: 'Junior и Middle позиции для тех, кто готов работать. Фильтруй по стеку, городу и формату — найди именно своё.',
+      title: t.forPath.sectionJobs,
+      desc: t.forPath.jobSeekersJobsDesc,
       gradient: 'from-emerald-500 to-teal-600',
       bg: 'bg-emerald-50/80 dark:bg-emerald-950/20',
-      tags: ['По стеку', 'Зарплаты', 'Удалёнка'],
+      tags: t.forPath.jobSeekersTagJobs.split(','),
     },
     {
       icon: '🏢', href: '/companies',
-      title: 'Компании',
-      desc: 'Изучи компании изнутри: стек технологий, отзывы сотрудников, открытые позиции, контакты HR. Всё на одной странице.',
+      title: t.forPath.sectionCompanies,
+      desc: t.forPath.jobSeekersCompaniesDesc,
       gradient: 'from-sky-500 to-cyan-600',
       bg: 'bg-sky-50/80 dark:bg-sky-950/20',
-      tags: ['Стек', 'Отзывы', 'HR контакты'],
+      tags: t.forPath.jobSeekersTagCompanies.split(','),
     },
     {
       icon: '🗺️', href: '/career-paths',
-      title: 'Карьерные треки',
-      desc: 'Пошаговые треки от выбора направления до Senior-позиции. С материалами и курсами — знай что учить и в каком порядке.',
+      title: t.forPath.sectionCareerPaths,
+      desc: t.forPath.jobSeekersCareerPathsDesc,
       gradient: 'from-purple-500 to-violet-600',
       bg: 'bg-purple-50/80 dark:bg-purple-950/20',
-      tags: ['Пошаговые', 'Материалы', 'От нуля до Senior'],
+      tags: t.forPath.jobSeekersTagCareerPaths.split(','),
     },
     {
       icon: '🎯', href: '/interview',
-      title: 'Подготовка к собеседованиям',
-      desc: 'Вопросы и задачи с реальных собеседований в IT-компаниях. По уровням сложности и с ответами — тренируйся перед интервью.',
+      title: t.forPath.sectionInterview,
+      desc: t.forPath.jobSeekersInterviewDesc,
       gradient: 'from-amber-500 to-orange-600',
       bg: 'bg-amber-50/80 dark:bg-amber-950/20',
-      tags: ['Реальные вопросы', 'По уровням', 'С ответами'],
+      tags: t.forPath.jobSeekersTagInterview.split(','),
     },
   ];
 
@@ -63,13 +65,13 @@ export default function ForJobSeekersPage() {
           </div>
           <div className="relative mx-auto max-w-3xl text-center">
             <div className="mb-5 inline-flex rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-semibold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
-              💼 Для тех, кто ищет работу
+              💼 {t.forPath.jobSeekersHeroBadge}
             </div>
             <h1 className="text-3xl font-extrabold leading-tight text-slate-900 dark:text-white sm:text-5xl">
-              Первый оффер ближе, чем кажется
+              {t.forPath.jobSeekersHeroTitle}
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-500 dark:text-slate-400 sm:text-lg">
-              Компании региона прямо сейчас ищут стажёров и джунов. Мы собрали все позиции, компании и инструменты подготовки — чтобы тебе осталось только откликнуться.
+              {t.forPath.jobSeekersHeroDesc}
             </p>
           </div>
         </section>
@@ -101,7 +103,7 @@ export default function ForJobSeekersPage() {
                     ))}
                   </div>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand transition group-hover:gap-2">
-                    Перейти
+                    {t.forPath.goTo}
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                   </span>
                 </div>
@@ -120,16 +122,16 @@ export default function ForJobSeekersPage() {
                 </div>
                 <div className="relative">
                   <h2 className="text-xl font-bold text-white sm:text-3xl">
-                    Создай аккаунт — получай подборки по своему стеку
+                    {t.forPath.jobSeekersCta}
                   </h2>
                   <p className="mx-auto mt-3 max-w-lg text-sm text-indigo-100/80">
-                    Персональные рекомендации, избранное, уведомления о новых позициях. Быстрая регистрация, без спама.
+                    {t.forPath.jobSeekersCtaDesc}
                   </p>
                   <Link
                     href="/auth"
                     className="mt-6 inline-flex rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-indigo-700 shadow-lg transition hover:bg-indigo-50"
                   >
-                    Зарегистрироваться бесплатно
+                    {t.forPath.registerFree}
                   </Link>
                 </div>
               </div>

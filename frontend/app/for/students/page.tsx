@@ -4,50 +4,52 @@ import Link from 'next/link';
 import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
 import { getToken } from '../../../lib/auth';
+import { useLang } from '../../../lib/lang-context';
 
 export default function ForStudentsPage() {
   const isLoggedIn = !!getToken();
+  const { t } = useLang();
 
   const sections = [
     {
       icon: '🏫', href: '/schools',
-      title: 'IT-школы и буткемпы',
-      desc: 'Курсы программирования, дизайна и аналитики от школ региона. Онлайн и офлайн, с трудоустройством и без — выбирай что подходит.',
+      title: t.forPath.sectionSchools,
+      desc: t.forPath.studentsSchoolsDesc,
       gradient: 'from-emerald-500 to-green-600',
       bg: 'bg-emerald-50/80 dark:bg-emerald-950/20',
-      tags: ['Буткемпы', 'Онлайн/офлайн', 'С трудоустройством'],
+      tags: t.forPath.studentsTagSchools.split(','),
     },
     {
       icon: '🎓', href: '/schools?tab=universities',
-      title: 'Университеты',
-      desc: 'Лучшие IT-факультеты Казахстана и мира. Бакалавриат, магистратура, гранты — сравнивай программы и выбирай.',
+      title: t.forPath.sectionUniversities,
+      desc: t.forPath.studentsUniversitiesDesc,
       gradient: 'from-blue-500 to-indigo-600',
       bg: 'bg-blue-50/80 dark:bg-blue-950/20',
-      tags: ['IT-факультеты', 'Гос. гранты', 'Бакалавриат'],
+      tags: t.forPath.studentsTagUniversities.split(','),
     },
     {
       icon: '🌍', href: '/masters',
-      title: 'Магистратура за рубежом',
-      desc: 'MSc программы в Европе, Азии и Америке. Стипендии, дедлайны, языки обучения — всё структурировано и актуально.',
+      title: t.forPath.sectionMasters,
+      desc: t.forPath.studentsMastersDesc,
       gradient: 'from-violet-500 to-purple-600',
       bg: 'bg-violet-50/80 dark:bg-violet-950/20',
-      tags: ['Стипендии', 'Дедлайны', 'Европа & Азия'],
+      tags: t.forPath.studentsTagMasters.split(','),
     },
     {
       icon: '📚', href: '/schools?tab=prep',
-      title: 'Подготовка к поступлению',
-      desc: 'ЕНТ, SAT, IELTS — подготовительные курсы от проверенных партнёров. Сравнивай и выбирай под свои цели.',
+      title: t.forPath.sectionPartners,
+      desc: t.forPath.studentsPartnersDesc,
       gradient: 'from-amber-500 to-orange-600',
       bg: 'bg-amber-50/80 dark:bg-amber-950/20',
-      tags: ['ЕНТ / SAT / IELTS', 'Партнёры', 'Подготовка'],
+      tags: t.forPath.studentsTagPartners.split(','),
     },
     {
       icon: '🗺️', href: '/career-paths',
-      title: 'Карьерные треки',
-      desc: 'Frontend, Backend, Data Science, Дизайн, DevOps, AI — направлений много. Изучи каждое, попробуй что откликается и начни двигаться.',
+      title: t.forPath.sectionCareerPaths,
+      desc: t.forPath.studentsCareerPathsDesc,
       gradient: 'from-rose-500 to-pink-600',
       bg: 'bg-rose-50/80 dark:bg-rose-950/20',
-      tags: ['Пошаговый план', 'Все направления', 'Материалы'],
+      tags: t.forPath.studentsTagCareerPaths.split(','),
     },
   ];
 
@@ -63,13 +65,13 @@ export default function ForStudentsPage() {
           </div>
           <div className="relative mx-auto max-w-3xl text-center">
             <div className="mb-5 inline-flex rounded-full bg-emerald-100 px-4 py-1.5 text-sm font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-              🎓 Для тех, кто начинает путь
+              🎓 {t.forPath.studentsHeroBadge}
             </div>
             <h1 className="text-3xl font-extrabold leading-tight text-slate-900 dark:text-white sm:text-5xl">
-              Найди то, от чего загораются глаза
+              {t.forPath.studentsHeroTitle}
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-500 dark:text-slate-400 sm:text-lg">
-              В IT десятки направлений и сотни школ. Исследуй, пробуй, действуй — а мы покажем все варианты и поможем сделать выбор.
+              {t.forPath.studentsHeroDesc}
             </p>
           </div>
         </section>
@@ -101,7 +103,7 @@ export default function ForStudentsPage() {
                     ))}
                   </div>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 transition group-hover:gap-2 dark:text-emerald-400">
-                    Перейти
+                    {t.forPath.goTo}
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                   </span>
                 </div>
@@ -120,16 +122,16 @@ export default function ForStudentsPage() {
                 </div>
                 <div className="relative">
                   <h2 className="text-xl font-bold text-white sm:text-3xl">
-                    Создай аккаунт — сохраняй школы и треки
+                    {t.forPath.studentsCta}
                   </h2>
                   <p className="mx-auto mt-3 max-w-lg text-sm text-emerald-100/80">
-                    Избранное, персональные рекомендации и уведомления. Бесплатно, без спама, в два клика.
+                    {t.forPath.studentsCtaDesc}
                   </p>
                   <Link
                     href="/auth"
                     className="mt-6 inline-flex rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-emerald-700 shadow-lg transition hover:bg-emerald-50"
                   >
-                    Зарегистрироваться бесплатно
+                    {t.forPath.registerFree}
                   </Link>
                 </div>
               </div>

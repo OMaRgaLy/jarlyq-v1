@@ -43,14 +43,14 @@ function AuthContent() {
     setLoading(true);
     try {
       if (mode === 'register') {
-        if (!termsAccepted) { setError('Примите пользовательское соглашение'); setLoading(false); return; }
+        if (!termsAccepted) { setError(t.auth.termsRequired); setLoading(false); return; }
         await emailRegister(email, password, firstName, lastName, termsAccepted);
       } else {
         await emailLogin(email, password);
       }
       router.push(returnTo);
     } catch (err: any) {
-      setError(err?.response?.data?.error || 'Произошла ошибка');
+      setError(err?.response?.data?.error || t.auth.genericError);
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ function AuthContent() {
       await googleLogin(token);
       router.push(returnTo);
     } catch {
-      setError('Ошибка входа через Google');
+      setError(t.auth.googleError);
     }
   };
 
@@ -73,12 +73,10 @@ function AuthContent() {
           <div className="rounded-3xl border border-slate-200/70 bg-white p-8 shadow-xl dark:border-slate-700/60 dark:bg-slate-900">
             <div className="mb-6 text-center">
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                {mode === 'register' ? 'Создай аккаунт' : 'Войди в аккаунт'}
+                {mode === 'register' ? t.auth.createAccount : t.auth.loginAccount}
               </h1>
               <p className="mt-2 text-sm text-slate-500">
-                {mode === 'register'
-                  ? 'Персональные подборки, избранное и уведомления — всё это после регистрации'
-                  : 'Рады видеть тебя снова'}
+                {mode === 'register' ? t.auth.registerSubtitle : t.auth.loginSubtitle}
               </p>
             </div>
 
@@ -86,7 +84,7 @@ function AuthContent() {
             <div className="mb-5 flex justify-center">
               <GoogleLogin
                 onSuccess={(r) => r.credential && handleGoogle(r.credential)}
-                onError={() => setError('Google login failed')}
+                onError={() => setError(t.auth.googleError)}
                 text={mode === 'register' ? 'signup_with' : 'signin_with'}
                 shape="pill"
                 width="350"
@@ -95,7 +93,7 @@ function AuthContent() {
 
             <div className="mb-5 flex items-center gap-3">
               <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
-              <span className="text-xs text-slate-400">или по email</span>
+              <span className="text-xs text-slate-400">{t.auth.orByEmail}</span>
               <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
             </div>
 
@@ -103,31 +101,31 @@ function AuthContent() {
               {mode === 'register' && (
                 <div className="grid grid-cols-2 gap-3">
                   <input
-                    type="text" required placeholder="Имя" value={firstName}
+                    type="text" required placeholder={t.auth.firstName} value={firstName}
                     onChange={e => setFirstName(e.target.value)}
                     className="rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
                   <input
-                    type="text" required placeholder="Фамилия" value={lastName}
+                    type="text" required placeholder={t.auth.lastName} value={lastName}
                     onChange={e => setLastName(e.target.value)}
                     className="rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
                 </div>
               )}
               <input
-                type="email" required placeholder="Email" value={email}
+                type="email" required placeholder={t.auth.email} value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
               <input
-                type="password" required placeholder="Пароль" value={password}
+                type="password" required placeholder={t.auth.password} value={password}
                 onChange={e => setPassword(e.target.value)} minLength={6}
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
               {mode === 'register' && (
                 <label className="flex items-start gap-2 text-xs text-slate-500">
                   <input type="checkbox" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)} className="mt-0.5 rounded" />
-                  <span>Принимаю <Link href="/legal" className="text-brand hover:underline">пользовательское соглашение</Link></span>
+                  <span>{t.auth.acceptTerms} <Link href="/legal" className="text-brand hover:underline">{t.auth.termsLink}</Link></span>
                 </label>
               )}
               {error && <p className="text-sm text-red-500">{error}</p>}
@@ -135,15 +133,15 @@ function AuthContent() {
                 type="submit" disabled={loading}
                 className="w-full rounded-xl bg-slate-900 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
               >
-                {loading ? '...' : mode === 'register' ? 'Создать аккаунт' : 'Войти'}
+                {loading ? '...' : mode === 'register' ? t.auth.createButton : t.auth.loginButton}
               </button>
             </form>
 
             <p className="mt-5 text-center text-sm text-slate-500">
               {mode === 'register' ? (
-                <>Уже есть аккаунт? <button onClick={() => setMode('login')} className="font-medium text-brand hover:underline">Войти</button></>
+                <>{t.auth.hasAccount} <button onClick={() => setMode('login')} className="font-medium text-brand hover:underline">{t.auth.switchLogin}</button></>
               ) : (
-                <>Нет аккаунта? <button onClick={() => setMode('register')} className="font-medium text-brand hover:underline">Создать</button></>
+                <>{t.auth.noAccount} <button onClick={() => setMode('register')} className="font-medium text-brand hover:underline">{t.auth.switchRegister}</button></>
               )}
             </p>
           </div>
