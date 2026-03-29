@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
@@ -7,11 +8,34 @@ import { JsonLd, educationalOrgJsonLd } from '../../../components/json-ld';
 import { FavoriteButton } from '../../../components/favorite-button';
 import { useSchool } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
+import { api } from '../../../lib/api';
+
+interface RelatedCompany {
+  id: number;
+  name: string;
+  logoURL?: string;
+  industry?: string;
+}
 
 export default function SchoolDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const { data: school, isLoading } = useSchool(Number(id));
   const { t } = useLang();
+  const [relatedCompanies, setRelatedCompanies] = useState<RelatedCompany[]>([]);
+
+  // Fetch companies that use the same stacks as this school's courses
+  useEffect(() => {
+    if (!school?.courses?.length) return;
+    const stackIds = new Set<number>();
+    for (const c of school.courses) {
+      for (const s of c.stack ?? []) stackIds.add(s.id);
+    }
+    if (!stackIds.size) return;
+    const params = [...stackIds].map(id => `stack_ids[]=${id}`).join('&');
+    api.get<{ companies: RelatedCompany[] }>(`/companies?${params}`)
+      .then(({ data }) => setRelatedCompanies((data.companies ?? []).slice(0, 4)))
+      .catch(() => {});
+  }, [school?.courses]);
 
   if (isLoading) {
     return (
@@ -110,6 +134,35 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
             )}
           </div>
         </div>
+
+        {/* Related Companies */}
+        {relatedCompanies.length > 0 && (
+          <section className="card p-6">
+            <h2 className="mb-1 text-base font-semibold text-slate-900 dark:text-white">{t.companies.title}</h2>
+            <p className="mb-4 text-xs text-slate-400">{t.companies.subtitle}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {relatedCompanies.map(c => (
+                <Link
+                  key={c.id}
+                  href={`/companies/${c.id}`}
+                  className="flex items-center gap-3 rounded-xl border border-slate-200/70 p-3 transition hover:border-brand/40 hover:shadow-sm dark:border-slate-700/50"
+                >
+                  {c.logoURL?.startsWith('http') ? (
+                    <img src={c.logoURL} alt={c.name} className="h-10 w-10 rounded-lg object-cover" />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10 text-brand font-bold">
+                      {c.name[0]}
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{c.name}</p>
+                    {c.industry && <p className="truncate text-xs text-slate-400">{c.industry}</p>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Courses */}
         <section className="card p-6 space-y-4">

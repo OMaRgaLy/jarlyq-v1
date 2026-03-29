@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
@@ -10,7 +10,7 @@ import { useCompany, useCompanyReviews } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
 import { getUser } from '../../../lib/auth';
 import { api } from '../../../lib/api';
-import type { CompanyShowcase, HRContent } from '../../../lib/api';
+import type { CompanyShowcase, HRContent, School } from '../../../lib/api';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -97,6 +97,7 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
   const [activePhoto, setActivePhoto] = useState(0);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [relatedSchools, setRelatedSchools] = useState<School[]>([]);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [reviewError, setReviewError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -116,6 +117,15 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
     growth_rating: 0,
     culture_rating: 0,
   });
+
+  // Fetch related schools by company stack
+  useEffect(() => {
+    if (!company?.stack?.length) return;
+    const stackParams = company.stack.map(s => `stack_ids[]=${s.id}`).join('&');
+    api.get<{ schools: School[] }>(`/schools?${stackParams}`)
+      .then(({ data }) => setRelatedSchools((data.schools ?? []).slice(0, 4)))
+      .catch(() => {});
+  }, [company?.stack]);
 
   const handleSubmitReview = async () => {
     setReviewError('');
@@ -371,6 +381,37 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                 <p className="whitespace-pre-line leading-relaxed text-slate-600 dark:text-slate-300">
                   {company.about || company.description}
                 </p>
+              </section>
+            )}
+
+            {/* Related Schools */}
+            {relatedSchools.length > 0 && (
+              <section className="card p-6">
+                <h2 className="mb-1 text-base font-semibold text-slate-900 dark:text-white">{t.school.pageTitle}</h2>
+                <p className="mb-4 text-xs text-slate-400">{t.school.pageSubtitle}</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {relatedSchools.map(s => (
+                    <Link
+                      key={s.id}
+                      href={`/schools/${s.id}`}
+                      className="flex items-center gap-3 rounded-xl border border-slate-200/70 p-3 transition hover:border-brand/40 hover:shadow-sm dark:border-slate-700/50"
+                    >
+                      {s.logoURL?.startsWith('http') ? (
+                        <img src={s.logoURL} alt={s.name} className="h-10 w-10 rounded-lg object-cover" />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 font-bold dark:bg-emerald-900/30 dark:text-emerald-400">
+                          {s.name[0]}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{s.name}</p>
+                        <p className="truncate text-xs text-slate-400">
+                          {s.isStateFunded ? t.school.badgeStateFunded : s.type === 'university' ? t.school.badgeUniversity : t.school.badgeBootcamp}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </section>
             )}
 

@@ -273,6 +273,7 @@ export interface Course {
   language?: string;
   scholarshipAvailable?: boolean;
   applicationDeadline?: string;
+  stack?: Stack[];
 }
 
 export interface MasterProgram {

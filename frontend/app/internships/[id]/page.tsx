@@ -96,7 +96,7 @@ export default function InternshipDetailPage({ params }: { params: { id: string 
           <div className="flex flex-wrap gap-6 text-sm">
             {salary && (
               <div>
-                <span className="text-slate-400">Зарплата: </span>
+                <span className="text-slate-400">{t.reviews.salaryRating}: </span>
                 <span className="font-semibold text-slate-900 dark:text-white">{salary}</span>
               </div>
             )}
