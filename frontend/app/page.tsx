@@ -34,7 +34,7 @@ export default function Page() {
           (c.stack ?? []).some(s => stackIds.has(s.id)),
         );
         setRecommended(matched.slice(0, 6));
-      } catch { /* not logged in or error */ }
+      } catch { /* ignore */ }
     })();
   }, []);
 
@@ -44,12 +44,10 @@ export default function Page() {
 
       <main className="flex-1">
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 px-4 pb-32 pt-20 dark:from-slate-950 dark:to-slate-900">
-          {/* Decorative elements */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 px-4 pb-36 pt-20 dark:from-slate-950 dark:to-slate-900">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute left-1/4 top-20 h-72 w-72 rounded-full bg-brand/8 blur-3xl" />
             <div className="absolute right-1/4 bottom-10 h-96 w-96 rounded-full bg-purple-500/6 blur-3xl" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(0,0,0,0.3)_100%)]" />
           </div>
 
           <div className="relative mx-auto max-w-4xl text-center">
@@ -58,75 +56,82 @@ export default function Page() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
               </span>
-              IT career platform for Central Asia
+              Where talents meet opportunities
             </div>
+
             <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl">
               Jarlyq
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">
-              {t.home.heroSubtitle}
+
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl">
+              Мы здесь, чтобы ты нашёл своё место в IT. Одна платформа вместо десятка телеграм-каналов и сайтов — стажировки, вакансии, компании, школы и карьерные треки.
+            </p>
+
+            <p className="mx-auto mt-3 max-w-xl text-base text-slate-400">
+              Неважно на каком ты этапе — первый шаг, смена направления или охота за оффером. Мы рядом.
             </p>
           </div>
         </section>
 
-        {/* ── Two Paths (overlapping hero) ── */}
+        {/* ── Two Paths ── */}
         <section className="relative -mt-20 px-4 pb-16">
           <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2">
-            {/* Path 1: Job Seekers */}
+
+            {/* Path: Job Seekers */}
             <Link
               href="/for/job-seekers"
-              className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-8 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900"
+              className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-7 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900 sm:p-9"
             >
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-brand/20 to-purple-500/20 blur-2xl transition-all group-hover:scale-150" />
               <div className="relative">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand/10 to-indigo-500/10 text-3xl">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand to-indigo-600 text-2xl shadow-lg">
                   💼
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {t.home.path1Label}
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
+                  Ищу работу или стажировку
                 </h2>
-                <p className="mt-3 leading-relaxed text-slate-500 dark:text-slate-400">
-                  {t.home.path1Desc}
+                <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:text-base">
+                  Первый оффер ближе, чем кажется. Компании региона прямо сейчас ищут стажёров и джунов — мы знаем кто, куда и на каких условиях.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {[t.forPath.sectionInternships, t.forPath.sectionJobs, t.forPath.sectionCompanies, t.forPath.sectionCareerPaths].map(tag => (
+                  {['Стажировки', 'Вакансии', 'Компании', 'Карьерные треки'].map(tag => (
                     <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="mt-6 inline-flex items-center gap-2 font-semibold text-brand transition group-hover:gap-3">
-                  {t.home.path1CTA}
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand transition group-hover:gap-3">
+                  Смотреть возможности
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </div>
               </div>
             </Link>
 
-            {/* Path 2: Students */}
+            {/* Path: Students */}
             <Link
               href="/for/students"
-              className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-8 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900"
+              className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-7 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900 sm:p-9"
             >
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 blur-2xl transition-all group-hover:scale-150" />
               <div className="relative">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 text-3xl">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-2xl shadow-lg">
                   🎓
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {t.home.path2Label}
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
+                  Учусь, расту, ищу свой путь
                 </h2>
-                <p className="mt-3 leading-relaxed text-slate-500 dark:text-slate-400">
-                  {t.home.path2Desc}
+                <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:text-base">
+                  В IT столько направлений, что голова кругом — и это нормально. Не торопись. Исследуй школы, программы, университеты — и найди то, от чего загораются глаза.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {[t.forPath.sectionSchools, t.forPath.sectionUniversities, t.forPath.sectionMasters, t.forPath.sectionCareerPaths].map(tag => (
+                  {['Школы', 'Университеты', 'Магистратура', 'Карьерные треки'].map(tag => (
                     <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="mt-6 inline-flex items-center gap-2 font-semibold text-emerald-600 transition group-hover:gap-3 dark:text-emerald-400">
-                  {t.home.path2CTA}
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 transition group-hover:gap-3 dark:text-emerald-400">
+                  Начать исследовать
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </div>
               </div>
@@ -134,29 +139,37 @@ export default function Page() {
           </div>
         </section>
 
-        {/* ── Stats ── */}
-        <section className="border-y border-slate-200/70 bg-slate-50/80 dark:border-slate-800/60 dark:bg-slate-900/30">
-          <div className="mx-auto grid max-w-4xl grid-cols-2 md:grid-cols-4">
-            {[
-              { num: t.home.stat1Num, label: t.home.stat1Label },
-              { num: t.home.stat2Num, label: t.home.stat2Label },
-              { num: t.home.stat3Num, label: t.home.stat3Label },
-              { num: 'AI', label: t.home.stat4Label },
-            ].map((s, i) => (
-              <div key={s.label} className={`flex flex-col items-center py-8 text-center ${i > 0 ? 'border-l border-slate-200/70 dark:border-slate-800/60' : ''}`}>
-                <span className="text-3xl font-extrabold text-brand">{s.num}</span>
-                <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">{s.label}</span>
-              </div>
-            ))}
+        {/* ── What makes Jarlyq different ── */}
+        <section className="border-y border-slate-200/70 bg-slate-50/80 px-4 py-14 dark:border-slate-800/60 dark:bg-slate-900/30">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
+              Всё в одном месте — без шума и лишнего
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-slate-500 dark:text-slate-400">
+              Больше не нужно мониторить десятки телеграм-каналов, гуглить компании по одной и гадать куда подавать. Мы уже всё собрали.
+            </p>
+            <div className="mt-10 grid gap-6 sm:grid-cols-3">
+              {[
+                { icon: '🎯', title: 'Точный поиск', desc: 'Стажировки и вакансии отфильтрованы по стеку, городу и формату. Подал заявку — жди фидбэк.' },
+                { icon: '🏢', title: 'Прозрачные компании', desc: 'Стек, отзывы, открытые позиции, контакты HR. Вся информация на одной странице.' },
+                { icon: '🗺️', title: 'Понятный путь', desc: 'Карьерные треки от нуля до Senior. Знаешь что учить, где учить и куда целиться.' },
+              ].map(f => (
+                <div key={f.title} className="rounded-2xl bg-white p-6 shadow-sm dark:bg-slate-800/50">
+                  <div className="mb-3 text-2xl">{f.icon}</div>
+                  <h3 className="font-bold text-slate-900 dark:text-white">{f.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{f.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* ── For You (personalized — logged in only) ── */}
+        {/* ── For You (personalized) ── */}
         {recommended.length > 0 && (
           <section className="px-4 py-14">
             <div className="mx-auto max-w-5xl">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">{t.home.forYouTitle}</h2>
-              <p className="mt-1 text-sm text-slate-500">{t.home.forYouSub}</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">Подобрали для тебя</h2>
+              <p className="mt-1 text-sm text-slate-500">Компании, которые работают с твоим стеком</p>
               <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {recommended.map(c => (
                   <Link
@@ -182,31 +195,26 @@ export default function Page() {
           </section>
         )}
 
-        {/* ── Registration CTA (not logged in) ── */}
+        {/* ── CTA: Registration ── */}
         {!isLoggedIn && (
           <section className="px-4 py-14">
             <div className="mx-auto max-w-4xl">
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-10 sm:p-14">
                 <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand/15 blur-3xl" />
                 <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
-                <div className="relative flex flex-col items-center text-center sm:flex-row sm:text-left">
+                <div className="relative sm:flex sm:items-center sm:gap-10">
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-white sm:text-3xl">{t.forPath.whyRegister}</h2>
-                    <ul className="mt-5 space-y-2 text-sm text-slate-300">
-                      {[t.forPath.benefit1, t.forPath.benefit2, t.forPath.benefit3, t.forPath.benefit4].map((b, i) => (
-                        <li key={i} className="flex items-center gap-2">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/20 text-xs text-brand">✓</span>
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
+                    <h2 className="text-2xl font-bold text-white sm:text-3xl">Создай аккаунт — это бесплатно</h2>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                      Персональные подборки по твоему стеку, избранное, уведомления о новых позициях. Всё это — после быстрой регистрации.
+                    </p>
                   </div>
-                  <div className="mt-8 shrink-0 sm:ml-10 sm:mt-0">
+                  <div className="mt-6 shrink-0 sm:mt-0">
                     <Link
-                      href="/profile"
+                      href="/auth"
                       className="inline-flex rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-slate-100"
                     >
-                      {t.forPath.ctaRegister}
+                      Зарегистрироваться
                     </Link>
                   </div>
                 </div>
@@ -214,6 +222,23 @@ export default function Page() {
             </div>
           </section>
         )}
+
+        {/* ── Stats ── */}
+        <section className="border-y border-slate-200/70 dark:border-slate-800/60">
+          <div className="mx-auto grid max-w-4xl grid-cols-2 md:grid-cols-4">
+            {[
+              { num: t.home.stat1Num, label: t.home.stat1Label },
+              { num: t.home.stat2Num, label: t.home.stat2Label },
+              { num: t.home.stat3Num, label: t.home.stat3Label },
+              { num: 'AI', label: t.home.stat4Label },
+            ].map((s, i) => (
+              <div key={s.label} className={`flex flex-col items-center py-8 text-center ${i > 0 ? 'border-l border-slate-200/70 dark:border-slate-800/60' : ''}`}>
+                <span className="text-3xl font-extrabold text-brand">{s.num}</span>
+                <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* ── AI teaser ── */}
         <section className="px-4 py-14">
@@ -223,7 +248,7 @@ export default function Page() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">AI Career Consultant</h2>
             <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-              Скоро: персональный карьерный консультант на базе Claude AI — посоветует куда подать заявку, какие навыки подтянуть, проверит резюме.
+              Скоро: персональный карьерный консультант — посоветует куда подать заявку, какие навыки подтянуть, проверит резюме и сравнит с требованиями компании.
             </p>
             <span className="mt-5 inline-block rounded-full border border-brand/20 bg-brand/5 px-4 py-1.5 text-xs font-semibold text-brand">
               Coming soon
