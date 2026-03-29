@@ -1,17 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '../../components/header';
 import { Footer } from '../../components/footer';
 import { emailLogin, emailRegister, getToken } from '../../lib/auth';
-import { useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { googleLogin } from '../../lib/auth';
 import { useLang } from '../../lib/lang-context';
 
 export default function AuthPage() {
+  return (
+    <Suspense>
+      <AuthContent />
+    </Suspense>
+  );
+}
+
+function AuthContent() {
   const router = useRouter();
   const params = useSearchParams();
   const { t } = useLang();
