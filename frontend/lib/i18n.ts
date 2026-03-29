@@ -376,6 +376,38 @@ const dict = {
       message: 'Сообщение (кто вы в компании/школе)',
       send: 'Отправить заявку',
     },
+    forPath: {
+      jobSeekersTitle: 'Найди работу или стажировку в IT',
+      jobSeekersSubtitle: 'Всё для поиска работы: стажировки, вакансии, карьерные треки и компании — в одном месте',
+      studentsTitle: 'Начни свой путь в IT',
+      studentsSubtitle: 'Школы, ВУЗы, подготовительные курсы и карьерные пути для тех, кто только входит в профессию',
+      sectionInternships: 'Стажировки',
+      sectionInternshipsDesc: 'Оплачиваемые и неоплачиваемые стажировки в IT-компаниях региона. Идеально для первого опыта.',
+      sectionJobs: 'Вакансии',
+      sectionJobsDesc: 'Junior и Middle позиции для тех, кто уже готов работать. Фильтруй по стеку и городу.',
+      sectionCareerPaths: 'Карьерные пути',
+      sectionCareerPathsDesc: 'Пошаговые треки: от выбора направления до Senior-позиции. Материалы, курсы, технологии.',
+      sectionCompanies: 'Компании',
+      sectionCompaniesDesc: 'Изучи компании региона: стек технологий, отзывы, открытые позиции.',
+      sectionInterview: 'Подготовка к собеседованиям',
+      sectionInterviewDesc: 'Вопросы и задачи, которые задают на реальных собеседованиях в IT-компаниях.',
+      sectionSchools: 'IT-школы и буткемпы',
+      sectionSchoolsDesc: 'Курсы программирования, дизайна и аналитики. Онлайн и офлайн, с трудоустройством.',
+      sectionUniversities: 'Университеты',
+      sectionUniversitiesDesc: 'Лучшие IT-факультеты Казахстана и зарубежных ВУЗов. Бакалавриат и магистратура.',
+      sectionMasters: 'Магистратура за рубежом',
+      sectionMastersDesc: 'MSc программы в Европе, Азии и Америке. Стипендии, дедлайны, языки обучения.',
+      sectionPartners: 'Подготовка к поступлению',
+      sectionPartnersDesc: 'Подготовительные курсы к ЕНТ, SAT, IELTS и другим экзаменам от проверенных партнёров.',
+      ctaRegister: 'Зарегистрируйся бесплатно',
+      ctaRegisterDesc: 'Получай персональные подборки стажировок и вакансий по твоему стеку. Уведомления о новых позициях.',
+      orBrowse: 'или просто смотри каталог',
+      whyRegister: 'Что даёт регистрация?',
+      benefit1: 'Персональные подборки по твоему стеку',
+      benefit2: 'Избранное — сохраняй компании и стажировки',
+      benefit3: 'Уведомления о новых позициях (скоро)',
+      benefit4: 'Профиль видный HR-менеджерам (скоро)',
+    },
   },
 
   en: {
@@ -746,6 +778,38 @@ const dict = {
       selectSchool: 'Select school',
       message: 'Message (your role at the company/school)',
       send: 'Submit request',
+    },
+    forPath: {
+      jobSeekersTitle: 'Find a Job or Internship in IT',
+      jobSeekersSubtitle: 'Everything for your job search: internships, vacancies, career tracks and companies — all in one place',
+      studentsTitle: 'Start Your IT Journey',
+      studentsSubtitle: 'Schools, universities, prep courses and career paths for those just entering the profession',
+      sectionInternships: 'Internships',
+      sectionInternshipsDesc: 'Paid and unpaid internships at IT companies in the region. Perfect for your first experience.',
+      sectionJobs: 'Jobs',
+      sectionJobsDesc: 'Junior and Middle positions for those ready to work. Filter by stack and city.',
+      sectionCareerPaths: 'Career Paths',
+      sectionCareerPathsDesc: 'Step-by-step tracks: from choosing a direction to Senior positions. Materials, courses, technologies.',
+      sectionCompanies: 'Companies',
+      sectionCompaniesDesc: 'Explore regional companies: tech stack, reviews, open positions.',
+      sectionInterview: 'Interview Prep',
+      sectionInterviewDesc: 'Questions and tasks asked in real IT company interviews.',
+      sectionSchools: 'IT Schools & Bootcamps',
+      sectionSchoolsDesc: 'Programming, design and analytics courses. Online and offline, with job placement.',
+      sectionUniversities: 'Universities',
+      sectionUniversitiesDesc: 'Top IT faculties in Kazakhstan and abroad. Bachelor and Master programs.',
+      sectionMasters: 'Masters Abroad',
+      sectionMastersDesc: 'MSc programs in Europe, Asia and Americas. Scholarships, deadlines, teaching languages.',
+      sectionPartners: 'University Prep',
+      sectionPartnersDesc: 'Prep courses for UNT, SAT, IELTS and other exams from verified partners.',
+      ctaRegister: 'Register for free',
+      ctaRegisterDesc: 'Get personalized internship and job picks based on your stack. Notifications about new positions.',
+      orBrowse: 'or just browse the catalog',
+      whyRegister: 'Why register?',
+      benefit1: 'Personalized picks based on your stack',
+      benefit2: 'Favorites — save companies and internships',
+      benefit3: 'Notifications about new positions (coming soon)',
+      benefit4: 'Profile visible to HR managers (coming soon)',
     },
   },
 
@@ -1118,6 +1182,38 @@ const dict = {
       message: 'Хабарлама (компаниядағы/мектептегі рөліңіз)',
       send: 'Өтінім жіберу',
     },
+    forPath: {
+      jobSeekersTitle: 'IT саласында жұмыс немесе тағылымдама тап',
+      jobSeekersSubtitle: 'Жұмыс іздеуге қажеттінің бәрі: тағылымдамалар, бос орындар, мансап жолдары мен компаниялар — бір жерде',
+      studentsTitle: 'IT-дағы жолыңды баста',
+      studentsSubtitle: 'Мектептер, ЖОО-лар, дайындық курстары мен мансап жолдары — мамандыққа енді кіріп жатқандарға',
+      sectionInternships: 'Тағылымдамалар',
+      sectionInternshipsDesc: 'Аймақтағы IT-компаниялардағы ақылы және тегін тағылымдамалар. Алғашқы тәжірибе үшін тамаша.',
+      sectionJobs: 'Бос орындар',
+      sectionJobsDesc: 'Жұмысқа дайын адамдарға Junior және Middle позициялар. Стек пен қала бойынша сүзгілеңіз.',
+      sectionCareerPaths: 'Мансап жолдары',
+      sectionCareerPathsDesc: 'Қадамдық трек: бағыт таңдаудан Senior-позицияға дейін. Материалдар, курстар, технологиялар.',
+      sectionCompanies: 'Компаниялар',
+      sectionCompaniesDesc: 'Аймақ компанияларын зерттеңіз: технологиялық стек, пікірлер, ашық позициялар.',
+      sectionInterview: 'Сұхбатқа дайындық',
+      sectionInterviewDesc: 'IT-компаниялардағы нақты сұхбаттарда қойылатын сұрақтар мен тапсырмалар.',
+      sectionSchools: 'IT-мектептер мен буткемптер',
+      sectionSchoolsDesc: 'Бағдарламалау, дизайн және аналитика курстары. Онлайн және офлайн, жұмысқа орналастырумен.',
+      sectionUniversities: 'Университеттер',
+      sectionUniversitiesDesc: 'Қазақстан мен шетелдің үздік IT-факультеттері. Бакалавриат пен магистратура.',
+      sectionMasters: 'Шетелдегі магистратура',
+      sectionMastersDesc: 'Еуропа, Азия мен Америкадағы MSc бағдарламалар. Стипендиялар, мерзімдер, оқыту тілдері.',
+      sectionPartners: 'ЖОО-ға дайындық',
+      sectionPartnersDesc: 'ҰБТ, SAT, IELTS және басқа емтихандарға тексерілген серіктестерден дайындық курстары.',
+      ctaRegister: 'Тегін тіркеліңіз',
+      ctaRegisterDesc: 'Стекке сәйкес жеке тағылымдама мен бос орын ұсыныстарын алыңыз. Жаңа позициялар туралы хабарламалар.',
+      orBrowse: 'немесе каталогты қараңыз',
+      whyRegister: 'Тіркелу не береді?',
+      benefit1: 'Стекке сәйкес жеке ұсыныстар',
+      benefit2: 'Таңдаулылар — компаниялар мен тағылымдамаларды сақтаңыз',
+      benefit3: 'Жаңа позициялар туралы хабарламалар (жақында)',
+      benefit4: 'HR-менеджерлерге көрінетін профиль (жақында)',
+    },
   },
 } as const;
 
@@ -1265,6 +1361,22 @@ export interface Translations {
     save: string; saved: string; delete: string;
     entityType: string; selectCompany: string; selectSchool: string;
     message: string; send: string;
+  };
+  forPath: {
+    jobSeekersTitle: string; jobSeekersSubtitle: string;
+    studentsTitle: string; studentsSubtitle: string;
+    sectionInternships: string; sectionInternshipsDesc: string;
+    sectionJobs: string; sectionJobsDesc: string;
+    sectionCareerPaths: string; sectionCareerPathsDesc: string;
+    sectionCompanies: string; sectionCompaniesDesc: string;
+    sectionInterview: string; sectionInterviewDesc: string;
+    sectionSchools: string; sectionSchoolsDesc: string;
+    sectionUniversities: string; sectionUniversitiesDesc: string;
+    sectionMasters: string; sectionMastersDesc: string;
+    sectionPartners: string; sectionPartnersDesc: string;
+    ctaRegister: string; ctaRegisterDesc: string;
+    orBrowse: string; whyRegister: string;
+    benefit1: string; benefit2: string; benefit3: string; benefit4: string;
   };
 }
 

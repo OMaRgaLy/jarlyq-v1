@@ -166,7 +166,7 @@ export default function Page() {
                   <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path1Desc}</p>
                 </div>
                 <Link
-                  href="/internships"
+                  href="/for/job-seekers"
                   className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
                 >
                   {t.home.path1CTA}
@@ -180,7 +180,7 @@ export default function Page() {
                   <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t.home.path2Desc}</p>
                 </div>
                 <Link
-                  href="/schools"
+                  href="/for/students"
                   className="mt-6 inline-flex w-full items-center justify-center rounded-xl border border-brand px-5 py-2.5 text-sm font-semibold text-brand hover:bg-brand/5 dark:hover:bg-brand/10"
                 >
                   {t.home.path2CTA}
