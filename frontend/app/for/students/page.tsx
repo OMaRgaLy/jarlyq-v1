@@ -44,7 +44,7 @@ export default function ForStudentsPage() {
     {
       icon: '🗺️', href: '/career-paths',
       title: 'Карьерные треки',
-      desc: 'Frontend, Backend, Data Science, Дизайн, DevOps, AI — направлений много, и это прекрасно. Изучи каждое, попробуй что откликается, найди своё.',
+      desc: 'Frontend, Backend, Data Science, Дизайн, DevOps, AI — направлений много. Изучи каждое, попробуй что откликается и начни двигаться.',
       gradient: 'from-rose-500 to-pink-600',
       bg: 'bg-rose-50/80 dark:bg-rose-950/20',
       tags: ['Пошаговый план', 'Все направления', 'Материалы'],
@@ -69,19 +69,7 @@ export default function ForStudentsPage() {
               Найди то, от чего загораются глаза
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-500 dark:text-slate-400 sm:text-lg">
-              В IT десятки направлений и сотни школ — выбрать непросто. И не нужно спешить. Исследуй, пробуй, слушай себя. А мы покажем все варианты.
-            </p>
-          </div>
-        </section>
-
-        {/* Philosophy block */}
-        <section className="border-y border-slate-200/70 bg-slate-50/80 px-4 py-12 dark:border-slate-800/60 dark:bg-slate-900/30">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-lg font-medium italic leading-relaxed text-slate-600 dark:text-slate-300">
-              «Сделай то, что любишь, своей работой — и тебе не придётся работать ни дня»
-            </p>
-            <p className="mt-4 text-sm text-slate-400">
-              Поэтому не торопись с выбором. Попробуй разное. Если хобби приносит кайф — значит, в ту сторону и нужно двигаться.
+              В IT десятки направлений и сотни школ. Исследуй, пробуй, действуй — а мы покажем все варианты и поможем сделать выбор.
             </p>
           </div>
         </section>
