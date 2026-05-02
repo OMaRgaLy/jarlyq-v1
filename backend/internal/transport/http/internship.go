@@ -30,7 +30,7 @@ func (h *Handler) listInternships(c *gin.Context) {
 		Table("opportunities").
 		Select("opportunities.*, companies.name as company_name, companies.logo_url as company_logo_url, companies.id as company_id").
 		Joins("LEFT JOIN companies ON companies.id = opportunities.company_id").
-		Where("opportunities.type = ?", "internship")
+		Where("opportunities.type = ? AND opportunities.is_active = ?", "internship", true)
 
 	if city := strings.TrimSpace(c.Query("city")); city != "" {
 		db = db.Where("LOWER(opportunities.city) LIKE ?", "%"+strings.ToLower(city)+"%")
@@ -78,7 +78,7 @@ func (h *Handler) getInternship(c *gin.Context) {
 		Table("opportunities").
 		Select("opportunities.*, companies.name as company_name, companies.logo_url as company_logo_url, companies.id as company_id").
 		Joins("LEFT JOIN companies ON companies.id = opportunities.company_id").
-		Where("opportunities.id = ?", id).
+		Where("opportunities.id = ? AND opportunities.is_active = ?", id, true).
 		Scan(&result).Error
 
 	if err != nil || result.ID == 0 {

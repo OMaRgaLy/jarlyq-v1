@@ -40,26 +40,34 @@ export interface AdminCompany {
   contacts: { website: string; telegram: string; email: string };
   widgets: { trainingEnabled: boolean; internshipEnabled: boolean; vacancyEnabled: boolean };
   isVerified: boolean;
+  isActive?: boolean;
+  source?: string;
+  externalId?: string;
   opportunities?: AdminOpportunity[];
 }
 
 export interface AdminOpportunity {
   id: number;
-  type: 'internship' | 'vacancy';
+  type: 'internship' | 'vacancy' | 'job' | 'grant';
   title: string;
   description: string;
   requirements: string;
   apply_url: string;
+  source_url?: string;
   level: string;
   salary_min: number;
   salary_max: number;
   salary_currency: string;
   work_format: string;
   city: string;
+  country?: string;
   deadline: string | null;
   is_year_round: boolean;
   is_verified: boolean;
+  is_active?: boolean;
+  needs_review?: boolean;
   source: string;
+  external_id?: string;
 }
 
 export interface AdminSchool {
@@ -138,6 +146,16 @@ export const createAdminOpportunity = (companyId: number, body: Omit<AdminOpport
 export const updateAdminOpportunity = (id: number, body: Omit<AdminOpportunity, 'id'>) =>
   adminApi.put(`/admin/opportunities/${id}`, body);
 export const deleteAdminOpportunity = (id: number) => adminApi.delete(`/admin/opportunities/${id}`);
+
+// Review queue
+export const fetchReviewQueue = async (limit = 50, offset = 0): Promise<{ opportunities: AdminOpportunity[]; total: number }> => {
+  const { data } = await adminApi.get('/admin/opportunities', { params: { needs_review: 'true', limit, offset } });
+  return { opportunities: data.opportunities ?? [], total: data.total ?? 0 };
+};
+export const approveOpportunity = (id: number, updates?: { title?: string; type?: string; level?: string; work_format?: string; is_verified?: boolean }) =>
+  adminApi.put(`/admin/opportunities/${id}/approve`, updates ?? {});
+export const rejectOpportunity = (id: number) =>
+  adminApi.put(`/admin/opportunities/${id}/reject`, {});
 
 // Schools
 export const fetchAdminSchools = async (): Promise<AdminSchool[]> => {
@@ -277,3 +295,230 @@ export const fetchAuditLog = async (page = 1, entity?: string, action?: string):
   const { data } = await adminApi.get('/admin/audit-log', { params: { page, entity, action } });
   return { logs: data.logs ?? [], total: data.total ?? 0 };
 };
+
+// ─── CMS: Types ───────────────────────────────────────────────────────────────
+
+export interface EntityBadge {
+  id: number;
+  entityType: string;
+  entityId: number;
+  icon: string;       // predefined slug or emoji
+  label: string;
+  colorLight: string; // hex e.g. "#2563eb"
+  colorDark: string;  // hex e.g. "#3b82f6"
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface EntityTheme {
+  id?: number;
+  entityType: string;
+  entityId: number;
+  accentLight: string;
+  accentDark: string;
+  coverGradient: 'none' | 'top' | 'overlay' | 'blur';
+}
+
+export interface AdminShowcaseItem {
+  id: number;
+  type: 'internship' | 'event' | 'vacancy' | 'news';
+  title: string;
+  description?: string;
+  imageURL?: string;
+  linkURL?: string;
+  sortOrder: number;
+}
+
+export interface AdminPhoto {
+  id: number;
+  url: string;
+  caption?: string;
+  sortOrder: number;
+}
+
+export interface AdminOffice {
+  id: number;
+  city: string;
+  country: string;
+  address?: string;
+  isHQ: boolean;
+}
+
+export interface AdminHRContact {
+  id: number;
+  name: string;
+  position?: string;
+  telegram?: string;
+  linkedin?: string;
+  note?: string;
+}
+
+export interface AdminCompanyFull extends AdminCompany {
+  logoURL?: string;
+  about?: string;
+  foundedYear?: number;
+  employeeCount?: string;
+  industry?: string;
+  stack?: { id: number; name: string }[];
+  offices?: AdminOffice[];
+  photos?: AdminPhoto[];
+  showcase?: AdminShowcaseItem[];
+  hrContacts?: AdminHRContact[];
+  hrContent?: { id: number; title: string; type: string; url?: string; authorName: string }[];
+}
+
+// Predefined badge configs
+export const PREDEFINED_BADGES = [
+  { icon: 'verified',    label: 'Верифицировано',    colorLight: '#059669', colorDark: '#10b981' },
+  { icon: '⭐',           label: 'Топ работодатель',  colorLight: '#d97706', colorDark: '#f59e0b' },
+  { icon: '🤝',           label: 'Партнёр Jarlyq',   colorLight: '#7c3aed', colorDark: '#8b5cf6' },
+  { icon: '🏛',           label: 'Государственный',  colorLight: '#475569', colorDark: '#94a3b8' },
+  { icon: '🔥',           label: 'В тренде',         colorLight: '#dc2626', colorDark: '#f87171' },
+  { icon: '✨',           label: 'Новое',            colorLight: '#0284c7', colorDark: '#38bdf8' },
+  { icon: '💼',           label: 'Активно нанимает', colorLight: '#0891b2', colorDark: '#22d3ee' },
+  { icon: '🎓',           label: 'Есть стипендии',   colorLight: '#2563eb', colorDark: '#3b82f6' },
+] as const;
+
+// ─── CMS: Single Company ──────────────────────────────────────────────────────
+
+export const fetchAdminCompany = async (id: number): Promise<{ company: AdminCompanyFull; badges: EntityBadge[]; theme: EntityTheme }> => {
+  const { data } = await adminApi.get(`/admin/companies/${id}`);
+  return data;
+};
+
+export const setCompanyStacks = (companyId: number, stackIds: number[]) =>
+  adminApi.put(`/admin/companies/${companyId}/stacks`, { stack_ids: stackIds });
+
+// ─── CMS: Showcase ────────────────────────────────────────────────────────────
+
+export const createShowcase = (companyId: number, body: Omit<AdminShowcaseItem, 'id'>) =>
+  adminApi.post(`/admin/companies/${companyId}/showcase`, body);
+export const updateShowcase = (id: number, body: Omit<AdminShowcaseItem, 'id'>) =>
+  adminApi.put(`/admin/showcase/${id}`, body);
+export const deleteShowcase = (id: number) => adminApi.delete(`/admin/showcase/${id}`);
+
+// ─── CMS: Photos ─────────────────────────────────────────────────────────────
+
+export const createPhoto = (companyId: number, body: Omit<AdminPhoto, 'id'>) =>
+  adminApi.post(`/admin/companies/${companyId}/photos`, {
+    url: body.url, caption: body.caption, sort_order: body.sortOrder,
+  });
+export const updatePhoto = (id: number, body: Omit<AdminPhoto, 'id'>) =>
+  adminApi.put(`/admin/photos/${id}`, { url: body.url, caption: body.caption, sort_order: body.sortOrder });
+export const deletePhoto = (id: number) => adminApi.delete(`/admin/photos/${id}`);
+
+// ─── CMS: Offices ─────────────────────────────────────────────────────────────
+
+export const createOffice = (companyId: number, body: Omit<AdminOffice, 'id'>) =>
+  adminApi.post(`/admin/companies/${companyId}/offices`, {
+    city: body.city, country: body.country, address: body.address, is_hq: body.isHQ,
+  });
+export const updateOffice = (id: number, body: Omit<AdminOffice, 'id'>) =>
+  adminApi.put(`/admin/offices/${id}`, { city: body.city, country: body.country, address: body.address, is_hq: body.isHQ });
+export const deleteOffice = (id: number) => adminApi.delete(`/admin/offices/${id}`);
+
+// ─── CMS: HR Contacts ────────────────────────────────────────────────────────
+
+export const createHRContact = (companyId: number, body: Omit<AdminHRContact, 'id'>) =>
+  adminApi.post(`/admin/companies/${companyId}/hr-contacts`, body);
+export const updateHRContact = (id: number, body: Omit<AdminHRContact, 'id'>) =>
+  adminApi.put(`/admin/hr-contacts/${id}`, body);
+export const deleteHRContact = (id: number) => adminApi.delete(`/admin/hr-contacts/${id}`);
+
+// ─── CMS: Badges ─────────────────────────────────────────────────────────────
+
+export const fetchBadges = async (entityType: string, entityId: number): Promise<EntityBadge[]> => {
+  const { data } = await adminApi.get('/admin/badges', { params: { entity_type: entityType, entity_id: entityId } });
+  return data.badges ?? [];
+};
+export const createBadge = (body: Omit<EntityBadge, 'id' | 'createdAt'>) =>
+  adminApi.post('/admin/badges', {
+    entity_type: body.entityType,
+    entity_id: body.entityId,
+    icon: body.icon,
+    label: body.label,
+    color_light: body.colorLight,
+    color_dark: body.colorDark,
+    sort_order: body.sortOrder,
+  });
+export const updateBadge = (id: number, body: Partial<Omit<EntityBadge, 'id' | 'createdAt'>>) =>
+  adminApi.put(`/admin/badges/${id}`, {
+    icon: body.icon, label: body.label,
+    color_light: body.colorLight, color_dark: body.colorDark,
+    sort_order: body.sortOrder,
+  });
+export const deleteBadge = (id: number) => adminApi.delete(`/admin/badges/${id}`);
+
+// ─── CMS: Themes ─────────────────────────────────────────────────────────────
+
+export const fetchTheme = async (entityType: string, entityId: number): Promise<EntityTheme> => {
+  const { data } = await adminApi.get('/admin/themes', { params: { entity_type: entityType, entity_id: entityId } });
+  return data;
+};
+export const upsertTheme = (body: EntityTheme) =>
+  adminApi.put('/admin/themes', {
+    entity_type: body.entityType,
+    entity_id: body.entityId,
+    accent_light: body.accentLight,
+    accent_dark: body.accentDark,
+    cover_gradient: body.coverGradient,
+  });
+
+// ─── CMS: Schools ─────────────────────────────────────────────────────────────
+
+export interface AdminSchoolFull extends AdminSchool {
+  logoURL?: string;
+  about?: string;
+  ageRange?: string;
+  audience?: string;
+  city?: string;
+  isVerified?: boolean;
+  courses?: AdminCourse[];
+}
+
+export interface AdminSchoolFullBody {
+  name: string;
+  type: string;
+  country: string;
+  city: string;
+  description: string;
+  about: string;
+  age_range: string;
+  audience: string;
+  logo_url: string;
+  cover_url: string;
+  is_state_funded: boolean;
+  is_verified: boolean;
+  website: string;
+  telegram: string;
+  email: string;
+}
+
+export const fetchAdminSchool = async (id: number): Promise<{ school: AdminSchoolFull; badges: EntityBadge[]; theme: EntityTheme }> => {
+  const { data } = await adminApi.get(`/admin/schools/${id}`);
+  return data;
+};
+
+export const updateAdminSchoolFull = (id: number, body: AdminSchoolFullBody) =>
+  adminApi.put(`/admin/schools/${id}/full`, body);
+
+export const SCHOOL_TYPES = [
+  { value: 'bootcamp',          label: 'Буткемп / Курсы' },
+  { value: 'university',        label: 'Университет (локальный)' },
+  { value: 'university_abroad', label: 'Университет (зарубежный)' },
+  { value: 'state_program',     label: 'Государственная программа' },
+  { value: 'center',            label: 'Образовательный центр' },
+  { value: 'peer_learning',     label: 'Peer-to-peer обучение' },
+] as const;
+
+export const SCHOOL_PREDEFINED_BADGES = [
+  { icon: 'verified',    label: 'Верифицировано',    colorLight: '#059669', colorDark: '#10b981' },
+  { icon: '🎓',           label: 'Трудоустройство',   colorLight: '#2563eb', colorDark: '#3b82f6' },
+  { icon: '🆓',           label: 'Бесплатно',        colorLight: '#059669', colorDark: '#10b981' },
+  { icon: '🏛',           label: 'Гос. программа',   colorLight: '#475569', colorDark: '#94a3b8' },
+  { icon: '🌍',           label: 'Онлайн',           colorLight: '#0284c7', colorDark: '#38bdf8' },
+  { icon: '🏢',           label: 'Оффлайн',          colorLight: '#7c3aed', colorDark: '#8b5cf6' },
+  { icon: '🎯',           label: '12–17 лет',        colorLight: '#d97706', colorDark: '#f59e0b' },
+  { icon: '✨',           label: 'Стипендии',        colorLight: '#dc2626', colorDark: '#f87171' },
+  { icon: '🤝',           label: 'Партнёр Jarlyq',   colorLight: '#7c3aed', colorDark: '#8b5cf6' },
+] as const;

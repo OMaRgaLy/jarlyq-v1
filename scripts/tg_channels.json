@@ -1,0 +1,20 @@
+{
+  "_comment": "Добавляй сюда каналы. username без @ или полная ссылка t.me/...",
+  "channels": [
+    {"username": "ittaldau",         "country": "KZ", "lang": "ru", "note": "IT вакансии Казахстан"},
+    {"username": "it_jobs_kz",       "country": "KZ", "lang": "ru", "note": "IT вакансии KZ"},
+    {"username": "tngejobs",         "country": "KZ", "lang": "ru", "note": "Tengri jobs"},
+    {"username": "kaztechvacancies", "country": "KZ", "lang": "ru", "note": "KZ tech вакансии"},
+    {"username": "hh_kz_jobs",       "country": "KZ", "lang": "ru", "note": "hh.kz объявления"},
+    {"username": "uzdevjobs",        "country": "UZ", "lang": "ru", "note": "Dev вакансии Узбекистан"},
+    {"username": "itjobs_uz",        "country": "UZ", "lang": "ru", "note": "IT вакансии UZ"},
+    {"username": "tashkentjobs",     "country": "UZ", "lang": "ru", "note": "Вакансии Ташкент"},
+    {"username": "devjobs_kg",       "country": "KG", "lang": "ru", "note": "Dev вакансии Кыргызстан"},
+    {"username": "itjobs_bishkek",   "country": "KG", "lang": "ru", "note": "IT Бишкек"}
+  ],
+  "settings": {
+    "days_back": 7,
+    "min_message_length": 80,
+    "max_messages_per_channel": 200
+  }
+}

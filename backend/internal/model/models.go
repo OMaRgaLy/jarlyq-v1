@@ -125,6 +125,7 @@ type Company struct {
 	CreatedAt     time.Time       `json:"-"`
 	UpdatedAt     time.Time       `json:"-"`
 	Name          string          `gorm:"size:255" json:"name"`
+	Country       string          `gorm:"size:10;index" json:"country,omitempty"` // ISO: "KZ","TR","UZ"
 	CoverURL      string          `gorm:"size:512" json:"coverURL,omitempty"`
 	LogoURL       string          `gorm:"size:512" json:"logoURL,omitempty"`
 	Description   string          `gorm:"type:text" json:"description,omitempty"`
@@ -142,9 +143,13 @@ type Company struct {
 	Photos        []CompanyPhoto    `json:"photos,omitempty"`
 	Showcase      []CompanyShowcase `json:"showcase,omitempty"`
 	IsVerified    bool              `json:"isVerified"`
+	IsActive      bool              `gorm:"default:true;index" json:"isActive"`
+	Source        string            `gorm:"size:50;default:'admin'" json:"source,omitempty"` // "admin"|"hh"|"parser"
+	ExternalID    string            `gorm:"size:255;index" json:"externalID,omitempty"`      // "hh:employer:12345"
 	Reviews       []CompanyReview   `json:"reviews,omitempty"`
 	HRContacts    []HRContact       `json:"hrContacts,omitempty"`
 	HRContent     []HRContent       `json:"hrContent,omitempty"`
+	Badges        []EntityBadge     `gorm:"-" json:"badges,omitempty"` // loaded separately
 }
 
 // CompanyWidgets indicates sections enabled for company profile.
@@ -168,21 +173,28 @@ type Opportunity struct {
 	CreatedAt      time.Time  `json:"-"`
 	UpdatedAt      time.Time  `json:"-"`
 	CompanyID      uint       `gorm:"index" json:"-"`
-	Type           string     `gorm:"size:20" json:"type"`
+	Type           string     `gorm:"size:20;index" json:"type"`
 	Title          string     `gorm:"size:255" json:"title"`
 	Description    string     `gorm:"type:text" json:"description,omitempty"`
 	Requirements   string     `gorm:"type:text" json:"-"`
 	ApplyURL       string     `gorm:"size:512" json:"applyURL,omitempty"`
+	SourceURL      string     `gorm:"size:512" json:"-"`                        // оригинальная страница вакансии
 	Level          string     `gorm:"size:50" json:"level"`
 	SalaryMin      int        `json:"salaryMin,omitempty"`
 	SalaryMax      int        `json:"salaryMax,omitempty"`
 	SalaryCurrency string     `gorm:"size:10" json:"salaryCurrency,omitempty"`
-	WorkFormat     string     `gorm:"size:20" json:"workFormat,omitempty"` // remote|office|hybrid
+	WorkFormat     string     `gorm:"size:20;index" json:"workFormat,omitempty"` // remote|office|hybrid
 	City           string     `gorm:"size:100" json:"city,omitempty"`
+	Country        string     `gorm:"size:10;index" json:"country,omitempty"`    // ISO: "KZ","TR","UZ"
 	Deadline       *time.Time `json:"deadline,omitempty"`
 	IsYearRound    bool       `json:"isYearRound"`
-	Source         string     `gorm:"size:100" json:"source,omitempty"`  // "admin"|"oss-data"|"partner"
+	Source         string     `gorm:"size:100;index" json:"source,omitempty"`    // "admin"|"hh"|"telegram"|"kariyer"
+	ExternalID     string     `gorm:"size:255;index" json:"externalID,omitempty"` // "hh:123456"
 	IsVerified     bool       `json:"isVerified"`
+	IsActive       bool       `gorm:"default:true;index" json:"isActive"`
+	NeedsReview    bool       `gorm:"default:false;index" json:"needsReview"` // AI не уверен — нужна ручная проверка
+	LastCheckedAt  *time.Time `json:"-"`
+	ParsedAt       *time.Time `json:"-"`
 	StartDate      *time.Time `json:"-"`
 	EndDate        *time.Time `json:"-"`
 	Stack          []Stack    `gorm:"many2many:opportunity_stacks" json:"-"`
@@ -190,20 +202,29 @@ type Opportunity struct {
 }
 
 // School represents education providers.
-// Type: "bootcamp" | "university" | "state_program" | "university_abroad"
+// Type: "bootcamp" | "university" | "state_program" | "university_abroad" | "center" | "peer_learning"
 type School struct {
-	ID             uint        `gorm:"primaryKey" json:"id"`
-	CreatedAt      time.Time   `json:"-"`
-	UpdatedAt      time.Time   `json:"-"`
-	Name           string      `gorm:"size:255" json:"name"`
-	Type           string      `gorm:"size:40;default:'bootcamp'" json:"type"`
-	Country        string      `gorm:"size:100" json:"country,omitempty"`
-	LogoURL        string      `gorm:"size:512" json:"logoURL,omitempty"`
-	CoverURL       string      `gorm:"size:512" json:"coverURL,omitempty"`
-	Description    string      `gorm:"type:text" json:"description,omitempty"`
-	IsStateFunded  bool        `json:"isStateFunded"`
-	Contacts       ContactInfo `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
-	Courses        []Course    `json:"courses"`
+	ID            uint        `gorm:"primaryKey" json:"id"`
+	CreatedAt     time.Time   `json:"-"`
+	UpdatedAt     time.Time   `json:"-"`
+	Name          string      `gorm:"size:255" json:"name"`
+	Type          string      `gorm:"size:40;default:'bootcamp'" json:"type"`
+	Country       string      `gorm:"size:10;index" json:"country,omitempty"` // ISO: "KZ","TR"
+	City          string      `gorm:"size:100" json:"city,omitempty"`
+	LogoURL       string      `gorm:"size:512" json:"logoURL,omitempty"`
+	CoverURL      string      `gorm:"size:512" json:"coverURL,omitempty"`
+	Description   string      `gorm:"type:text" json:"description,omitempty"`
+	About         string      `gorm:"type:text" json:"about,omitempty"`
+	AgeRange      string      `gorm:"size:50" json:"ageRange,omitempty"`
+	Audience      string      `gorm:"size:255" json:"audience,omitempty"`
+	IsStateFunded bool          `json:"isStateFunded"`
+	IsVerified    bool          `json:"isVerified"`
+	IsActive      bool          `gorm:"default:true;index" json:"isActive"`
+	Source        string        `gorm:"size:50;default:'admin'" json:"source,omitempty"` // "admin"|"parser"
+	ExternalID    string        `gorm:"size:255;index" json:"externalID,omitempty"`
+	Contacts      ContactInfo   `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
+	Courses       []Course      `json:"courses"`
+	Badges        []EntityBadge `gorm:"-" json:"badges,omitempty"` // loaded separately
 }
 
 // Course describes training programs.
@@ -223,9 +244,11 @@ type Course struct {
 	Format               string    `gorm:"size:20" json:"format,omitempty"` // online|offline|hybrid
 	HasEmployment        bool      `json:"hasEmployment"`
 	Level                string    `gorm:"size:30;index" json:"level,omitempty"`
-	Language             string    `gorm:"size:10" json:"language,omitempty"` // en|ru|de|fr|kk
+	Language             string    `gorm:"size:10" json:"language,omitempty"` // en|ru|de|fr|kk|tr
 	ScholarshipAvailable bool      `json:"scholarshipAvailable"`
-	ApplicationDeadline  string    `gorm:"size:100" json:"applicationDeadline,omitempty"` // e.g. "1 декабря" / "Rolling"
+	ApplicationDeadline  string    `gorm:"size:100" json:"applicationDeadline,omitempty"`
+	IsActive             bool      `gorm:"default:true;index" json:"isActive"`
+	ExternalID           string    `gorm:"size:255;index" json:"externalID,omitempty"`
 	Stack                []Stack   `gorm:"many2many:course_stacks" json:"-"`
 	Regions              []Region  `gorm:"many2many:course_regions" json:"-"`
 }
@@ -386,7 +409,7 @@ type Job struct {
 	SalaryMin        int       `json:"salaryMin"`
 	SalaryMax        int       `json:"salaryMax"`
 	SalaryCurrency   string    `gorm:"size:10" json:"salaryCurrency"`
-	WorkFormat       string    `gorm:"size:100" json:"workFormat"`
+	WorkFormat       string    `gorm:"size:100;index" json:"workFormat"`
 	YearsExperience  int       `json:"yearsExperience"`
 	Requirements     string    `gorm:"type:text" json:"requirements"`
 	NiceToHave       string    `gorm:"type:text" json:"-"`
@@ -582,6 +605,19 @@ type AuditLog struct {
 	IP        string    `gorm:"size:45" json:"ip,omitempty"`
 }
 
+// ParseLog records each parser run for monitoring and debugging.
+type ParseLog struct {
+	ID            uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt     time.Time `json:"createdAt"`
+	Source        string    `gorm:"size:100;index" json:"source"`        // "hh"|"telegram"|"kariyer"
+	EntityType    string    `gorm:"size:50" json:"entityType"`           // "opportunity"|"company"|"school"
+	TotalFound    int       `json:"totalFound"`
+	TotalNew      int       `json:"totalNew"`
+	TotalUpdated  int       `json:"totalUpdated"`
+	TotalArchived int       `json:"totalArchived"`
+	Error         string    `gorm:"type:text" json:"error,omitempty"`
+}
+
 // AutoMigrate runs database migrations using GORM.
 func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
@@ -623,7 +659,25 @@ func AutoMigrate(db *gorm.DB) error {
 		&OwnerRequest{},
 		&UserFavorite{},
 		&AuditLog{},
+		// CMS: Badges & Themes
+		&EntityBadge{},
+		&EntityTheme{},
+		// Security: refresh token store
+		&RefreshToken{},
+		// Parser infrastructure
+		&ParseLog{},
 	)
+}
+
+// RefreshToken stores issued refresh tokens so they can be invalidated on use (rotation).
+// On each /auth/refresh the old token is deleted and a new one is inserted.
+// On logout all tokens for the user are deleted.
+type RefreshToken struct {
+	ID        uint      `gorm:"primaryKey" json:"-"`
+	UserID    uint      `gorm:"index;not null" json:"-"`
+	TokenHash string    `gorm:"size:64;uniqueIndex;not null" json:"-"` // SHA-256 hex of the raw token
+	ExpiresAt time.Time `gorm:"index;not null" json:"-"`
+	CreatedAt time.Time `json:"-"`
 }
 
 // HRContact represents a public HR contact from a company.
@@ -688,4 +742,35 @@ type Suggestion struct {
 	ContactEmail string    `gorm:"size:255" json:"contactEmail"`
 	Status       string    `gorm:"size:20;default:'pending'" json:"status"` // pending | approved | rejected
 	AdminNotes   string    `gorm:"type:text" json:"adminNotes,omitempty"`
+}
+
+// ─── CMS: Badges & Themes ─────────────────────────────────────────────────────
+
+// EntityBadge represents a visual label/badge displayed on a company, school, or partner profile.
+// Supports dual-theme colors (light and dark mode variants).
+// Predefined icon slugs: verified, top, partner, government, trending, new, hiring, scholarship
+// Custom: set Icon to an emoji or short string.
+type EntityBadge struct {
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"-"`
+	EntityType string    `gorm:"size:30;index:idx_badge_entity" json:"entityType"` // "company" | "school" | "partner"
+	EntityID   uint      `gorm:"index:idx_badge_entity" json:"entityId"`
+	Icon       string    `gorm:"size:50" json:"icon"`         // predefined slug OR emoji
+	Label      string    `gorm:"size:80" json:"label"`        // displayed text, e.g. "Топ работодатель"
+	ColorLight string    `gorm:"size:20" json:"colorLight"`   // hex for light mode, e.g. "#2563eb"
+	ColorDark  string    `gorm:"size:20" json:"colorDark"`    // hex for dark mode, e.g. "#3b82f6"
+	SortOrder  int       `gorm:"default:0" json:"sortOrder"`
+}
+
+// EntityTheme stores custom accent colors and visual style for a profile page.
+// One record per entity (enforced by unique index).
+type EntityTheme struct {
+	ID            uint      `gorm:"primaryKey" json:"id"`
+	UpdatedAt     time.Time `json:"updatedAt"`
+	EntityType    string    `gorm:"size:30;uniqueIndex:idx_entity_theme" json:"entityType"` // "company" | "school"
+	EntityID      uint      `gorm:"uniqueIndex:idx_entity_theme" json:"entityId"`
+	AccentLight   string    `gorm:"size:20" json:"accentLight"`   // hex, e.g. "#2563eb"
+	AccentDark    string    `gorm:"size:20" json:"accentDark"`    // hex for dark mode
+	CoverGradient string    `gorm:"size:20;default:'none'" json:"coverGradient"` // "none" | "top" | "overlay" | "blur"
 }

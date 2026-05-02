@@ -314,6 +314,20 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                   )}
                 </div>
 
+                {/* Badges */}
+                {((company as any).badges ?? []).length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {((company as any).badges as Array<{ id: number; icon: string; label: string; colorLight: string; colorDark: string }>).map(badge => (
+                      <span key={badge.id}
+                        className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
+                        style={{ color: badge.colorLight, backgroundColor: badge.colorLight + '18', border: `1px solid ${badge.colorLight}40` }}>
+                        <span>{badge.icon === 'verified' ? '✓' : badge.icon}</span>
+                        {badge.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 {/* Short description */}
                 {company.description && (
                   <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 line-clamp-2">{company.description}</p>

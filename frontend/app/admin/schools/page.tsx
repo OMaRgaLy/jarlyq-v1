@@ -133,6 +133,9 @@ export default function AdminSchoolsPage() {
                     >
                       + Курс
                     </button>
+                    <button onClick={() => router.push(`/admin/schools/${s.id}`)} className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400">
+                      Полный редактор
+                    </button>
                     <button onClick={() => openEdit(s)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300">
                       Изменить
                     </button>

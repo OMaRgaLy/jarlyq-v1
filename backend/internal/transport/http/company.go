@@ -34,6 +34,26 @@ func (h *Handler) listCompanies(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch companies"})
 		return
 	}
+
+	// Attach badges to each company (single batch query)
+	if len(companies) > 0 {
+		ids := make([]uint, len(companies))
+		for i, co := range companies {
+			ids[i] = co.ID
+		}
+		var badges []model.EntityBadge
+		h.Services.DB.Where("entity_type = ? AND entity_id IN ?", "company", ids).
+			Order("sort_order").Find(&badges)
+
+		badgeMap := make(map[uint][]model.EntityBadge)
+		for _, b := range badges {
+			badgeMap[b.EntityID] = append(badgeMap[b.EntityID], b)
+		}
+		for i := range companies {
+			companies[i].Badges = badgeMap[companies[i].ID]
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{"companies": companies, "limit": limit, "offset": offset})
 }
 
@@ -48,6 +68,13 @@ func (h *Handler) getCompany(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "company not found"})
 		return
 	}
+
+	// Attach badges
+	var badges []model.EntityBadge
+	h.Services.DB.Where("entity_type = ? AND entity_id = ?", "company", id).
+		Order("sort_order").Find(&badges)
+	company.Badges = badges
+
 	c.JSON(http.StatusOK, gin.H{"company": company})
 }
 

@@ -90,6 +90,53 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 
 	// Audit log
 	group.GET("/audit-log", handler.adminListAuditLog)
+
+	// ─── CMS: Single company GET (for tabbed editor) ──────────────────────────
+	group.GET("/companies/:id", handler.adminGetCompany)
+
+	// ─── CMS: Showcase (витрина) ──────────────────────────────────────────────
+	group.POST("/companies/:id/showcase", handler.adminCreateShowcase)
+	group.PUT("/showcase/:id", handler.adminUpdateShowcase)
+	group.DELETE("/showcase/:id", handler.adminDeleteShowcase)
+
+	// ─── CMS: Photo gallery ───────────────────────────────────────────────────
+	group.POST("/companies/:id/photos", handler.adminCreatePhoto)
+	group.PUT("/photos/:id", handler.adminUpdatePhoto)
+	group.DELETE("/photos/:id", handler.adminDeletePhoto)
+
+	// ─── CMS: Offices ─────────────────────────────────────────────────────────
+	group.POST("/companies/:id/offices", handler.adminCreateOffice)
+	group.PUT("/offices/:id", handler.adminUpdateOffice)
+	group.DELETE("/offices/:id", handler.adminDeleteOffice)
+
+	// ─── CMS: HR Contacts (full CRUD) ─────────────────────────────────────────
+	group.PUT("/hr-contacts/:id", handler.adminUpdateHRContact)
+
+	// ─── CMS: Badges ──────────────────────────────────────────────────────────
+	group.GET("/badges", handler.adminListBadges)
+	group.POST("/badges", handler.adminCreateBadge)
+	group.PUT("/badges/:id", handler.adminUpdateBadge)
+	group.DELETE("/badges/:id", handler.adminDeleteBadge)
+
+	// ─── CMS: Entity Themes ───────────────────────────────────────────────────
+	group.PUT("/themes", handler.adminUpsertTheme)
+	group.GET("/themes", handler.adminGetTheme)
+
+	// ─── CMS: Single school GET (for tabbed editor) ───────────────────────────
+	group.GET("/schools/:id", handler.adminGetSchool)
+	group.PUT("/schools/:id/full", handler.adminUpdateSchoolFull)
+
+	// ─── Company stacks ───────────────────────────────────────────────────────
+	group.PUT("/companies/:id/stacks", handler.adminSetCompanyStacks)
+
+	// ─── Parser API ───────────────────────────────────────────────────────────
+	group.GET("/opportunities", handler.adminListOpportunities)
+	group.POST("/opportunities", handler.adminCreateOpportunityDirect)
+	group.POST("/parse-logs", handler.adminCreateParseLog)
+
+	// ─── Review queue ─────────────────────────────────────────────────────────
+	group.PUT("/opportunities/:id/approve", handler.adminApproveOpportunity)
+	group.PUT("/opportunities/:id/reject", handler.adminRejectOpportunity)
 }
 
 // ─── COMPANIES ────────────────────────────────────────────────────────────────
@@ -128,6 +175,7 @@ func (h *Handler) adminCreateCompany(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeURLs(&req.CoverURL, &req.LogoURL)
 	company := &model.Company{
 		Name:          req.Name,
 		Description:   req.Description,
@@ -172,6 +220,7 @@ func (h *Handler) adminUpdateCompany(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeURLs(&req.CoverURL, &req.LogoURL)
 	company.Name = req.Name
 	company.Description = req.Description
 	company.CoverURL = req.CoverURL
@@ -209,6 +258,36 @@ func (h *Handler) adminDeleteCompany(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+// PUT /admin/companies/:id/stacks — заменить список стеков компании
+func (h *Handler) adminSetCompanyStacks(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	var req struct {
+		StackIDs []uint `json:"stack_ids"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	var company model.Company
+	if err := h.Services.DB.First(&company, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "company not found"})
+		return
+	}
+	var stacks []model.Stack
+	if len(req.StackIDs) > 0 {
+		h.Services.DB.Where("id IN ?", req.StackIDs).Find(&stacks)
+	}
+	if err := h.Services.DB.Model(&company).Association("Stack").Replace(stacks); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"stack": stacks})
 }
 
 // ─── OPPORTUNITIES ────────────────────────────────────────────────────────────
@@ -328,6 +407,180 @@ func (h *Handler) adminDeleteOpportunity(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
 }
 
+// ─── PARSER API ───────────────────────────────────────────────────────────────
+
+// GET /admin/opportunities — список с фильтрами
+// ?external_id=hh:123  — поиск для дедупликации
+// ?needs_review=true   — очередь на проверку
+func (h *Handler) adminListOpportunities(c *gin.Context) {
+	externalID  := c.Query("external_id")
+	needsReview := c.Query("needs_review")
+
+	var opps []model.Opportunity
+	q := h.Services.DB.Model(&model.Opportunity{})
+
+	if externalID != "" {
+		q = q.Where("external_id = ?", externalID)
+	} else if needsReview == "true" {
+		q = q.Where("needs_review = true AND is_active = true").
+			Order("created_at DESC")
+		limit, offset := parsePagination(c)
+		q = q.Limit(limit).Offset(offset)
+	} else {
+		limit, offset := parsePagination(c)
+		q = q.Limit(limit).Offset(offset)
+	}
+
+	q.Find(&opps)
+
+	var total int64
+	if needsReview == "true" {
+		h.Services.DB.Model(&model.Opportunity{}).Where("needs_review = true AND is_active = true").Count(&total)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"opportunities": opps, "total": total})
+}
+
+// PUT /admin/opportunities/:id/approve — одобрить, снять флаг needs_review
+func (h *Handler) adminApproveOpportunity(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	// Можно обновить поля при одобрении
+	var req struct {
+		Title      string `json:"title"`
+		Type       string `json:"type"`
+		Level      string `json:"level"`
+		WorkFormat string `json:"work_format"`
+		IsVerified bool   `json:"is_verified"`
+	}
+	_ = c.ShouldBindJSON(&req)
+
+	updates := map[string]any{"needs_review": false}
+	if req.Title != ""      { updates["title"]       = req.Title }
+	if req.Type != ""       { updates["type"]        = req.Type }
+	if req.Level != ""      { updates["level"]       = req.Level }
+	if req.WorkFormat != "" { updates["work_format"] = req.WorkFormat }
+	if req.IsVerified       { updates["is_verified"] = true }
+
+	if err := h.Services.DB.Model(&model.Opportunity{}).Where("id = ?", id).Updates(updates).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "approved"})
+}
+
+// PUT /admin/opportunities/:id/reject — отклонить (soft delete: is_active=false)
+func (h *Handler) adminRejectOpportunity(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	if err := h.Services.DB.Model(&model.Opportunity{}).Where("id = ?", id).
+		Updates(map[string]any{"is_active": false, "needs_review": false}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "rejected"})
+}
+
+// POST /admin/opportunities — создать вакансию напрямую (без company/:id в пути, для парсера)
+type adminOpportunityDirectRequest struct {
+	CompanyID      uint    `json:"company_id"`
+	Type           string  `json:"type" binding:"required"`
+	Title          string  `json:"title" binding:"required"`
+	Description    string  `json:"description"`
+	ApplyURL       string  `json:"apply_url"`
+	SourceURL      string  `json:"source_url"`
+	Level          string  `json:"level"`
+	SalaryMin      int     `json:"salary_min"`
+	SalaryMax      int     `json:"salary_max"`
+	SalaryCurrency string  `json:"salary_currency"`
+	WorkFormat     string  `json:"work_format"`
+	City           string  `json:"city"`
+	Country        string  `json:"country"`
+	Source         string  `json:"source"`
+	ExternalID     string  `json:"external_id"`
+	IsActive       bool    `json:"is_active"`
+	IsVerified     bool    `json:"is_verified"`
+	NeedsReview    bool    `json:"needs_review"`
+	Deadline       *string `json:"deadline"`
+}
+
+func (h *Handler) adminCreateOpportunityDirect(c *gin.Context) {
+	var req adminOpportunityDirectRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	safeURLs(&req.ApplyURL, &req.SourceURL)
+	now := time.Now()
+	opp := model.Opportunity{
+		CompanyID:      req.CompanyID,
+		Type:           req.Type,
+		Title:          req.Title,
+		Description:    req.Description,
+		ApplyURL:       req.ApplyURL,
+		SourceURL:      req.SourceURL,
+		Level:          req.Level,
+		SalaryMin:      req.SalaryMin,
+		SalaryMax:      req.SalaryMax,
+		SalaryCurrency: req.SalaryCurrency,
+		WorkFormat:     req.WorkFormat,
+		City:           req.City,
+		Country:        req.Country,
+		Source:         req.Source,
+		ExternalID:     req.ExternalID,
+		IsActive:       req.IsActive,
+		IsVerified:     req.IsVerified,
+		NeedsReview:    req.NeedsReview,
+		ParsedAt:       &now,
+	}
+	if req.Deadline != nil {
+		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
+			opp.Deadline = &t
+		}
+	}
+	if err := h.Services.DB.Create(&opp).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"opportunity": opp})
+}
+
+// POST /admin/parse-logs — записать лог парсера
+type adminParseLogRequest struct {
+	Source        string `json:"source" binding:"required"`
+	EntityType    string `json:"entity_type" binding:"required"`
+	TotalFound    int    `json:"total_found"`
+	TotalNew      int    `json:"total_new"`
+	TotalUpdated  int    `json:"total_updated"`
+	TotalArchived int    `json:"total_archived"`
+	Error         string `json:"error"`
+}
+
+func (h *Handler) adminCreateParseLog(c *gin.Context) {
+	var req adminParseLogRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	log := model.ParseLog{
+		Source:        req.Source,
+		EntityType:    req.EntityType,
+		TotalFound:    req.TotalFound,
+		TotalNew:      req.TotalNew,
+		TotalUpdated:  req.TotalUpdated,
+		TotalArchived: req.TotalArchived,
+		Error:         req.Error,
+	}
+	h.Services.DB.Create(&log)
+	c.JSON(http.StatusCreated, gin.H{"status": "ok"})
+}
+
 // ─── SCHOOLS ──────────────────────────────────────────────────────────────────
 
 func (h *Handler) adminListSchools(c *gin.Context) {
@@ -357,6 +610,7 @@ func (h *Handler) adminCreateSchool(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeURLs(&req.CoverURL)
 	school := &model.School{
 		Name:          req.Name,
 		Type:          req.Type,
@@ -393,6 +647,7 @@ func (h *Handler) adminUpdateSchool(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeURLs(&req.CoverURL)
 	school.Name = req.Name
 	school.Type = req.Type
 	school.Country = req.Country

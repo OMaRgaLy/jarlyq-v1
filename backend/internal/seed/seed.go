@@ -1165,6 +1165,8 @@ func SeedRegions(db *gorm.DB) error {
 		{Code: "KZ", Name: "Казахстан"},
 		{Code: "KG", Name: "Кыргызстан"},
 		{Code: "UZ", Name: "Узбекистан"},
+		{Code: "TR", Name: "Турция"},
+		{Code: "REMOTE", Name: "Удалённо"},
 		{Code: "EMEA", Name: "EMEA"},
 	}
 
@@ -1177,6 +1179,22 @@ func SeedRegions(db *gorm.DB) error {
 	return nil
 }
 
+// UpsertRegions добавляет регионы если их нет (можно вызывать повторно при добавлении новых).
+func UpsertRegions(db *gorm.DB) error {
+	regions := []model.Region{
+		{Code: "KZ", Name: "Казахстан"},
+		{Code: "KG", Name: "Кыргызстан"},
+		{Code: "UZ", Name: "Узбекистан"},
+		{Code: "TR", Name: "Турция"},
+		{Code: "REMOTE", Name: "Удалённо"},
+		{Code: "EMEA", Name: "EMEA"},
+	}
+	for _, r := range regions {
+		db.Where(model.Region{Code: r.Code}).FirstOrCreate(&r)
+	}
+	return nil
+}
+
 // Seed runs all seeders (skips if data already exists)
 func Seed(db *gorm.DB) error {
 	log.Println("Starting database seeding...")
@@ -1184,6 +1202,11 @@ func Seed(db *gorm.DB) error {
 	if err := SeedRegions(db); err != nil {
 		log.Printf("Error seeding regions: %v", err)
 		return err
+	}
+
+	// Всегда добавляем новые регионы если их нет
+	if err := UpsertRegions(db); err != nil {
+		log.Printf("Error upserting regions: %v", err)
 	}
 
 	if err := SeedStacks(db); err != nil {

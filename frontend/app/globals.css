@@ -2,31 +2,304 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Google Fonts: Inter ─────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ─── Color scheme ────────────────────────────────────────────────────────── */
 :root {
   color-scheme: light;
+  --brand: #2563eb;
+  --brand-light: #3b82f6;
+  --brand-dark: #1d4ed8;
+  --radius-card: 1rem;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06);
+  --shadow-card-hover: 0 4px 16px -2px rgb(37 99 235 / .12), 0 2px 6px -1px rgb(0 0 0 / .08);
 }
 
 .dark {
   color-scheme: dark;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / .3), 0 1px 2px -1px rgb(0 0 0 / .2);
+  --shadow-card-hover: 0 4px 20px -4px rgb(37 99 235 / .25), 0 2px 8px -1px rgb(0 0 0 / .4);
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  @apply min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300;
+  @apply min-h-screen bg-[#f8fafc] text-slate-900;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dark body {
-  @apply bg-slate-950 text-slate-100;
+  @apply bg-[#0a0f1e] text-slate-100;
 }
 
+/* ─── Typography ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+/* ─── Links ───────────────────────────────────────────────────────────────── */
 a {
-  @apply text-brand hover:text-brand-dark transition-colors;
+  @apply transition-colors duration-150;
 }
 
-.section-title {
-  @apply text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4;
+/* ─── Focus visible (accessible, not ugly) ───────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
+/* ─── Scrollbar (webkit) ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-slate-300 dark:bg-slate-700;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-600;
+}
+
+/* ─── Selection ───────────────────────────────────────────────────────────── */
+::selection {
+  background: rgb(37 99 235 / .15);
+  color: inherit;
+}
+
+/* ─── Card component ──────────────────────────────────────────────────────── */
 .card {
-  @apply rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-white/90 dark:bg-slate-900/70 backdrop-blur shadow-sm hover:shadow-md transition-shadow;
+  background: white;
+  border: 1px solid rgb(226 232 240 / .7);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
+
+.dark .card {
+  background: rgb(15 23 42 / .8);
+  border-color: rgb(30 41 59 / .7);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgb(37 99 235 / .2);
+}
+
+.dark .card:hover {
+  border-color: rgb(37 99 235 / .25);
+}
+
+/* ─── Card lift variant (for clickable cards) ─────────────────────────────── */
+.card-lift {
+  @apply card;
+  cursor: pointer;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* ─── Section title ───────────────────────────────────────────────────────── */
+.section-title {
+  @apply text-2xl font-bold text-slate-900 dark:text-white mb-1;
+  letter-spacing: -0.025em;
+}
+
+.section-subtitle {
+  @apply text-sm text-slate-500 dark:text-slate-400 mb-6;
+}
+
+/* ─── Pill / Tag component ────────────────────────────────────────────────── */
+.pill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  border: 1px solid transparent;
+}
+
+.pill-blue {
+  @apply pill bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300;
+}
+
+.pill-purple {
+  @apply pill bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300;
+}
+
+.pill-green {
+  @apply pill bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300;
+}
+
+.pill-amber {
+  @apply pill bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300;
+}
+
+.pill-slate {
+  @apply pill bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300;
+}
+
+/* ─── Button components ───────────────────────────────────────────────────── */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-150;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply btn bg-brand text-white px-4 py-2 text-sm shadow-sm;
+  @apply hover:bg-brand-dark hover:shadow-md active:scale-[0.98];
+}
+
+.btn-secondary {
+  @apply btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200;
+  @apply px-4 py-2 text-sm shadow-sm;
+  @apply hover:border-brand hover:text-brand hover:shadow-md;
+}
+
+.btn-ghost {
+  @apply btn text-slate-600 dark:text-slate-300 px-3 py-1.5 text-sm;
+  @apply hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white;
+}
+
+/* ─── Input / Select ──────────────────────────────────────────────────────── */
+.input {
+  @apply w-full rounded-xl border border-slate-200 dark:border-slate-700;
+  @apply bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-slate-100;
+  @apply px-4 py-2.5 shadow-sm;
+  @apply placeholder:text-slate-400 dark:placeholder:text-slate-500;
+  @apply focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand/50;
+  @apply transition duration-150;
+}
+
+/* ─── Badge indicator (verified, new, etc.) ──────────────────────────────── */
+.badge-verified {
+  @apply inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20;
+  @apply px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300;
+}
+
+/* ─── Gradient text ───────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glow effects ────────────────────────────────────────────────────────── */
+.glow-blue {
+  box-shadow: 0 0 30px rgb(37 99 235 / .15);
+}
+
+.dark .glow-blue {
+  box-shadow: 0 0 40px rgb(37 99 235 / .2);
+}
+
+/* ─── Page layout helpers ─────────────────────────────────────────────────── */
+.page-container {
+  @apply mx-auto max-w-6xl px-4 py-8;
+}
+
+.page-header {
+  @apply mb-8;
+}
+
+/* ─── Animated skeleton shimmer ──────────────────────────────────────────── */
+.skeleton {
+  @apply rounded-lg bg-slate-200 dark:bg-slate-800;
+  background: linear-gradient(
+    90deg,
+    rgb(226 232 240) 25%,
+    rgb(241 245 249) 50%,
+    rgb(226 232 240) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(30 41 59) 25%,
+    rgb(51 65 85) 50%,
+    rgb(30 41 59) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Fade in animation ───────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.35s ease both;
+}
+
+/* ─── Stagger children ────────────────────────────────────────────────────── */
+.stagger-children > * { animation: fadeInUp 0.35s ease both; }
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 400ms; }
+
+/* ─── Dot ping (status indicator) ────────────────────────────────────────── */
+.dot-ping {
+  @apply relative inline-flex h-2 w-2;
+}
+.dot-ping::before {
+  content: '';
+  @apply absolute inline-flex h-full w-full rounded-full bg-current opacity-75;
+  animation: ping 1s cubic-bezier(0, 0, .2, 1) infinite;
+}
+.dot-ping::after {
+  content: '';
+  @apply relative inline-flex h-2 w-2 rounded-full bg-current;
+}
+
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+/* ─── Divider with text ───────────────────────────────────────────────────── */
+.divider-text {
+  @apply relative flex items-center gap-3 text-xs text-slate-400;
+}
+.divider-text::before,
+.divider-text::after {
+  content: '';
+  @apply flex-1 border-t border-slate-200 dark:border-slate-700;
+}
+
+/* ─── Prose-like description text ────────────────────────────────────────── */
+.description-text {
+  @apply text-sm leading-relaxed text-slate-600 dark:text-slate-300;
+}
+
+/* ─── Empty state ─────────────────────────────────────────────────────────── */
+.empty-state {
+  @apply flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed;
+  @apply border-slate-200 dark:border-slate-700 py-16 text-center;
+}
+
 

@@ -168,10 +168,14 @@ export interface Opportunity {
   salaryCurrency?: string;
   workFormat?: string;
   city?: string;
+  country?: string;
   deadline?: string;
   isYearRound?: boolean;
   source?: string;
+  sourceURL?: string;
+  externalId?: string;
   isVerified?: boolean;
+  stack?: { id: number; name: string; iconURL?: string }[];
 }
 
 export interface InternshipItem extends Opportunity {
@@ -246,17 +250,32 @@ export interface UserSkill {
   level: 'beginner' | 'intermediate' | 'expert';
 }
 
+export interface EntityBadge {
+  id: number;
+  icon: string;
+  label: string;
+  colorLight: string;
+  colorDark: string;
+  sortOrder: number;
+}
+
 export interface School {
   id: number;
   name: string;
-  type: 'bootcamp' | 'university' | 'state_program' | 'university_abroad';
+  type: 'bootcamp' | 'university' | 'state_program' | 'university_abroad' | 'center' | 'peer_learning';
   country?: string;
+  city?: string;
   logoURL?: string;
   coverURL?: string;
   description?: string;
+  about?: string;
+  ageRange?: string;
+  audience?: string;
   isStateFunded: boolean;
+  isVerified?: boolean;
   contacts?: ContactInfo;
   courses: Course[];
+  badges?: EntityBadge[];
 }
 
 export interface Course {

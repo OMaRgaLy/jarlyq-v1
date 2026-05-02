@@ -36,7 +36,8 @@ func NewCompanyRepository(db *gorm.DB) CompanyRepository {
 }
 
 func (r *companyRepo) List(ctx context.Context, filter CompanyFilter) ([]model.Company, error) {
-	query := r.db.WithContext(ctx).Model(&model.Company{}).Preload("Stack").Preload("Regions").Preload("Opportunities").Preload("Opportunities.Stack").Preload("Opportunities.Regions")
+	activeOnly := func(db *gorm.DB) *gorm.DB { return db.Where("is_active = ?", true) }
+	query := r.db.WithContext(ctx).Model(&model.Company{}).Preload("Stack").Preload("Regions").Preload("Opportunities", activeOnly).Preload("Opportunities.Stack").Preload("Opportunities.Regions")
 
 	if len(filter.StackIDs) > 0 {
 		query = query.Joins("JOIN company_stacks cs ON cs.company_id = companies.id").Where("cs.stack_id IN ?", filter.StackIDs).Group("companies.id")
@@ -62,7 +63,7 @@ func (r *companyRepo) FindByID(ctx context.Context, id uint) (*model.Company, er
 	var company model.Company
 	if err := r.db.WithContext(ctx).
 		Preload("Stack").Preload("Regions").
-		Preload("Opportunities").Preload("Opportunities.Stack").Preload("Opportunities.Regions").
+		Preload("Opportunities", func(db *gorm.DB) *gorm.DB { return db.Where("is_active = ?", true) }).Preload("Opportunities.Stack").Preload("Opportunities.Regions").
 		Preload("Offices").Preload("Photos", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
 		Preload("Showcase", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
 		Preload("HRContacts").Preload("HRContent").

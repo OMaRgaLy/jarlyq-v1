@@ -330,7 +330,7 @@ def main():
     print("=" * 60)
     print("🤖 AI DATA PARSER FOR JARLYQ")
     print("=" * 60)
-    print(f"API Key loaded: {api_key[:20]}...")
+    print("API Key loaded: ✓")
     print(f"Companies to parse: {len(companies_to_parse)}")
 
     # Parse companies

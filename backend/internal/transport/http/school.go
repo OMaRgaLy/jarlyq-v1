@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
 	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/repository"
 )
 
@@ -85,6 +86,27 @@ func (h *Handler) listSchools(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch schools"})
 		return
 	}
+
+	// Attach badges to each school
+	if len(schools) > 0 {
+		ids := make([]uint, len(schools))
+		for i, s := range schools {
+			ids[i] = s.ID
+		}
+		var badges []model.EntityBadge
+		h.Services.DB.Where("entity_type = ? AND entity_id IN ?", "school", ids).
+			Order("sort_order").Find(&badges)
+
+		// Group badges by entity_id
+		badgeMap := make(map[uint][]model.EntityBadge)
+		for _, b := range badges {
+			badgeMap[b.EntityID] = append(badgeMap[b.EntityID], b)
+		}
+		for i := range schools {
+			schools[i].Badges = badgeMap[schools[i].ID]
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{"schools": schools, "limit": limit, "offset": offset})
 }
 
@@ -99,5 +121,12 @@ func (h *Handler) getSchool(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "school not found"})
 		return
 	}
+
+	// Attach badges
+	var badges []model.EntityBadge
+	h.Services.DB.Where("entity_type = ? AND entity_id = ?", "school", id).
+		Order("sort_order").Find(&badges)
+	school.Badges = badges
+
 	c.JSON(http.StatusOK, gin.H{"school": school})
 }

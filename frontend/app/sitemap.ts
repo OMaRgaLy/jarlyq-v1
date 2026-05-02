@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://jarlyq.com';
-const API_URL = process.env.BACKEND_URL || 'http://93.183.87.152:8080';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://jarlyq.kz';
+const API_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
 async function fetchIDs(path: string, key: string): Promise<number[]> {
   try {

@@ -81,6 +81,13 @@ func New(cfg *config.Config) (*Server, error) {
 	csrfMiddleware := middleware.NewCSRFMiddleware(cfg)
 	engine.Use(csrfMiddleware)
 
+	// Limit request body size to 2MB to prevent DoS
+	engine.MaxMultipartMemory = 2 << 20 // 2MB
+	engine.Use(func(c *gin.Context) {
+		c.Request.Body = gohttp.MaxBytesReader(c.Writer, c.Request.Body, 2<<20)
+		c.Next()
+	})
+
 	repoSet := httptransport.NewRepositories(db)
 	services := httptransport.NewServices(repoSet, cfg, log)
 	jwtManager := auth.NewJWTManager(cfg)

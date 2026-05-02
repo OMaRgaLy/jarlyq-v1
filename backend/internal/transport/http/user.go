@@ -192,7 +192,10 @@ func (h *Handler) updatePrivacy(c *gin.Context) {
 	if req.EmailPrivate != nil {
 		user.Privacy.EmailPrivate = *req.EmailPrivate
 	}
-	h.Services.DB.Save(&user)
+	if err := h.Services.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save privacy settings"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"profile_public":   user.Privacy.ProfilePublic,
 		"phone_private":    user.Privacy.PhonePrivate,
@@ -215,6 +218,7 @@ func (h *Handler) updateExtProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
+	safeURLs(&req.GithubURL, &req.LinkedinURL, &req.InstagramURL)
 
 	var ep model.UserExtProfile
 	result := h.Services.DB.Where("user_id = ?", id).First(&ep)

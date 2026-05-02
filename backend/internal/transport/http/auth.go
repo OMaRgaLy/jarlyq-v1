@@ -1,7 +1,10 @@
 package http
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -10,6 +13,30 @@ import (
 	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/service"
 )
 
+// hashToken returns SHA-256 hex of a raw token string.
+func hashToken(raw string) string {
+	h := sha256.Sum256([]byte(raw))
+	return fmt.Sprintf("%x", h)
+}
+
+// storeRefreshToken saves a refresh token hash to the DB.
+func (h *Handler) storeRefreshToken(userID uint, rawToken string, ttl time.Duration) {
+	rt := model.RefreshToken{
+		UserID:    userID,
+		TokenHash: hashToken(rawToken),
+		ExpiresAt: time.Now().Add(ttl),
+	}
+	h.Services.DB.Create(&rt)
+}
+
+// revokeRefreshToken deletes the token hash from DB. Returns false if not found (already used).
+func (h *Handler) revokeRefreshToken(rawToken string) bool {
+	hash := hashToken(rawToken)
+	result := h.Services.DB.Where("token_hash = ? AND expires_at > ?", hash, time.Now()).
+		Delete(&model.RefreshToken{})
+	return result.RowsAffected > 0
+}
+
 func newAuthRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager, authRateLimiter gin.HandlerFunc) {
 	group.POST("/register", authRateLimiter, handler.register)
 	group.POST("/login", authRateLimiter, handler.login)
@@ -17,6 +44,7 @@ func newAuthRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager, a
 	group.POST("/refresh", authRateLimiter, handler.refreshToken)
 	group.POST("/password/forgot", authRateLimiter, handler.forgotPassword)
 	group.POST("/password/reset", authRateLimiter, handler.resetPassword)
+	group.GET("/verify-email", handler.verifyEmail)
 }
 
 type registerRequest struct {
@@ -62,6 +90,7 @@ func (h *Handler) register(c *gin.Context) {
 		return
 	}
 
+	h.storeRefreshToken(res.User.ID, res.RefreshToken, 30*24*time.Hour)
 	c.JSON(http.StatusCreated, authResponse{
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
@@ -85,6 +114,7 @@ func (h *Handler) login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
+	h.storeRefreshToken(res.User.ID, res.RefreshToken, 30*24*time.Hour)
 	c.JSON(http.StatusOK, authResponse{
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
@@ -108,6 +138,7 @@ func (h *Handler) googleOAuth(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
 		return
 	}
+	h.storeRefreshToken(res.User.ID, res.RefreshToken, 30*24*time.Hour)
 	c.JSON(http.StatusOK, authResponse{
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
@@ -161,30 +192,48 @@ func (h *Handler) refreshToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "refresh_token required"})
 		return
 	}
+
+	// 1. Validate JWT signature & expiry
 	claims, err := h.JWT.ParseRefreshToken(req.RefreshToken)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired refresh token"})
 		return
 	}
-	// Verify user still exists
+
+	// 2. Check token exists in DB and hasn't been used yet (rotation check)
+	if !h.revokeRefreshToken(req.RefreshToken) {
+		// Token not found — either already rotated or never issued. Possible replay attack.
+		// Revoke ALL tokens for this user as a safety measure.
+		h.Services.DB.Where("user_id = ?", claims.UserID).Delete(&model.RefreshToken{})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "refresh token already used or revoked"})
+		return
+	}
+
+	// 3. Verify user still exists
 	var user model.User
 	if err := h.Services.DB.First(&user, claims.UserID).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
 		return
 	}
+
+	// 4. Issue new tokens
 	accessToken, err := h.JWT.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
-	refreshToken, err := h.JWT.GenerateRefreshToken(user.ID, user.Email, user.Role)
+	newRefreshToken, err := h.JWT.GenerateRefreshToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
+
+	// 5. Store new refresh token
+	h.storeRefreshToken(user.ID, newRefreshToken, 30*24*time.Hour)
+
 	c.JSON(http.StatusOK, authResponse{
 		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		RefreshToken: newRefreshToken,
 		User:         mapUser(&user),
 	})
 }
@@ -205,4 +254,18 @@ func mapUser(user *model.User) authUserResponse {
 		Theme:     user.Theme,
 		Role:      role,
 	}
+}
+
+// GET /auth/verify-email?token=...
+func (h *Handler) verifyEmail(c *gin.Context) {
+	token := c.Query("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "token is required"})
+		return
+	}
+	if err := h.Services.User.VerifyEmail(c.Request.Context(), token); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "email verified"})
 }

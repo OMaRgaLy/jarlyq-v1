@@ -30,6 +30,7 @@ type UserService interface {
 	UpdateProfile(ctx context.Context, id uint, input UpdateProfileInput) (*model.User, error)
 	RequestPasswordReset(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context, token, newPassword string) error
+	VerifyEmail(ctx context.Context, token string) error
 }
 
 // RegisterInput for new users.
@@ -137,10 +138,17 @@ func (s *userService) Register(ctx context.Context, input RegisterInput) (*AuthR
 		return nil, err
 	}
 
-	if s.mailer != nil {
-		link := fmt.Sprintf("%s/verify?token=%s", s.cfg.AppBaseURL, access)
-		if err := s.mailer.SendVerification(user.Email, link); err != nil {
-			s.log.Warnf("failed to send verification email to %s: %v", user.Email, err)
+	if s.mailer != nil && s.tokenRepo != nil {
+		rawVerify, err2 := generateSecureToken(32)
+		if err2 == nil {
+			verifyHash := "email:" + hashToken(rawVerify)
+			expires := time.Now().Add(48 * time.Hour)
+			if err3 := s.tokenRepo.Save(ctx, verifyHash, user.ID, expires); err3 == nil {
+				link := fmt.Sprintf("%s/verify-email?token=%s", s.cfg.AppBaseURL, rawVerify)
+				if err4 := s.mailer.SendVerification(user.Email, link); err4 != nil {
+					s.log.Warnf("failed to send verification email to %s: %v", user.Email, err4)
+				}
+			}
 		}
 	}
 
@@ -311,6 +319,30 @@ func (s *userService) ResetPassword(ctx context.Context, token, newPassword stri
 		return err
 	}
 	user.PasswordHash = string(hashed)
+	user.EmailVerified = true
+	if err := s.users.Update(ctx, user); err != nil {
+		return err
+	}
+	return s.tokenRepo.Delete(ctx, tokenHash)
+}
+
+func (s *userService) VerifyEmail(ctx context.Context, token string) error {
+	if s.tokenRepo == nil {
+		return errors.New("email verification not configured")
+	}
+	tokenHash := "email:" + hashToken(token)
+	userID, expiresAt, err := s.tokenRepo.Find(ctx, tokenHash)
+	if err != nil {
+		return errors.New("invalid or expired verification link")
+	}
+	if time.Now().After(expiresAt) {
+		_ = s.tokenRepo.Delete(ctx, tokenHash)
+		return errors.New("verification link expired")
+	}
+	user, err := s.users.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
 	user.EmailVerified = true
 	if err := s.users.Update(ctx, user); err != nil {
 		return err

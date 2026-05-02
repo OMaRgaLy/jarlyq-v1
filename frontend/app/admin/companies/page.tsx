@@ -178,6 +178,8 @@ export default function AdminCompaniesPage() {
                     <h3 className="font-semibold text-slate-900 dark:text-white">
                       {c.name}
                       {c.isVerified && <span className="ml-2 inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900/30 dark:text-green-400">✓ Верифицировано</span>}
+                      {c.isActive === false && <span className="ml-2 inline-block rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-500 dark:bg-red-900/30 dark:text-red-400">⛔ Неактивна</span>}
+                      {c.source && c.source !== 'admin' && <span className="ml-2 inline-block rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-800">via {c.source}</span>}
                     </h3>
                     {c.description && <p className="mt-1 text-sm text-slate-500 line-clamp-2">{c.description}</p>}
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -192,6 +194,8 @@ export default function AdminCompaniesPage() {
                             <span className="text-xs text-slate-600 dark:text-slate-300">{o.title}</span>
                             <span className="text-xs text-slate-400">{o.level}</span>
                             {(o as any).isVerified && <span className="text-xs text-green-500">✓</span>}
+                            {(o as any).needs_review && <span className="text-xs text-amber-500">⚠ review</span>}
+                            {(o as any).is_active === false && <span className="text-xs text-red-400">⛔</span>}
                             <button onClick={() => openEditOpp(o)} className="ml-auto text-xs text-brand hover:underline">Ред.</button>
                             <button onClick={() => handleDeleteOpp(o.id)} className="text-xs text-red-400 hover:text-red-600">✕</button>
                           </div>
@@ -205,6 +209,9 @@ export default function AdminCompaniesPage() {
                       className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300"
                     >
                       + Вакансия
+                    </button>
+                    <button onClick={() => router.push(`/admin/companies/${c.id}`)} className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400">
+                      Полный редактор
                     </button>
                     <button onClick={() => openEdit(c)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300">
                       Изменить

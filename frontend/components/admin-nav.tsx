@@ -6,6 +6,7 @@ import { clearAdminToken } from '../lib/admin-api';
 
 const links = [
   { href: '/admin/dashboard', label: '🏠 Главная' },
+  { href: '/admin/review-queue', label: '⚠️ Очередь проверки' },
   { href: '/admin/reviews', label: '⭐ Отзывы' },
   { href: '/admin/suggestions', label: '📬 Предложения' },
   { href: '/admin/companies', label: '🏢 Компании' },
