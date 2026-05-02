@@ -48,7 +48,7 @@ export default function CompanyDashboardPage() {
     const u = getUser();
     if (!token || !u) { router.push('/'); return; }
     if (u.role !== 'company_owner' && u.role !== 'admin') { router.push('/dashboard'); return; }
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
 
     fetchDashboardCompany()
       .then(c => {

@@ -1,7 +1,6 @@
 import { api } from './api';
 
-const TOKEN_KEY = 'jarlyq_token';
-const REFRESH_KEY = 'jarlyq_refresh_token';
+// Only user data lives in localStorage — NOT tokens (they are httpOnly cookies now).
 const USER_KEY = 'jarlyq_user';
 
 export interface AuthUser {
@@ -12,28 +11,39 @@ export interface AuthUser {
   role: string; // "user" | "company_owner" | "school_owner" | "partner" | "admin"
 }
 
-export function saveAuth(accessToken: string, refreshToken: string, user: AuthUser) {
-  localStorage.setItem(TOKEN_KEY, accessToken);
-  localStorage.setItem(REFRESH_KEY, refreshToken);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
-  api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+/** Called after a successful login/register/refresh. Saves user to localStorage. */
+export function saveAuth(_accessToken: string, _refreshToken: string, user: AuthUser) {
+  // Tokens are httpOnly cookies set by the server — we never touch them from JS.
+  // We only keep the user object for UI (name, role, etc.).
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  }
 }
 
-export function clearAuth() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_KEY);
-  localStorage.removeItem(USER_KEY);
-  delete api.defaults.headers.common['Authorization'];
+/** Clears user from localStorage and asks the server to expire the auth cookies. */
+export async function clearAuth() {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(USER_KEY);
+  }
+  try {
+    // Tell the server to clear the httpOnly cookies.
+    await api.post('/auth/logout');
+  } catch {
+    // Ignore — cookies may already be expired.
+  }
 }
 
+/** Returns a truthy value if the user appears to be logged in (user data present). */
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(TOKEN_KEY);
+  // We can't read the httpOnly access_token cookie from JS.
+  // We use the presence of the cached user object as a "logged in" indicator.
+  return localStorage.getItem(USER_KEY) ? 'cookie' : null;
 }
 
+/** @deprecated Not used with cookie auth — kept for compatibility. */
 export function getRefreshToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(REFRESH_KEY);
+  return null;
 }
 
 export function getUser(): AuthUser | null {

@@ -6,6 +6,8 @@ const baseURL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 export const api = axios.create({
   baseURL,
+  // Send httpOnly auth cookies on every request (same-origin via Next.js proxy).
+  withCredentials: true,
 });
 
 // CSRF + silent refresh interceptors — run only in browser
@@ -18,33 +20,25 @@ if (typeof window !== 'undefined') {
     }
     return config;
   });
+
   let isRefreshing = false;
-  let queue: Array<(token: string) => void> = [];
+  let queue: Array<() => void> = [];
 
   api.interceptors.response.use(
     (res) => res,
     async (error) => {
       const original = error.config;
 
-      // Only intercept 401s that aren't the refresh endpoint itself
+      // Only intercept 401s that aren't an auth endpoint itself
       if (error.response?.status !== 401 || original._retry || original.url?.includes('/auth/')) {
         return Promise.reject(error);
       }
 
-      const { getRefreshToken, saveAuth, clearAuth } = await import('./auth');
-      const refreshToken = getRefreshToken();
-
-      if (!refreshToken) {
-        clearAuth();
-        return Promise.reject(error);
-      }
-
       if (isRefreshing) {
-        // Queue requests while refresh is in flight
-        return new Promise((resolve) => {
-          queue.push((token) => {
-            original.headers['Authorization'] = `Bearer ${token}`;
-            resolve(api(original));
+        // Queue requests while refresh is in flight, retry when done
+        return new Promise((resolve, reject) => {
+          queue.push(() => {
+            api(original).then(resolve).catch(reject);
           });
         });
       }
@@ -53,14 +47,16 @@ if (typeof window !== 'undefined') {
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(`${baseURL}/auth/refresh`, { refresh_token: refreshToken });
+        // The server reads the refresh_token httpOnly cookie automatically.
+        // On success it sets a new access_token cookie.
+        const { data } = await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
+        const { saveAuth } = await import('./auth');
         saveAuth(data.access_token, data.refresh_token, data.user);
-        api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
-        queue.forEach((cb) => cb(data.access_token));
+        queue.forEach((cb) => cb());
         queue = [];
-        original.headers['Authorization'] = `Bearer ${data.access_token}`;
         return api(original);
       } catch {
+        const { clearAuth } = await import('./auth');
         clearAuth();
         queue = [];
         return Promise.reject(error);
@@ -273,6 +269,8 @@ export interface School {
   audience?: string;
   isStateFunded: boolean;
   isVerified?: boolean;
+  isActive?: boolean;
+  source?: string;
   contacts?: ContactInfo;
   courses: Course[];
   badges?: EntityBadge[];

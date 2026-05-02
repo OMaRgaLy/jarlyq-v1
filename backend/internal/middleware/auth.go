@@ -10,19 +10,33 @@ import (
 )
 
 // JWTAuth validates JWT access tokens.
+// Token source priority: Authorization header → access_token cookie.
+// The header path is kept for admin panel and API clients; cookies serve browser users.
 func JWTAuth(jwtManager auth.Manager) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		header := c.GetHeader("Authorization")
-		if header == "" {
+		var tokenStr string
+
+		// 1. Authorization: Bearer <token> (admin panel, API clients)
+		if header := c.GetHeader("Authorization"); header != "" {
+			parts := strings.SplitN(header, " ", 2)
+			if len(parts) == 2 && strings.ToLower(parts[0]) == "bearer" {
+				tokenStr = parts[1]
+			}
+		}
+
+		// 2. Fallback: httpOnly cookie (browser users)
+		if tokenStr == "" {
+			if cookie, err := c.Cookie("access_token"); err == nil {
+				tokenStr = cookie
+			}
+		}
+
+		if tokenStr == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing authorization"})
 			return
 		}
-		parts := strings.SplitN(header, " ", 2)
-		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization"})
-			return
-		}
-		claims, err := jwtManager.ParseToken(parts[1])
+
+		claims, err := jwtManager.ParseToken(tokenStr)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
 			return

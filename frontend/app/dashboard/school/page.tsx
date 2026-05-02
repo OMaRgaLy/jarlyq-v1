@@ -38,7 +38,7 @@ export default function SchoolDashboardPage() {
     const u = getUser();
     if (!token || !u) { router.push('/'); return; }
     if (u.role !== 'school_owner' && u.role !== 'admin') { router.push('/dashboard'); return; }
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
 
     fetchDashboardSchool()
       .then(s => {

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '../../../components/header';
+import { Footer } from '../../../components/footer';
 import { JsonLd, educationalOrgJsonLd } from '../../../components/json-ld';
 import { FavoriteButton } from '../../../components/favorite-button';
 import { useSchool } from '../../../lib/hooks';
@@ -48,6 +49,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
             <div className="h-60 rounded-2xl bg-slate-200 dark:bg-slate-800" />
           </div>
         </main>
+        <Footer />
       </div>
     );
   }
@@ -62,6 +64,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
             {t.school.backToList}
           </Link>
         </main>
+        <Footer />
       </div>
     );
   }
@@ -128,6 +131,11 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
                   {school.ageRange && <span>👤 {school.ageRange}</span>}
                   {school.audience && <span>· {school.audience}</span>}
                   {school.isStateFunded && <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 font-medium">🏛 Гос. финансирование</span>}
+                  {school.source && school.source !== 'admin' && (
+                    <span className="rounded-full border border-slate-200 dark:border-slate-700 px-2 py-0.5">
+                      via {school.source}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -265,6 +273,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
           )}
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

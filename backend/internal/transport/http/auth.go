@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,50 @@ import (
 	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/model"
 	"github.com/OMaRgaLy/jarlyq-v1/backend/internal/service"
 )
+
+// cookieSecure returns true when running in production (HTTPS required for Secure flag).
+func cookieSecure() bool {
+	return os.Getenv("GIN_MODE") == "release"
+}
+
+// setAuthCookies writes httpOnly access_token and refresh_token cookies.
+func (h *Handler) setAuthCookies(c *gin.Context, accessToken, refreshToken string) {
+	secure := cookieSecure()
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "access_token",
+		Value:    accessToken,
+		MaxAge:   15 * 60, // 15 min
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
+	})
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		MaxAge:   30 * 24 * 3600, // 30 days
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
+// clearAuthCookies expires both auth cookies.
+func (h *Handler) clearAuthCookies(c *gin.Context) {
+	secure := cookieSecure()
+	for _, name := range []string{"access_token", "refresh_token"} {
+		http.SetCookie(c.Writer, &http.Cookie{
+			Name:     name,
+			Value:    "",
+			MaxAge:   -1,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   secure,
+			SameSite: http.SameSiteLaxMode,
+		})
+	}
+}
 
 // hashToken returns SHA-256 hex of a raw token string.
 func hashToken(raw string) string {
@@ -42,6 +87,7 @@ func newAuthRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager, a
 	group.POST("/login", authRateLimiter, handler.login)
 	group.POST("/google", authRateLimiter, handler.googleOAuth)
 	group.POST("/refresh", authRateLimiter, handler.refreshToken)
+	group.POST("/logout", handler.logout)
 	group.POST("/password/forgot", authRateLimiter, handler.forgotPassword)
 	group.POST("/password/reset", authRateLimiter, handler.resetPassword)
 	group.GET("/verify-email", handler.verifyEmail)
@@ -91,6 +137,7 @@ func (h *Handler) register(c *gin.Context) {
 	}
 
 	h.storeRefreshToken(res.User.ID, res.RefreshToken, 30*24*time.Hour)
+	h.setAuthCookies(c, res.AccessToken, res.RefreshToken)
 	c.JSON(http.StatusCreated, authResponse{
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
@@ -115,6 +162,7 @@ func (h *Handler) login(c *gin.Context) {
 		return
 	}
 	h.storeRefreshToken(res.User.ID, res.RefreshToken, 30*24*time.Hour)
+	h.setAuthCookies(c, res.AccessToken, res.RefreshToken)
 	c.JSON(http.StatusOK, authResponse{
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
@@ -139,6 +187,7 @@ func (h *Handler) googleOAuth(c *gin.Context) {
 		return
 	}
 	h.storeRefreshToken(res.User.ID, res.RefreshToken, 30*24*time.Hour)
+	h.setAuthCookies(c, res.AccessToken, res.RefreshToken)
 	c.JSON(http.StatusOK, authResponse{
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
@@ -183,25 +232,30 @@ func (h *Handler) resetPassword(c *gin.Context) {
 }
 
 type refreshRequest struct {
-	RefreshToken string `json:"refresh_token" binding:"required"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 func (h *Handler) refreshToken(c *gin.Context) {
-	var req refreshRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "refresh_token required"})
-		return
+	// Read refresh_token from httpOnly cookie first, then fallback to JSON body.
+	rawRefresh, err := c.Cookie("refresh_token")
+	if err != nil || rawRefresh == "" {
+		var req refreshRequest
+		if jsonErr := c.ShouldBindJSON(&req); jsonErr != nil || req.RefreshToken == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "refresh_token required"})
+			return
+		}
+		rawRefresh = req.RefreshToken
 	}
 
 	// 1. Validate JWT signature & expiry
-	claims, err := h.JWT.ParseRefreshToken(req.RefreshToken)
+	claims, err := h.JWT.ParseRefreshToken(rawRefresh)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired refresh token"})
 		return
 	}
 
 	// 2. Check token exists in DB and hasn't been used yet (rotation check)
-	if !h.revokeRefreshToken(req.RefreshToken) {
+	if !h.revokeRefreshToken(rawRefresh) {
 		// Token not found — either already rotated or never issued. Possible replay attack.
 		// Revoke ALL tokens for this user as a safety measure.
 		h.Services.DB.Where("user_id = ?", claims.UserID).Delete(&model.RefreshToken{})
@@ -228,14 +282,24 @@ func (h *Handler) refreshToken(c *gin.Context) {
 		return
 	}
 
-	// 5. Store new refresh token
+	// 5. Store new refresh token and update cookies
 	h.storeRefreshToken(user.ID, newRefreshToken, 30*24*time.Hour)
+	h.setAuthCookies(c, accessToken, newRefreshToken)
 
 	c.JSON(http.StatusOK, authResponse{
 		AccessToken:  accessToken,
 		RefreshToken: newRefreshToken,
 		User:         mapUser(&user),
 	})
+}
+
+// POST /auth/logout — clear auth cookies and revoke refresh token.
+func (h *Handler) logout(c *gin.Context) {
+	if rawRefresh, err := c.Cookie("refresh_token"); err == nil && rawRefresh != "" {
+		h.revokeRefreshToken(rawRefresh)
+	}
+	h.clearAuthCookies(c)
+	c.JSON(http.StatusOK, gin.H{"status": "logged out"})
 }
 
 func mapUser(user *model.User) authUserResponse {

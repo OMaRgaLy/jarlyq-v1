@@ -84,7 +84,7 @@ func NewCourseRepository(db *gorm.DB) CourseRepository {
 }
 
 func (r *schoolRepo) List(ctx context.Context, filter EducationFilter) ([]model.School, error) {
-	query := r.db.WithContext(ctx).Model(&model.School{}).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions")
+	query := r.db.WithContext(ctx).Model(&model.School{}).Where("is_active = ?", true).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions")
 	if len(filter.StackIDs) > 0 {
 		query = query.Joins("JOIN courses ON courses.school_id = schools.id").Joins("JOIN course_stacks cs ON cs.course_id = courses.id").Where("cs.stack_id IN ?", filter.StackIDs).Group("schools.id")
 	}
@@ -106,7 +106,7 @@ func (r *schoolRepo) List(ctx context.Context, filter EducationFilter) ([]model.
 
 func (r *schoolRepo) FindByID(ctx context.Context, id uint) (*model.School, error) {
 	var school model.School
-	if err := r.db.WithContext(ctx).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions").First(&school, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("is_active = ?", true).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions").First(&school, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}

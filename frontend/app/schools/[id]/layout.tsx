@@ -4,9 +4,9 @@ const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
 const siteUrl    = process.env.NEXT_PUBLIC_SITE_URL || 'https://jarlyq.kz';
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ): Promise<Metadata> {
-  const { id } = await params;
+  const { id } = params;
   try {
     const res = await fetch(`${backendUrl}/api/v1/schools/${id}`, { next: { revalidate: 3600 } });
     if (!res.ok) return { title: 'Школа' };

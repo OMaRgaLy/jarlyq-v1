@@ -34,7 +34,7 @@ export default function DashboardPage() {
       return;
     }
     setUser(u);
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
 
     // Load owner requests
     fetchMyOwnerRequests().then(setRequests).catch(() => {});
