@@ -24,19 +24,13 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
   const { t } = useLang();
   const [relatedCompanies, setRelatedCompanies] = useState<RelatedCompany[]>([]);
 
-  // Fetch companies that use the same stacks as this school's courses
+  // Fetch related companies via dedicated endpoint (matched by shared course stacks)
   useEffect(() => {
-    if (!school?.courses?.length) return;
-    const stackIds = new Set<number>();
-    for (const c of school.courses) {
-      for (const s of c.stack ?? []) stackIds.add(s.id);
-    }
-    if (!stackIds.size) return;
-    const params = [...stackIds].map(id => `stack_ids[]=${id}`).join('&');
-    api.get<{ companies: RelatedCompany[] }>(`/companies?${params}`)
-      .then(({ data }) => setRelatedCompanies((data.companies ?? []).slice(0, 4)))
+    if (!id) return;
+    api.get<{ companies: RelatedCompany[] }>(`/schools/${id}/related-companies`)
+      .then(({ data }) => setRelatedCompanies(data.companies ?? []))
       .catch(() => {});
-  }, [school?.courses]);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -77,6 +71,9 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
     university_abroad: 'Зарубежный вуз',
     center: 'Образовательный центр',
     peer_learning: 'Peer-to-peer',
+    language_school: 'Языковая школа',
+    test_prep: 'Подготовка к экзаменам',
+    admissions: 'Помощь с поступлением',
   };
   const typeLabel = typeLabels[school.type] ?? school.type;
 

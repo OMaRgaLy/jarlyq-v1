@@ -172,6 +172,9 @@ export interface Opportunity {
   externalId?: string;
   isVerified?: boolean;
   stack?: { id: number; name: string; iconURL?: string }[];
+  educationLevel?: string;
+  acceptsCareerSwitchers?: boolean;
+  suitableForSchoolkids?: boolean;
 }
 
 export interface InternshipItem extends Opportunity {

@@ -118,14 +118,13 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
     culture_rating: 0,
   });
 
-  // Fetch related schools by company stack
+  // Fetch related schools via dedicated endpoint (matched by shared stacks)
   useEffect(() => {
-    if (!company?.stack?.length) return;
-    const stackParams = company.stack.map(s => `stack_ids[]=${s.id}`).join('&');
-    api.get<{ schools: School[] }>(`/schools?${stackParams}`)
-      .then(({ data }) => setRelatedSchools((data.schools ?? []).slice(0, 4)))
+    if (!id) return;
+    api.get<{ schools: School[] }>(`/companies/${id}/related-schools`)
+      .then(({ data }) => setRelatedSchools(data.schools ?? []))
       .catch(() => {});
-  }, [company?.stack]);
+  }, [id]);
 
   const handleSubmitReview = async () => {
     setReviewError('');

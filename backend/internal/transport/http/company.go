@@ -15,6 +15,7 @@ import (
 func newCompanyRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) {
 	group.GET("", handler.listCompanies)
 	group.GET("/:id", handler.getCompany)
+	group.GET("/:id/related-schools", handler.getCompanyRelatedSchools)
 	group.GET("/:id/reviews", handler.listCompanyReviews)
 	group.POST("/:id/reviews", middleware.JWTAuth(jwt), handler.createCompanyReview)
 }
@@ -185,6 +186,46 @@ func (h *Handler) createCompanyReview(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"review": review, "message": "Review submitted for moderation"})
+}
+
+// GET /companies/:id/related-schools
+// Returns up to 6 schools whose courses share stacks with this company.
+func (h *Handler) getCompanyRelatedSchools(c *gin.Context) {
+	companyID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	type schoolRow struct {
+		ID         uint   `json:"id"`
+		Name       string `json:"name"`
+		LogoURL    string `json:"logoURL,omitempty"`
+		Type       string `json:"type,omitempty"`
+		Country    string `json:"country,omitempty"`
+		City       string `json:"city,omitempty"`
+		IsVerified bool   `json:"isVerified"`
+	}
+
+	var rows []schoolRow
+	err = h.Services.DB.Raw(`
+		SELECT DISTINCT s.id, s.name, s.logo_url, s.type, s.country, s.city, s.is_verified
+		FROM schools s
+		JOIN courses c ON c.school_id = s.id AND c.is_active = true
+		JOIN course_stacks cs ON cs.course_id = c.id
+		JOIN company_stacks cst ON cst.stack_id = cs.stack_id AND cst.company_id = ?
+		WHERE s.is_active = true
+		ORDER BY s.name
+		LIMIT 6
+	`, companyID).Scan(&rows).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch related schools"})
+		return
+	}
+	if rows == nil {
+		rows = []schoolRow{}
+	}
+	c.JSON(http.StatusOK, gin.H{"schools": rows})
 }
 
 func parsePagination(c *gin.Context) (int, int) {

@@ -40,12 +40,16 @@ interface OppForm {
   is_year_round: boolean;
   is_verified: boolean;
   source: string;
+  education_level: string;
+  accepts_career_switchers: boolean;
+  suitable_for_schoolkids: boolean;
 }
 
 const emptyOpp: OppForm = {
   type: 'internship', title: '', description: '', requirements: '', apply_url: '', level: 'intern',
   salary_min: 0, salary_max: 0, salary_currency: '₸', work_format: '', city: '',
   deadline: null, is_year_round: false, is_verified: false, source: 'admin',
+  education_level: 'any', accepts_career_switchers: false, suitable_for_schoolkids: false,
 };
 
 export default function AdminCompaniesPage() {
@@ -148,6 +152,9 @@ export default function AdminCompaniesPage() {
       is_year_round: o.isYearRound ?? o.is_year_round ?? false,
       is_verified: o.isVerified ?? o.is_verified ?? false,
       source: o.source || 'admin',
+      education_level: o.educationLevel ?? o.education_level ?? 'any',
+      accepts_career_switchers: o.acceptsCareerSwitchers ?? o.accepts_career_switchers ?? false,
+      suitable_for_schoolkids: o.suitableForSchoolkids ?? o.suitable_for_schoolkids ?? false,
     });
     setShowOppForm(true);
   };
@@ -436,6 +443,32 @@ export default function AdminCompaniesPage() {
                   <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                     <input type="checkbox" checked={oppForm.is_verified} onChange={(e) => setOppForm({ ...oppForm, is_verified: e.target.checked })} className="rounded" />
                     Верифицировано
+                  </label>
+                </div>
+                {/* Education requirements */}
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500">Требования к образованию</label>
+                  <select
+                    value={oppForm.education_level}
+                    onChange={(e) => setOppForm({ ...oppForm, education_level: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  >
+                    <option value="any">Любое (не указано)</option>
+                    <option value="none">Без требований — диплом не нужен</option>
+                    <option value="schoolkid">Школьник (16+)</option>
+                    <option value="student_1_2">Студент 1–2 курса</option>
+                    <option value="student_3_4">Студент 3–4 курса</option>
+                    <option value="bachelor">Бакалавр / Диплом</option>
+                  </select>
+                </div>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" checked={oppForm.accepts_career_switchers} onChange={(e) => setOppForm({ ...oppForm, accepts_career_switchers: e.target.checked })} className="rounded" />
+                    Подходит для смены профессии
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" checked={oppForm.suitable_for_schoolkids} onChange={(e) => setOppForm({ ...oppForm, suitable_for_schoolkids: e.target.checked })} className="rounded" />
+                    Подходит школьникам
                   </label>
                 </div>
               </div>

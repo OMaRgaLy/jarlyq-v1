@@ -193,6 +193,11 @@ type Opportunity struct {
 	IsVerified     bool       `json:"isVerified"`
 	IsActive       bool       `gorm:"default:true;index" json:"isActive"`
 	NeedsReview    bool       `gorm:"default:false;index" json:"needsReview"` // AI не уверен — нужна ручная проверка
+	// Education requirements
+	// EducationLevel: "none" | "schoolkid" | "student_1_2" | "student_3_4" | "bachelor" | "any"
+	EducationLevel          string `gorm:"size:30;default:'any'" json:"educationLevel,omitempty"`
+	AcceptsCareerSwitchers  bool   `gorm:"default:false" json:"acceptsCareerSwitchers"`
+	SuitableForSchoolkids   bool   `gorm:"default:false" json:"suitableForSchoolkids"`
 	LastCheckedAt  *time.Time `json:"-"`
 	ParsedAt       *time.Time `json:"-"`
 	StartDate      *time.Time `json:"-"`
@@ -202,7 +207,11 @@ type Opportunity struct {
 }
 
 // School represents education providers.
-// Type: "bootcamp" | "university" | "state_program" | "university_abroad" | "center" | "peer_learning"
+// Type: "bootcamp" | "center" | "state_program" | "peer_learning"   ← частные школы (дают навык → работу)
+//       "university" | "university_abroad"                           ← высшее образование (дают диплом)
+//       "language_school"                                            ← языковые курсы (IELTS, TOEFL, разговорный)
+//       "test_prep"                                                  ← подготовка к экзаменам (ЕНТ, ОГЭ, ОРТ, SAT)
+//       "admissions"                                                 ← консультанты по поступлению в вуз
 type School struct {
 	ID            uint        `gorm:"primaryKey" json:"id"`
 	CreatedAt     time.Time   `json:"-"`

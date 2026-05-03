@@ -14,6 +14,7 @@ import (
 func newSchoolRoutes(group *gin.RouterGroup, handler *Handler) {
 	group.GET("", handler.listSchools)
 	group.GET("/:id", handler.getSchool)
+	group.GET("/:id/related-companies", handler.getSchoolRelatedCompanies)
 }
 
 func newMastersRoutes(group *gin.RouterGroup, handler *Handler) {
@@ -108,6 +109,43 @@ func (h *Handler) listSchools(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"schools": schools, "limit": limit, "offset": offset})
+}
+
+// GET /schools/:id/related-companies
+// Returns up to 6 companies that use stacks taught in this school's courses.
+func (h *Handler) getSchoolRelatedCompanies(c *gin.Context) {
+	schoolID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	type companyRow struct {
+		ID       uint   `json:"id"`
+		Name     string `json:"name"`
+		LogoURL  string `json:"logoURL,omitempty"`
+		Industry string `json:"industry,omitempty"`
+	}
+
+	var rows []companyRow
+	err = h.Services.DB.Raw(`
+		SELECT DISTINCT co.id, co.name, co.logo_url, co.industry
+		FROM companies co
+		JOIN company_stacks cs ON cs.company_id = co.id
+		JOIN course_stacks cst ON cst.stack_id = cs.stack_id
+		JOIN courses c ON c.id = cst.course_id AND c.school_id = ?
+		WHERE co.is_active = true
+		ORDER BY co.name
+		LIMIT 6
+	`, schoolID).Scan(&rows).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch related companies"})
+		return
+	}
+	if rows == nil {
+		rows = []companyRow{}
+	}
+	c.JSON(http.StatusOK, gin.H{"companies": rows})
 }
 
 func (h *Handler) getSchool(c *gin.Context) {

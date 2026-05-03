@@ -47,6 +47,32 @@ func (h *Handler) listInternships(c *gin.Context) {
 	if stackID, err := strconv.Atoi(c.Query("stack_id")); err == nil && stackID > 0 {
 		db = db.Joins("JOIN opportunity_stacks os ON os.opportunity_id = opportunities.id AND os.stack_id = ?", stackID)
 	}
+	if el := c.Query("education_level"); el != "" {
+		// "none" or "schoolkid" → only exact match; otherwise filter ≤ requested level
+		switch el {
+		case "none":
+			db = db.Where("opportunities.education_level = ?", "none")
+		case "schoolkid":
+			db = db.Where("opportunities.suitable_for_schoolkids = ? OR opportunities.education_level IN ?", true, []string{"none", "schoolkid"})
+		default:
+			// Return everything that asks for ≤ the requested level
+			order := map[string]int{"any": 99, "bachelor": 3, "student_3_4": 2, "student_1_2": 1, "schoolkid": 0, "none": -1}
+			max := order[el]
+			var allowed []string
+			for lvl, rank := range order {
+				if rank <= max {
+					allowed = append(allowed, lvl)
+				}
+			}
+			db = db.Where("opportunities.education_level IN ?", allowed)
+		}
+	}
+	if c.Query("career_switchers") == "true" {
+		db = db.Where("opportunities.accepts_career_switchers = ?", true)
+	}
+	if c.Query("schoolkids") == "true" {
+		db = db.Where("opportunities.suitable_for_schoolkids = ?", true)
+	}
 
 	db = db.Order("opportunities.is_year_round DESC, opportunities.deadline ASC")
 

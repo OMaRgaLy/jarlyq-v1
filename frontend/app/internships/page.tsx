@@ -42,6 +42,9 @@ export default function InternshipsPage() {
   const [format, setFormat] = useState('');
   const [yearRoundOnly, setYearRoundOnly] = useState(false);
   const [paidOnly, setPaidOnly] = useState(false);
+  const [educationLevel, setEducationLevel] = useState('');
+  const [careerSwitchers, setCareerSwitchers] = useState(false);
+  const [schoolkidsOnly, setSchoolkidsOnly] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -49,6 +52,9 @@ export default function InternshipsPage() {
     if (format) params.set('work_format', format);
     if (yearRoundOnly) params.set('is_year_round', 'true');
     if (paidOnly) params.set('is_paid', 'true');
+    if (educationLevel) params.set('education_level', educationLevel);
+    if (careerSwitchers) params.set('career_switchers', 'true');
+    if (schoolkidsOnly) params.set('schoolkids', 'true');
 
     setLoading(true);
     Promise.all([
@@ -60,7 +66,7 @@ export default function InternshipsPage() {
       setCompanies(cos.slice(0, 6));
       setHRContent(Array.isArray(content) ? content.slice(0, 6) : []);
     }).finally(() => setLoading(false));
-  }, [city, format, yearRoundOnly, paidOnly]);
+  }, [city, format, yearRoundOnly, paidOnly, educationLevel, careerSwitchers, schoolkidsOnly]);
 
   const formatLabel: Record<string, string> = {
     remote: t.company.remote,
@@ -120,6 +126,29 @@ export default function InternshipsPage() {
           <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 pb-1">
             <input type="checkbox" checked={paidOnly} onChange={e => setPaidOnly(e.target.checked)} className="rounded" />
             {t.internships.filterPaid}
+          </label>
+          <div className="w-52">
+            <label className="mb-1 block text-xs font-medium text-slate-500">Образование</label>
+            <select
+              value={educationLevel}
+              onChange={e => setEducationLevel(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            >
+              <option value="">Любое</option>
+              <option value="none">Без диплома</option>
+              <option value="schoolkid">Школьникам</option>
+              <option value="student_1_2">Студент 1–2 курса</option>
+              <option value="student_3_4">Студент 3–4 курса</option>
+              <option value="bachelor">Бакалавр+</option>
+            </select>
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 pb-1">
+            <input type="checkbox" checked={careerSwitchers} onChange={e => setCareerSwitchers(e.target.checked)} className="rounded" />
+            Смена профессии
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 pb-1">
+            <input type="checkbox" checked={schoolkidsOnly} onChange={e => setSchoolkidsOnly(e.target.checked)} className="rounded" />
+            Для школьников
           </label>
         </div>
 
@@ -259,6 +288,21 @@ function InternshipCard({
         {item.isYearRound && (
           <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
             {t.internships.yearRound}
+          </span>
+        )}
+        {item.educationLevel === 'none' && (
+          <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+            Без диплома
+          </span>
+        )}
+        {item.suitableForSchoolkids && (
+          <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+            Школьникам
+          </span>
+        )}
+        {item.acceptsCareerSwitchers && (
+          <span className="rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-medium text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+            Смена профессии
           </span>
         )}
         {item.workFormat && (

@@ -13,6 +13,9 @@ const TYPE_LABELS: Record<string, string> = {
   university_abroad: 'Зарубежный вуз',
   center: 'Образовательный центр',
   peer_learning: 'Peer-to-peer',
+  language_school: 'Языковая школа',
+  test_prep: 'Подготовка к экзаменам',
+  admissions: 'Помощь с поступлением',
 };
 
 export default async function Image({ params }: { params: { id: string } }) {

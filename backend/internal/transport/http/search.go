@@ -46,22 +46,28 @@ func (h *Handler) search(c *gin.Context) {
 
 	// Companies
 	var companies []model.Company
-	h.Services.DB.
+	if err := h.Services.DB.
 		Where("LOWER(name) LIKE ? OR LOWER(description) LIKE ? OR LOWER(industry) LIKE ?", like, like, like).
 		Limit(5).
-		Find(&companies)
+		Find(&companies).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "search failed"})
+		return
+	}
 
 	companyResults := make([]searchCompany, len(companies))
-	for i, c := range companies {
-		companyResults[i] = searchCompany{ID: c.ID, Name: c.Name, LogoURL: c.LogoURL, Industry: c.Industry}
+	for i, co := range companies {
+		companyResults[i] = searchCompany{ID: co.ID, Name: co.Name, LogoURL: co.LogoURL, Industry: co.Industry}
 	}
 
 	// Schools
 	var schools []model.School
-	h.Services.DB.
+	if err := h.Services.DB.
 		Where("LOWER(name) LIKE ? OR LOWER(description) LIKE ?", like, like).
 		Limit(5).
-		Find(&schools)
+		Find(&schools).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "search failed"})
+		return
+	}
 
 	schoolResults := make([]searchSchool, len(schools))
 	for i, s := range schools {
@@ -74,12 +80,15 @@ func (h *Handler) search(c *gin.Context) {
 		CompanyName string
 	}
 	var opps []oppRow
-	h.Services.DB.Table("opportunities").
+	if err := h.Services.DB.Table("opportunities").
 		Select("opportunities.*, companies.name AS company_name").
 		Joins("LEFT JOIN companies ON companies.id = opportunities.company_id").
 		Where("LOWER(opportunities.title) LIKE ? OR LOWER(opportunities.description) LIKE ? OR LOWER(companies.name) LIKE ?", like, like, like).
 		Limit(5).
-		Scan(&opps)
+		Scan(&opps).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "search failed"})
+		return
+	}
 
 	oppResults := make([]searchOpportunity, len(opps))
 	for i, o := range opps {

@@ -168,11 +168,21 @@ export default function AdminSchoolsPage() {
                     <label className="mb-1 block text-xs font-medium text-slate-500">Тип</label>
                     <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
                       className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                      <option value="bootcamp">Буткемп</option>
-                      <option value="university">Университет</option>
-                      <option value="state_program">Гос. программа</option>
-                      <option value="university_abroad">Зарубежный ВУЗ</option>
-                      <option value="prep_service">Подготовка к ВУЗу</option>
+                      <optgroup label="Обучение (навык → работу)">
+                        <option value="bootcamp">Буткемп</option>
+                        <option value="center">Образовательный центр</option>
+                        <option value="state_program">Гос. программа (бесплатно)</option>
+                        <option value="peer_learning">Peer-to-peer</option>
+                      </optgroup>
+                      <optgroup label="Высшее образование">
+                        <option value="university">Университет</option>
+                        <option value="university_abroad">Зарубежный вуз</option>
+                      </optgroup>
+                      <optgroup label="Подготовка / поступление">
+                        <option value="test_prep">Подготовка к экзаменам (ЕНТ, SAT, IELTS…)</option>
+                        <option value="language_school">Языковая школа</option>
+                        <option value="admissions">Помощь с поступлением в вуз</option>
+                      </optgroup>
                     </select>
                   </div>
                   <div>
