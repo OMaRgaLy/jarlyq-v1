@@ -475,6 +475,15 @@ func (h *Handler) adminApproveOpportunity(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Send Telegram notifications to users with matching stacks (async, don't block response)
+	go func() {
+		var opp model.Opportunity
+		if err := h.Services.DB.First(&opp, id).Error; err == nil {
+			h.NotifyNewOpportunity(&opp)
+		}
+	}()
+
 	c.JSON(http.StatusOK, gin.H{"status": "approved"})
 }
 

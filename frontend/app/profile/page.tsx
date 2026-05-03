@@ -46,6 +46,11 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
 
+  // Telegram linking state
+  const [tgLinked, setTgLinked] = useState(false);
+  const [tgCode, setTgCode] = useState('');
+  const [tgLoading, setTgLoading] = useState(false);
+
   // Basic info form
   const [form, setForm] = useState({ first_name: '', last_name: '', phone: '', telegram: '', bio: '' });
   // Ext profile form
@@ -91,6 +96,7 @@ export default function ProfilePage() {
   useEffect(() => {
     loadProfile();
     api.get<{ stacks: Stack[] }>('/stacks').then(({ data }) => setStacks(data.stacks)).catch(() => {});
+    api.get<{ linked: boolean }>('/telegram/status').then(({ data }) => setTgLinked(data.linked)).catch(() => {});
   }, [loadProfile]);
 
   const handleSave = async () => {
@@ -491,6 +497,77 @@ export default function ProfilePage() {
           >
             {stacksSaved ? t.profile.stacksSaved : savingStacks ? t.profile.saving : t.profile.saveStacks}
           </button>
+        </section>
+
+        {/* Telegram notifications */}
+        <section className="card space-y-4 p-6">
+          <SectionTitle>Уведомления в Telegram</SectionTitle>
+          {tgLinked ? (
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                <span className="text-lg">✓</span>
+                <span>Telegram подключён. Получаешь уведомления о новых стажировках по твоим технологиям.</span>
+              </div>
+              <button
+                onClick={async () => {
+                  await api.delete('/telegram/link');
+                  setTgLinked(false);
+                  setTgCode('');
+                }}
+                className="shrink-0 rounded-xl border border-red-200 px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20"
+              >
+                Отключить
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Подключи Telegram, чтобы получать уведомления когда появятся новые стажировки по твоим технологиям.
+              </p>
+              {tgCode ? (
+                <div className="space-y-3">
+                  <div className="rounded-xl border border-brand/20 bg-brand/5 p-4">
+                    <p className="mb-1 text-xs text-slate-500">Отправь этот код боту <a href="https://t.me/JarlyqBot" target="_blank" rel="noreferrer" className="text-brand hover:underline">@JarlyqBot</a>:</p>
+                    <p className="font-mono text-2xl font-bold tracking-widest text-brand">{tgCode}</p>
+                    <p className="mt-1 text-xs text-slate-400">Код действителен 15 минут</p>
+                  </div>
+                  <ol className="space-y-1 text-sm text-slate-500 dark:text-slate-400">
+                    <li>1. Открой <a href="https://t.me/JarlyqBot" target="_blank" rel="noreferrer" className="text-brand hover:underline">@JarlyqBot</a> в Telegram</li>
+                    <li>2. Нажми /start (если первый раз)</li>
+                    <li>3. Отправь код выше</li>
+                  </ol>
+                  <button
+                    onClick={async () => {
+                      const { data } = await api.get<{ linked: boolean }>('/telegram/status');
+                      if (data.linked) {
+                        setTgLinked(true);
+                        setTgCode('');
+                      }
+                    }}
+                    className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:border-brand hover:text-brand dark:border-slate-700 dark:text-slate-300"
+                  >
+                    Проверить подключение
+                  </button>
+                </div>
+              ) : (
+                <button
+                  disabled={tgLoading}
+                  onClick={async () => {
+                    setTgLoading(true);
+                    try {
+                      const { data } = await api.post<{ code: string }>('/telegram/link-code');
+                      setTgCode(data.code);
+                    } finally {
+                      setTgLoading(false);
+                    }
+                  }}
+                  className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
+                >
+                  {tgLoading ? 'Генерируем...' : 'Подключить Telegram'}
+                </button>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Member since */}

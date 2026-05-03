@@ -30,7 +30,9 @@ type Config struct {
 	CSRFCookieName     string
 	CSRFCookieDomain   string
 	SwaggerEnabled     bool
-	AdminEmail         string
+	AdminEmail          string
+	TelegramBotToken    string
+	TelegramWebhookSecret string // optional header check
 }
 
 // Load reads environment variables from .env (if present) and returns config.
@@ -56,7 +58,9 @@ func Load() (*Config, error) {
 		CSRFCookieName:     getString("CSRF_COOKIE_NAME", "csrf_token"),
 		CSRFCookieDomain:   getString("CSRF_COOKIE_DOMAIN", ""),
 		SwaggerEnabled:     getBool("SWAGGER_ENABLED", getString("APP_ENV", "development") != "production"),
-		AdminEmail:         getString("ADMIN_EMAIL", ""),
+		AdminEmail:            getString("ADMIN_EMAIL", ""),
+		TelegramBotToken:      getString("TELEGRAM_BOT_TOKEN", ""),
+		TelegramWebhookSecret: getString("TELEGRAM_WEBHOOK_SECRET", ""),
 	}
 
 	return cfg, nil

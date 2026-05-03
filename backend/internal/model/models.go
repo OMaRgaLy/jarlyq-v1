@@ -22,6 +22,8 @@ type User struct {
 	Theme         string `gorm:"size:20"`
 	EmailVerified bool
 	TermsAccepted bool
+	// Telegram integration
+	TelegramChatID string `gorm:"size:50;index" json:"-"` // Telegram chat_id after linking
 	// Role-based access: "user", "company_owner", "school_owner", "partner", "admin"
 	Role      string `gorm:"size:30;default:'user'"`
 	CompanyID *uint  `gorm:"index"` // set when role=company_owner
@@ -677,6 +679,8 @@ func AutoMigrate(db *gorm.DB) error {
 		&ParseLog{},
 		// Curated resources directory
 		&Resource{},
+		// Telegram integration
+		&TelegramLinkCode{},
 	)
 }
 
@@ -737,6 +741,16 @@ type Hackathon struct {
 	StartDate    *time.Time `json:"startDate,omitempty"`
 	EndDate      *time.Time `json:"endDate,omitempty"`
 	IsActive     bool       `gorm:"default:true" json:"isActive"`
+}
+
+// TelegramLinkCode is a short-lived code used to connect a Jarlyq account to Telegram.
+// The user sends this code to the bot; the bot calls /telegram/verify.
+type TelegramLinkCode struct {
+	ID        uint      `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UserID    uint      `gorm:"index;not null"`
+	Code      string    `gorm:"size:20;uniqueIndex;not null"` // e.g. "JARLYQ-A3X9K2"
+	ExpiresAt time.Time `gorm:"index;not null"`
 }
 
 // Resource represents a curated external link in the /resources directory.
