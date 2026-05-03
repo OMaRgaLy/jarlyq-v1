@@ -675,6 +675,8 @@ func AutoMigrate(db *gorm.DB) error {
 		&RefreshToken{},
 		// Parser infrastructure
 		&ParseLog{},
+		// Curated resources directory
+		&Resource{},
 	)
 }
 
@@ -735,6 +737,26 @@ type Hackathon struct {
 	StartDate    *time.Time `json:"startDate,omitempty"`
 	EndDate      *time.Time `json:"endDate,omitempty"`
 	IsActive     bool       `gorm:"default:true" json:"isActive"`
+}
+
+// Resource represents a curated external link in the /resources directory.
+// Category: "courses" | "scholarships" | "test_prep" | "languages" |
+//           "certifications" | "security" | "communities" | "career" | "other"
+type Resource struct {
+	ID           uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt    time.Time `json:"-"`
+	UpdatedAt    time.Time `json:"-"`
+	Title        string    `gorm:"size:255;not null" json:"title"`
+	URL          string    `gorm:"size:512;not null" json:"url"`
+	Description  string    `gorm:"type:text" json:"description,omitempty"`
+	Category     string    `gorm:"size:50;index;not null" json:"category"`
+	Subcategory  string    `gorm:"size:100" json:"subcategory,omitempty"` // e.g. "Python", "SOC", "IELTS"
+	IsFree       bool      `gorm:"default:true" json:"isFree"`
+	Language     string    `gorm:"size:10;default:'ru'" json:"language"`         // ru|en|kk
+	Difficulty   string    `gorm:"size:20" json:"difficulty,omitempty"`          // beginner|intermediate|advanced
+	CountryFocus string    `gorm:"size:10" json:"countryFocus,omitempty"`        // KZ|KG|UZ|* (empty = global)
+	IsActive     bool      `gorm:"default:true;index" json:"isActive"`
+	SortOrder    int       `gorm:"default:0" json:"sortOrder"`
 }
 
 // Suggestion — user-submitted request to add a company or school.

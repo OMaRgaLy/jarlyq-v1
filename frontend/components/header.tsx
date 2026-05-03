@@ -22,6 +22,7 @@ function useNavLinks() {
     { href: '/companies', label: t.nav.companies },
     { href: '/schools', label: t.nav.schools },
     { href: '/career-paths', label: t.nav.careerPaths },
+    { href: '/resources', label: 'Ресурсы' },
   ];
 }
 

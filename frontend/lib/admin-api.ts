@@ -522,3 +522,58 @@ export const SCHOOL_PREDEFINED_BADGES = [
   { icon: '✨',           label: 'Стипендии',        colorLight: '#dc2626', colorDark: '#f87171' },
   { icon: '🤝',           label: 'Партнёр Jarlyq',   colorLight: '#7c3aed', colorDark: '#8b5cf6' },
 ] as const;
+
+// ─── Resources ────────────────────────────────────────────────────────────────
+
+export interface AdminResource {
+  id: number;
+  title: string;
+  url: string;
+  description?: string;
+  category: string;
+  subcategory?: string;
+  isFree: boolean;
+  language: string;
+  difficulty?: string;
+  countryFocus?: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface ResourceForm {
+  title: string;
+  url: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  is_free: boolean;
+  language: string;
+  difficulty: string;
+  country_focus: string;
+  is_active: boolean;
+  sort_order: number;
+}
+
+export const RESOURCE_CATEGORIES: { value: string; label: string }[] = [
+  { value: 'courses',       label: 'Курсы и обучение' },
+  { value: 'scholarships',  label: 'Стипендии и гранты' },
+  { value: 'test_prep',     label: 'Подготовка к экзаменам' },
+  { value: 'languages',     label: 'Изучение языков' },
+  { value: 'certifications',label: 'Сертификации' },
+  { value: 'security',      label: 'Информационная безопасность' },
+  { value: 'communities',   label: 'Сообщества' },
+  { value: 'career',        label: 'Карьера в IT' },
+  { value: 'other',         label: 'Другое' },
+];
+
+export const fetchAdminResources = async (): Promise<AdminResource[]> => {
+  const { data } = await adminApi.get('/admin/resources');
+  return data.resources ?? [];
+};
+export const createAdminResource = (body: ResourceForm) =>
+  adminApi.post('/admin/resources', body);
+export const updateAdminResource = (id: number, body: ResourceForm) =>
+  adminApi.put(`/admin/resources/${id}`, body);
+export const deleteAdminResource = (id: number) =>
+  adminApi.delete(`/admin/resources/${id}`);
+

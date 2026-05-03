@@ -137,6 +137,12 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 	// ─── Review queue ─────────────────────────────────────────────────────────
 	group.PUT("/opportunities/:id/approve", handler.adminApproveOpportunity)
 	group.PUT("/opportunities/:id/reject", handler.adminRejectOpportunity)
+
+	// ─── Resources directory ──────────────────────────────────────────────────
+	group.GET("/resources", handler.adminListResources)
+	group.POST("/resources", handler.adminCreateResource)
+	group.PUT("/resources/:id", handler.adminUpdateResource)
+	group.DELETE("/resources/:id", handler.adminDeleteResource)
 }
 
 // ─── COMPANIES ────────────────────────────────────────────────────────────────

@@ -12,6 +12,7 @@ const links = [
   { href: '/admin/companies', label: '🏢 Компании' },
   { href: '/admin/schools', label: '🎓 Школы' },
   { href: '/admin/hackathons', label: '🏆 Хакатоны' },
+  { href: '/admin/resources', label: '📚 Ресурсы' },
   { href: '/admin/stacks', label: '⚙️ Стеки' },
   { href: '/admin/owner-requests', label: '🔑 Заявки на роль' },
   { href: '/admin/users', label: '👤 Пользователи' },
