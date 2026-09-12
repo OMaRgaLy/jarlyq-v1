@@ -9,7 +9,7 @@ export function Footer() {
 
   const sections = [
     {
-      title: t.nav.opportunities ?? 'Возможности',
+      title: t.nav.opportunities,
       links: [
         { href: '/internships', label: t.nav.internships },
         { href: '/jobs', label: t.nav.jobs },
@@ -18,17 +18,17 @@ export function Footer() {
       ],
     },
     {
-      title: t.nav.learning ?? 'Обучение',
+      title: t.nav.learning,
       links: [
         { href: '/schools', label: t.nav.schools },
         { href: '/masters', label: t.nav.masters },
         { href: '/career-paths', label: t.nav.careerPaths },
         { href: '/interview', label: t.nav.interview },
-        { href: '/project-ideas', label: t.nav.projectIdeas ?? 'Идеи проектов' },
+        { href: '/project-ideas', label: t.nav.projectIdeas },
       ],
     },
     {
-      title: t.nav.platform ?? 'Платформа',
+      title: t.nav.platform,
       links: [
         { href: '/suggest', label: t.nav.suggest },
         { href: '/search', label: t.nav.search },

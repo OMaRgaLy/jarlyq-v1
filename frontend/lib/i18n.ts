@@ -27,6 +27,10 @@ const dict = {
       search: 'Поиск',
       groupWork: 'Найти работу',
       groupPrep: 'Подготовка',
+      opportunities: 'Возможности',
+      learning: 'Обучение',
+      platform: 'Платформа',
+      projectIdeas: 'Идеи проектов',
     },
     home: {
       heroSubtitle: 'Платформа для поиска стажировок и вакансий в IT-компаниях СНГ и EMEA. Ищи компании по своему стеку технологий.',
@@ -513,6 +517,10 @@ const dict = {
       search: 'Search',
       groupWork: 'Find Work',
       groupPrep: 'Preparation',
+      opportunities: 'Opportunities',
+      learning: 'Learning',
+      platform: 'Platform',
+      projectIdeas: 'Project Ideas',
     },
     home: {
       heroSubtitle: 'Platform for finding internships and jobs at IT companies across CIS and EMEA. Find companies by your tech stack.',
@@ -996,6 +1004,10 @@ const dict = {
       search: 'Іздеу',
       groupWork: 'Жұмыс табу',
       groupPrep: 'Дайындық',
+      opportunities: 'Мүмкіндіктер',
+      learning: 'Оқыту',
+      platform: 'Платформа',
+      projectIdeas: 'Жоба идеялары',
     },
     home: {
       heroSubtitle: 'IT-компанияларда тәжірибе мен жұмыс іздеуге арналған платформа. Технология стегі бойынша компанияңды тап.',
@@ -1467,6 +1479,7 @@ export interface Translations {
     internships: string; hackathons: string; masters: string;
     login: string; logout: string; suggest: string; myProfile: string;
     publicProfile: string; search: string; groupWork: string; groupPrep: string;
+    opportunities: string; learning: string; platform: string; projectIdeas: string;
   };
   search: {
     placeholder: string; empty: string; companies: string;
