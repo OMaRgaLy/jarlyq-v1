@@ -119,7 +119,7 @@ function AuthContent() {
               />
               <input
                 type="password" required placeholder={t.auth.password} value={password}
-                onChange={e => setPassword(e.target.value)} minLength={6}
+                onChange={e => setPassword(e.target.value)} minLength={8}
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
               {mode === 'register' && (

@@ -220,7 +220,7 @@ type School struct {
 	UpdatedAt     time.Time   `json:"-"`
 	Name          string      `gorm:"size:255" json:"name"`
 	Type          string      `gorm:"size:40;default:'bootcamp'" json:"type"`
-	Country       string      `gorm:"size:10;index" json:"country,omitempty"` // ISO: "KZ","TR"
+	Country       string      `gorm:"size:100;index" json:"country,omitempty"`
 	City          string      `gorm:"size:100" json:"city,omitempty"`
 	LogoURL       string      `gorm:"size:512" json:"logoURL,omitempty"`
 	CoverURL      string      `gorm:"size:512" json:"coverURL,omitempty"`

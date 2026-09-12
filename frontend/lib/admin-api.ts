@@ -4,6 +4,9 @@ const TOKEN_KEY = 'jarlyq_admin_token';
 
 export const adminApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || '/api/v1',
+  headers: {
+    'ngrok-skip-browser-warning': 'true',
+  },
   // No withCredentials — we use Authorization header, not cookies
 });
 

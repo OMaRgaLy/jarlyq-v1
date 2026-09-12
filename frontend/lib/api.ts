@@ -6,6 +6,9 @@ const baseURL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 export const api = axios.create({
   baseURL,
+  headers: {
+    'ngrok-skip-browser-warning': 'true',
+  },
   // Send httpOnly auth cookies on every request (same-origin via Next.js proxy).
   withCredentials: true,
 });

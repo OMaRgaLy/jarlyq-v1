@@ -1199,95 +1199,45 @@ func UpsertRegions(db *gorm.DB) error {
 func Seed(db *gorm.DB) error {
 	log.Println("Starting database seeding...")
 
+	// Structural data — always seed these (regions, stacks, career content)
 	if err := SeedRegions(db); err != nil {
 		log.Printf("Error seeding regions: %v", err)
 		return err
 	}
-
-	// Всегда добавляем новые регионы если их нет
 	if err := UpsertRegions(db); err != nil {
 		log.Printf("Error upserting regions: %v", err)
 	}
-
 	if err := SeedStacks(db); err != nil {
 		log.Printf("Error seeding stacks: %v", err)
 		return err
 	}
-
-	if err := SeedCompanies(db); err != nil {
-		log.Printf("Error seeding companies: %v", err)
-		return err
-	}
-
-	if err := SeedSchools(db); err != nil {
-		log.Printf("Error seeding schools: %v", err)
-		return err
-	}
-
 	if err := SeedCareerPaths(db); err != nil {
 		log.Printf("Error seeding career paths: %v", err)
 		return err
 	}
-
 	if err := SeedPathStages(db); err != nil {
 		log.Printf("Error seeding path stages: %v", err)
 		return err
 	}
-
 	if err := SeedInterviewQuestions(db); err != nil {
 		log.Printf("Error seeding interview questions: %v", err)
 		return err
 	}
-
 	if err := SeedProjectIdeas(db); err != nil {
 		log.Printf("Error seeding project ideas: %v", err)
 		return err
 	}
-
-	if err := SeedMoreCompanies(db); err != nil {
-		log.Printf("Error seeding more companies: %v", err)
-		return err
-	}
-
-	if err := SeedMoreSchools(db); err != nil {
-		log.Printf("Error seeding more schools: %v", err)
-		return err
-	}
-
 	if err := SeedInterviewQuestionsByTopic(db); err != nil {
 		log.Printf("Error seeding interview questions by topic: %v", err)
 		return err
 	}
-
 	if err := SeedAllPathStages(db); err != nil {
 		log.Printf("Error seeding all path stages: %v", err)
 		return err
 	}
 
-	if err := SeedHackathons(db); err != nil {
-		log.Printf("Error seeding hackathons: %v", err)
-		return err
-	}
-
-	if err := SeedInternshipsFromOSS(db); err != nil {
-		log.Printf("Error seeding OSS internships: %v", err)
-		return err
-	}
-
-	if err := SeedNewInternships(db); err != nil {
-		log.Printf("Error seeding new internships: %v", err)
-		return err
-	}
-
-	if err := SeedStateProgramsAndUniversities(db); err != nil {
-		log.Printf("Error seeding state programs and universities: %v", err)
-		return err
-	}
-
-	if err := SeedWorldUniversities(db); err != nil {
-		log.Printf("Error seeding world universities: %v", err)
-		return err
-	}
+	// Companies, schools, hackathons, internships — NOT seeded here.
+	// Use the pipeline (admin/pipeline) to add this data via parsers.
 
 	log.Println("Database seeding completed successfully!")
 	return nil

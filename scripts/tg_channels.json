@@ -13,8 +13,8 @@
     {"username": "itjobs_bishkek",   "country": "KG", "lang": "ru", "note": "IT Бишкек"}
   ],
   "settings": {
-    "days_back": 7,
+    "days_back": 365,
     "min_message_length": 80,
-    "max_messages_per_channel": 200
+    "max_messages_per_channel": 5000
   }
 }

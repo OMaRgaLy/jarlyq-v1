@@ -17,6 +17,10 @@ const links = [
   { href: '/admin/owner-requests', label: '🔑 Заявки на роль' },
   { href: '/admin/users', label: '👤 Пользователи' },
   { href: '/admin/audit-log', label: '📋 Журнал действий' },
+  { href: '/admin/pipeline', label: '⚡ Парсеры' },
+  { href: '/admin/pipeline/parse-url', label: '🔍 Парсинг URL' },
+  { href: '/admin/pipeline/settings', label: '🔧 Настройки Pipeline' },
+  { href: '/admin/staging', label: '🗂 Staging' },
 ];
 
 export function AdminNav() {

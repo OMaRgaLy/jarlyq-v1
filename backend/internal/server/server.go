@@ -65,7 +65,7 @@ func New(cfg *config.Config) (*Server, error) {
 	} else {
 		corsCfg.AllowAllOrigins = true
 	}
-	corsCfg.AllowHeaders = []string{"Authorization", "Content-Type", "X-CSRF-Token"}
+	corsCfg.AllowHeaders = []string{"Authorization", "Content-Type", "X-CSRF-Token", "ngrok-skip-browser-warning"}
 	engine.Use(cors.New(corsCfg))
 
 	// Global rate limiter
