@@ -73,6 +73,7 @@ if (typeof window !== 'undefined') {
 export interface Stack {
   id: number;
   name: string;
+  category?: string;
   popularity: number;
   isTrending?: boolean;
 }
@@ -284,6 +285,7 @@ export interface School {
   source?: string;
   contacts?: ContactInfo;
   courses: Course[];
+  stack?: Stack[];
   badges?: EntityBadge[];
 }
 

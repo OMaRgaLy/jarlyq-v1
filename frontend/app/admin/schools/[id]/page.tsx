@@ -3,15 +3,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  fetchAdminSchool, updateAdminSchoolFull,
+  fetchAdminSchool, updateAdminSchoolFull, fetchAdminStacks, setSchoolStacks,
   createAdminCourse, updateAdminCourse, deleteAdminCourse,
   createBadge, deleteBadge,
   upsertTheme,
   SCHOOL_TYPES, SCHOOL_PREDEFINED_BADGES,
-  type AdminSchoolFull, type EntityBadge, type EntityTheme, type AdminCourse,
+  type AdminSchoolFull, type EntityBadge, type EntityTheme, type AdminCourse, type AdminStack,
 } from '../../../../lib/admin-api';
 import { isImageSrc } from '../../../../lib/image';
 import { ImageUpload } from '../../../../components/image-upload';
+import { TagFilter } from '../../../../components/tag-filter';
+import type { Stack } from '../../../../lib/api';
 
 type Tab = 'main' | 'courses' | 'badges' | 'theme';
 
@@ -60,7 +62,10 @@ function Btn({ variant = 'primary', ...props }: { variant?: 'primary' | 'danger'
 
 // ─── Tab: Main ────────────────────────────────────────────────────────────────
 
-function TabMain({ school, onSaved }: { school: AdminSchoolFull; onSaved: () => void }) {
+function TabMain({ school, allStacks, onSaved }: { school: AdminSchoolFull; allStacks: AdminStack[]; onSaved: () => void }) {
+  const [selectedStacks, setSelectedStacks] = useState<number[]>(
+    ((school as unknown as { stack?: { id: number }[] }).stack ?? []).map((s) => s.id)
+  );
   const [form, setForm] = useState({
     name: school.name ?? '',
     type: school.type ?? 'bootcamp',
@@ -90,6 +95,7 @@ function TabMain({ school, onSaved }: { school: AdminSchoolFull; onSaved: () => 
     setSaving(true); setMsg('');
     try {
       await updateAdminSchoolFull(school.id, form);
+      await setSchoolStacks(school.id, selectedStacks);
       setMsg('Сохранено ✓');
       onSaved();
     } catch { setMsg('Ошибка при сохранении'); }
@@ -149,6 +155,13 @@ function TabMain({ school, onSaved }: { school: AdminSchoolFull; onSaved: () => 
         <Input label="Telegram" value={form.telegram} onChange={f('telegram')} />
         <Input label="Email" value={form.email} onChange={f('email')} />
       </div>
+
+      <TagFilter
+        title="Чему учит школа: технологии, навыки, методологии"
+        stacks={allStacks as unknown as Stack[]}
+        selected={selectedStacks}
+        onChange={setSelectedStacks}
+      />
 
       <div className="flex flex-wrap gap-4 text-sm">
         <label className="flex items-center gap-2 cursor-pointer">
@@ -411,6 +424,7 @@ export default function AdminSchoolEditorPage() {
   const id = Number(params.id);
 
   const [school, setSchool] = useState<AdminSchoolFull | null>(null);
+  const [allStacks, setAllStacks] = useState<AdminStack[]>([]);
   const [badges, setBadges] = useState<EntityBadge[]>([]);
   const [theme, setTheme] = useState<EntityTheme>({ entityType: 'school', entityId: id, accentLight: '#2563eb', accentDark: '#3b82f6', coverGradient: 'none' });
   const [activeTab, setActiveTab] = useState<Tab>('main');
@@ -419,8 +433,9 @@ export default function AdminSchoolEditorPage() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetchAdminSchool(id);
+      const [res, stacks] = await Promise.all([fetchAdminSchool(id), fetchAdminStacks()]);
       setSchool(res.school);
+      setAllStacks(stacks);
       setBadges(res.badges ?? []);
       setTheme(res.theme ?? { entityType: 'school', entityId: id, accentLight: '#2563eb', accentDark: '#3b82f6', coverGradient: 'none' });
     } catch { setError('Не удалось загрузить школу'); }
@@ -458,7 +473,7 @@ export default function AdminSchoolEditorPage() {
       </div>
 
       <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        {activeTab === 'main'    && <TabMain school={school} onSaved={load} />}
+        {activeTab === 'main'    && <TabMain school={school} allStacks={allStacks} onSaved={load} />}
         {activeTab === 'courses' && <TabCourses school={school} onSaved={load} />}
         {activeTab === 'badges'  && <TabBadges school={school} badges={badges} onSaved={load} />}
         {activeTab === 'theme'   && <TabTheme school={school} theme={theme} onSaved={load} />}

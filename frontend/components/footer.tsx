@@ -2,102 +2,21 @@
 
 import Link from 'next/link';
 import { useLang } from '../lib/lang-context';
-import { useModules, moduleKeyFromHref } from '../lib/modules';
 
 export function Footer() {
   const { t } = useLang();
-  const { state } = useModules();
   const year = new Date().getFullYear();
 
-  const allSections = [
-    {
-      title: t.nav.opportunities,
-      links: [
-        { href: '/internships', label: t.nav.internships },
-        { href: '/jobs', label: t.nav.jobs },
-        { href: '/companies', label: t.nav.companies },
-        { href: '/hackathons', label: t.nav.hackathons },
-      ],
-    },
-    {
-      title: t.nav.learning,
-      links: [
-        { href: '/schools', label: t.nav.schools },
-        { href: '/masters', label: t.nav.masters },
-        { href: '/career-paths', label: t.nav.careerPaths },
-        { href: '/interview', label: t.nav.interview },
-        { href: '/project-ideas', label: t.nav.projectIdeas },
-      ],
-    },
-    {
-      title: t.nav.platform,
-      links: [
-        { href: '/suggest', label: t.nav.suggest },
-        { href: '/search', label: t.nav.search },
-        { href: '/legal', label: t.legal.title },
-      ],
-    },
-  ];
-
-  // Links to sections the admin hid must not stay in the footer.
-  // Pages outside the module list (suggest, search, legal) are always shown.
-  const sections = allSections
-    .map((sec) => ({ ...sec, links: sec.links.filter((l) => state(moduleKeyFromHref(l.href)) !== 'off') }))
-    .filter((sec) => sec.links.length > 0);
-
   return (
-    <footer className="mt-auto border-t border-slate-200/70 dark:border-slate-800/60 bg-white dark:bg-[#0a0f1e]">
-      <div className="mx-auto max-w-6xl px-4 py-12">
-        {/* Top section */}
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <span className="text-xl font-bold gradient-text">Jarlyq</span>
-            </Link>
-            <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400 max-w-[200px]">
-              {t.home.footer}
-            </p>
-            {/* Status dot */}
-            <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
-              <span className="dot-ping text-emerald-500" />
-              <span>Все системы работают</span>
-            </div>
-          </div>
-
-          {/* Nav sections */}
-          {sections.map((section) => (
-            <div key={section.title}>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                {section.title}
-              </p>
-              <ul className="space-y-2">
-                {section.links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-slate-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand-light transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800/60 pt-6 sm:flex-row">
-          <p className="text-xs text-slate-400 dark:text-slate-500">
-            © {year} Jarlyq. Все права защищены.
-          </p>
-          <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
-            <span>🇰🇿 Казахстан</span>
-            <span>🇰🇬 Кыргызстан</span>
-            <span>🇺🇿 Узбекистан</span>
-          </div>
-        </div>
+    <footer className="mt-auto border-t border-slate-200 bg-white">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm text-slate-500 sm:flex-row">
+        <p>© {year} Jarlyq. {t.home.footer}</p>
+        <nav className="flex items-center gap-5">
+          <Link href="/internships" className="hover:text-slate-900">{t.nav.internships}</Link>
+          <Link href="/companies" className="hover:text-slate-900">{t.nav.companies}</Link>
+          <Link href="/schools" className="hover:text-slate-900">{t.nav.schools}</Link>
+          <Link href="/legal" className="hover:text-slate-900">{t.legal.title}</Link>
+        </nav>
       </div>
     </footer>
   );

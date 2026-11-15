@@ -248,6 +248,7 @@ type School struct {
 	ExternalID    string        `gorm:"size:255;index" json:"externalID,omitempty"`
 	Contacts      ContactInfo   `gorm:"embedded;embeddedPrefix:contact_" json:"contacts,omitempty"`
 	Courses       []Course      `json:"courses"`
+	Stack         []Stack       `gorm:"many2many:school_stacks" json:"stack,omitempty"` // what the school teaches (any IT field)
 	Badges        []EntityBadge `gorm:"-" json:"badges,omitempty"` // loaded separately
 }
 
@@ -283,9 +284,26 @@ type Stack struct {
 	CreatedAt  time.Time `json:"-"`
 	UpdatedAt  time.Time `json:"-"`
 	Name       string    `gorm:"size:120;uniqueIndex" json:"name"`
+	Category   string    `gorm:"size:30;index" json:"category,omitempty"` // see Stack* constants
 	Popularity uint      `json:"popularity"`
 	IsTrending bool      `json:"isTrending"`
 }
+
+// Stack categories: the tag catalog covers every IT profession, not only programmers.
+const (
+	StackLanguage    = "language"
+	StackFramework   = "framework"
+	StackMobile      = "mobile"
+	StackDatabase    = "database"
+	StackDevOps      = "devops"
+	StackData        = "data"
+	StackQA          = "qa"
+	StackDesign      = "design"
+	StackManagement  = "management"
+	StackMethodology = "methodology"
+	StackSecurity    = "security"
+	StackBusiness    = "business"
+)
 
 // Region enumerates geographies.
 type Region struct {

@@ -13,7 +13,7 @@ export function Providers({ children }: PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>
         <QueryClientProvider client={queryClient}>
           <LanguageProvider>
             <ModulesProvider>{children}</ModulesProvider>

@@ -56,3 +56,6 @@ venv/
 .venv/
 backend/uploads/
 TEST_ACCOUNTS.local.md
+ngrok-jarlyq.log
+ngrok-jarlyq.err
+restore-ngrok-3001.txt

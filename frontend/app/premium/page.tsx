@@ -60,11 +60,11 @@ export default function PremiumPage() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
       <Header />
-      <section className="bg-gradient-to-br from-ink-deep via-ink to-brand">
+      <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-4xl px-4 py-14 text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-amber-300">Jarlyq Premium</p>
-          <h1 className="mt-2 text-4xl font-extrabold text-white sm:text-5xl">Узнавайте о стажировках первыми</h1>
-          <p className="mx-auto mt-3 max-w-2xl text-lg text-white/80">
+          <p className="text-sm font-semibold uppercase tracking-widest text-brand">Jarlyq Premium</p>
+          <h1 className="mt-2 text-3xl font-bold text-slate-900 ">Узнавайте о стажировках первыми</h1>
+          <p className="mx-auto mt-3 max-w-2xl text-lg text-slate-600">
             Лучшие места разбирают быстро. Premium даёт фору в один день — и письмо в Telegram в ту же минуту, как появилась вакансия.
           </p>
         </div>

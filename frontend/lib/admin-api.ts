@@ -109,6 +109,7 @@ export interface AdminCourse {
 export interface AdminStack {
   id: number;
   name: string;
+  category?: string;
   popularity: number;
   is_trending: boolean;
 }
@@ -423,6 +424,9 @@ export const fetchAdminCompany = async (id: number): Promise<{ company: AdminCom
 
 export const setCompanyStacks = (companyId: number, stackIds: number[]) =>
   adminApi.put(`/admin/companies/${companyId}/stacks`, { stack_ids: stackIds });
+
+export const setSchoolStacks = (schoolId: number, stackIds: number[]) =>
+  adminApi.put(`/admin/schools/${schoolId}/stacks`, { stack_ids: stackIds });
 
 // ─── CMS: Showcase ────────────────────────────────────────────────────────────
 

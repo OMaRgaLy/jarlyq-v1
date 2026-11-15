@@ -69,10 +69,10 @@ export default function JobsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
       <Header />
-      <section className="bg-gradient-to-br from-ink-deep via-ink to-brand">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-          <h1 className="text-4xl font-extrabold text-white sm:text-5xl">{t.jobs.title}</h1>
-          <p className="mt-3 max-w-2xl text-lg text-white/80">{t.jobs.subtitle}</p>
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+          <h1 className="text-3xl font-bold text-slate-900 ">{t.jobs.title}</h1>
+          <p className="mt-3 max-w-2xl text-lg text-slate-600">{t.jobs.subtitle}</p>
           <div className="mt-6 max-w-2xl">
             <label htmlFor="job-search" className="sr-only">Поиск по должности, компании, городу</label>
             <input id="job-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)}

@@ -20,6 +20,8 @@ import {
 } from '../../../../lib/admin-api';
 import { isImageSrc } from '../../../../lib/image';
 import { ImageUpload } from '../../../../components/image-upload';
+import { TagFilter } from '../../../../components/tag-filter';
+import type { Stack } from '../../../../lib/api';
 
 // ─── Tab IDs ──────────────────────────────────────────────────────────────────
 
@@ -194,34 +196,13 @@ function TabMain({ company, allStacks, onSaved }: {
         ))}
       </div>
 
-      {/* Стеки технологий */}
-      <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-          Стек технологий компании
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {allStacks.map((s) => {
-            const active = selectedStacks.includes(s.id);
-            return (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => toggleStack(s.id)}
-                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                  active
-                    ? 'bg-blue-600 border-blue-600 text-white'
-                    : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-blue-400'
-                }`}
-              >
-                {s.name}
-              </button>
-            );
-          })}
-        </div>
-        {selectedStacks.length > 0 && (
-          <p className="mt-1.5 text-xs text-gray-400">Выбрано: {selectedStacks.length}</p>
-        )}
-      </div>
+      {/* Технологии, навыки и методологии */}
+      <TagFilter
+        title="Технологии, навыки и методологии компании"
+        stacks={allStacks as unknown as Stack[]}
+        selected={selectedStacks}
+        onChange={setSelectedStacks}
+      />
 
       <div className="flex items-center gap-3">
         <Btn onClick={save} disabled={saving}>{saving ? 'Сохраняем...' : 'Сохранить'}</Btn>

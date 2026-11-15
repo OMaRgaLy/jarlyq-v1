@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '../../components/header';
 import { Footer } from '../../components/footer';
-import { useSchools } from '../../lib/hooks';
+import { useSchools, useStacks } from '../../lib/hooks';
+import { TagFilter } from '../../components/tag-filter';
 import { useLang } from '../../lib/lang-context';
 import { School } from '../../lib/api';
 
 type Tab = 'all' | 'state_program' | 'bootcamp' | 'university' | 'university_abroad';
 
-function SchoolCard({ school }: { school: School }) {
+function SchoolCard({ school, tags = [] }: { school: School; tags?: string[] }) {
   const { t } = useLang();
 
   const courses = school.courses ?? [];
@@ -29,7 +30,7 @@ function SchoolCard({ school }: { school: School }) {
       : { label: t.school.badgeBootcamp, cls: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' };
 
   return (
-    <article className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800/60 dark:bg-slate-900">
+    <article className="flex flex-col rounded-lg border border-slate-200 bg-white p-5 transition hover:border-slate-300">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="mb-1.5 flex flex-wrap gap-1.5">
@@ -45,6 +46,14 @@ function SchoolCard({ school }: { school: School }) {
           <h3 className="truncate text-base font-semibold text-slate-900 dark:text-slate-50">{school.name}</h3>
           {school.description && (
             <p className="mt-1 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">{school.description}</p>
+          )}
+          {tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1">
+              {tags.slice(0, 5).map((n) => (
+                <span key={n} className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{n}</span>
+              ))}
+              {tags.length > 5 && <span className="px-1 text-xs text-slate-400">+{tags.length - 5}</span>}
+            </div>
           )}
         </div>
       </div>
@@ -78,7 +87,10 @@ function SchoolCard({ school }: { school: School }) {
 export default function SchoolsPage() {
   const { t } = useLang();
   const [tab, setTab] = useState<Tab>('all');
+  const [search, setSearch] = useState('');
+  const [picked, setPicked] = useState<number[]>([]);
   const { data: schools = [], isLoading } = useSchools({});
+  const { data: stacks = [] } = useStacks();
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'all', label: t.school.tabAll },
@@ -88,132 +100,89 @@ export default function SchoolsPage() {
     { key: 'university_abroad', label: t.school.tabUniversitiesAbroad },
   ];
 
-  const filtered =
-    tab === 'all' ? schools : schools.filter((s) => s.type === tab);
-
-  const counts: Record<Tab, number> = {
-    all: schools.length,
-    state_program: schools.filter((s) => s.type === 'state_program').length,
-    bootcamp: schools.filter((s) => s.type === 'bootcamp').length,
-    university: schools.filter((s) => s.type === 'university').length,
-    university_abroad: schools.filter((s) => s.type === 'university_abroad').length,
+  // Tags of a school = its own tags + the tags of its courses. A school must have every picked tag.
+  const tagsOf = (s: School) => {
+    const names = new Map<number, string>();
+    [...(s.stack ?? []), ...(s.courses ?? []).flatMap((c) => c.stack ?? [])].forEach((x) => names.set(x.id, x.name));
+    return names;
   };
 
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return schools.filter((s) => {
+      if (tab !== 'all' && s.type !== tab) return false;
+      const tags = tagsOf(s);
+      if (!picked.every((id) => tags.has(id))) return false;
+      if (!q) return true;
+      return (
+        s.name.toLowerCase().includes(q) ||
+        s.description?.toLowerCase().includes(q) ||
+        [...tags.values()].some((n) => n.toLowerCase().includes(q))
+      );
+    });
+  }, [schools, tab, search, picked]);
+
+  const count = (k: Tab) => (k === 'all' ? schools.length : schools.filter((s) => s.type === k).length);
+  const dirty = !!(search || picked.length || tab !== 'all');
+  const reset = () => { setSearch(''); setPicked([]); setTab('all'); };
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-slate-50">
       <Header />
 
-      {/* Page header */}
-      <div className="border-b border-slate-200/70 bg-white dark:border-slate-800/60 dark:bg-slate-900">
-        <div className="mx-auto max-w-5xl px-4 py-8">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">{t.school.pageTitle}</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t.school.pageSubtitle}</p>
-
-          {/* Tabs */}
-          <div className="mt-5 flex gap-1 overflow-x-auto pb-px">
-            {tabs.map((tb) => (
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+          <h1 className="text-3xl font-bold text-slate-900">{t.school.pageTitle}</h1>
+          <p className="mt-2 max-w-2xl text-slate-600">{t.school.pageSubtitle}</p>
+          <div className="mt-5 max-w-3xl">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Название школы или технология"
+              aria-label="Поиск школы"
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+            />
+          </div>
+          <div className="mt-4 flex gap-1 overflow-x-auto">
+            {tabs.filter((tb) => tb.key === 'all' || count(tb.key) > 0).map((tb) => (
               <button
                 key={tb.key}
                 onClick={() => setTab(tb.key)}
-                className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                  tab === tb.key
-                    ? 'bg-brand text-white'
-                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                aria-pressed={tab === tb.key}
+                className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  tab === tb.key ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                {tb.label}
-                {counts[tb.key] > 0 && (
-                  <span className={`rounded-full px-1.5 py-0.5 text-xs ${tab === tb.key ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
-                    {counts[tb.key]}
-                  </span>
-                )}
+                {tb.label} <span className={tab === tb.key ? 'text-white/70' : 'text-slate-400'}>{count(tb.key)}</span>
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <main className="flex-1 mx-auto max-w-5xl px-4 py-8">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+        <TagFilter stacks={stacks} selected={picked} onChange={setPicked} />
+
+        {!isLoading && (
+          <p className="mb-4 mt-5 text-sm text-slate-500">
+            Найдено: <span className="font-semibold text-slate-900">{filtered.length}</span>
+            {dirty && <button onClick={reset} className="ml-3 text-brand hover:underline">Сбросить</button>}
+          </p>
+        )}
+
         {isLoading ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-44 animate-pulse rounded-2xl bg-slate-200 dark:bg-slate-800" />
-            ))}
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => <div key={i} className="h-44 animate-pulse rounded-lg bg-slate-200" />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center">
-            <div className="text-4xl">🎓</div>
-            <p className="mt-3 text-slate-500 dark:text-slate-400">{t.school.noCourses}</p>
+            <p className="text-slate-600">{t.school.noCourses}</p>
           </div>
         ) : (
-          <>
-            {/* State programs first when showing all */}
-            {tab === 'all' && counts.state_program > 0 && (
-              <div className="mb-8">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
-                  {t.school.tabStatePrograms}
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {filtered.filter((s) => s.type === 'state_program').map((s) => (
-                    <SchoolCard key={s.id} school={s} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Then bootcamps */}
-            {tab === 'all' && counts.bootcamp > 0 && (
-              <div className="mb-8">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500" />
-                  {t.school.tabBootcamps}
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {filtered.filter((s) => s.type === 'bootcamp').map((s) => (
-                    <SchoolCard key={s.id} school={s} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Then universities */}
-            {tab === 'all' && counts.university > 0 && (
-              <div className="mb-8">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple-500" />
-                  {t.school.tabUniversities}
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {filtered.filter((s) => s.type === 'university').map((s) => (
-                    <SchoolCard key={s.id} school={s} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Then universities abroad */}
-            {tab === 'all' && counts.university_abroad > 0 && (
-              <div className="mb-8">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                  {t.school.tabUniversitiesAbroad}
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {filtered.filter((s) => s.type === 'university_abroad').map((s) => (
-                    <SchoolCard key={s.id} school={s} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Filtered view (not 'all') */}
-            {tab !== 'all' && (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {filtered.map((s) => <SchoolCard key={s.id} school={s} />)}
-              </div>
-            )}
-          </>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((s) => <SchoolCard key={s.id} school={s} tags={[...tagsOf(s).values()]} />)}
+          </div>
         )}
       </main>
       <Footer />

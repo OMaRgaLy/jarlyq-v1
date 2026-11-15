@@ -1211,6 +1211,10 @@ func Seed(db *gorm.DB) error {
 		log.Printf("Error seeding stacks: %v", err)
 		return err
 	}
+	if err := EnsureTechCatalog(db); err != nil {
+		log.Printf("Error ensuring tech catalog: %v", err)
+		return err
+	}
 	if err := SeedCareerPaths(db); err != nil {
 		log.Printf("Error seeding career paths: %v", err)
 		return err

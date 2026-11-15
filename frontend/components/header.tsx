@@ -2,11 +2,10 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import {
-  SunIcon, MoonIcon, HamburgerMenuIcon, Cross1Icon,
-  PersonIcon, MagnifyingGlassIcon, ChevronDownIcon,
+  HamburgerMenuIcon, Cross1Icon,
+  PersonIcon, ChevronDownIcon,
 } from '@radix-ui/react-icons';
 import { AuthModal } from './auth-modal';
 import { getUser, clearAuth, AuthUser } from '../lib/auth';
@@ -21,12 +20,8 @@ function useNavLinks() {
   const { ready, state } = useModules();
   const all = [
     { key: 'internships', href: '/internships', label: t.nav.internships },
-    { key: 'jobs', href: '/jobs', label: t.nav.jobs },
     { key: 'companies', href: '/companies', label: t.nav.companies },
-    { key: 'stacks', href: '/stacks', label: 'Стеки' },
     { key: 'schools', href: '/schools', label: t.nav.schools },
-    { key: 'career-paths', href: '/career-paths', label: t.nav.careerPaths },
-    { key: 'resources', href: '/resources', label: t.nav.resources },
   ];
   // Hidden sections disappear; "soon" ones stay, marked with a badge.
   // Until we know the state, show nothing rather than a nav that then changes.
@@ -48,7 +43,6 @@ function SoonBadge({ children }: { children: React.ReactNode }) {
 
 export function Header() {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
@@ -90,21 +84,21 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/90 backdrop-blur dark:border-slate-800/60 dark:bg-slate-950/90">
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
 
           {/* ── Logo (flex-none, never moves) ── */}
-          <Link href="/" className="flex-none text-xl font-bold text-brand">
+          <Link href="/" className="flex-none text-xl font-bold tracking-tight text-slate-900">
             Jarlyq
           </Link>
 
           {/* ── Desktop nav (flex-1, centered, scrollable if needed) ── */}
-          <nav className="hidden flex-1 items-center justify-start gap-0.5 overflow-x-auto md:flex xl:justify-center">
+          <nav className="hidden flex-1 items-center justify-start gap-1 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-brand dark:text-slate-300 dark:hover:bg-slate-800"
+                className="whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
               >
                 {link.label}
                 {link.soon && <SoonBadge>{t.modules.soonBadge}</SoonBadge>}
@@ -135,24 +129,7 @@ export function Header() {
               </div>
             )}
 
-            {/* Search */}
-            <Link
-              href="/search"
-              aria-label={t.nav.search}
-              className="rounded-full border border-slate-200/70 bg-white/50 p-2 text-slate-500 shadow-sm hover:text-brand hover:shadow dark:border-slate-700/60 dark:bg-slate-900/60"
-            >
-              <MagnifyingGlassIcon />
-            </Link>
 
-            {/* Theme toggle */}
-            <button
-              type="button"
-              aria-label="Toggle theme"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="rounded-full border border-slate-200/70 bg-white/50 p-2 text-slate-500 shadow-sm hover:text-brand hover:shadow dark:border-slate-700/60 dark:bg-slate-900/60"
-            >
-              {mounted && theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-            </button>
 
             {/* Auth — desktop */}
             {mounted && (user || authEnabled) && (

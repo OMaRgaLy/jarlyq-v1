@@ -133,6 +133,7 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 
 	// ─── Company stacks ───────────────────────────────────────────────────────
 	group.PUT("/companies/:id/stacks", handler.adminSetCompanyStacks)
+	group.PUT("/schools/:id/stacks", handler.adminSetSchoolStacks)
 
 	// ─── Parser API ───────────────────────────────────────────────────────────
 	group.GET("/opportunities", handler.adminListOpportunities)
@@ -302,6 +303,36 @@ func (h *Handler) adminSetCompanyStacks(c *gin.Context) {
 		h.Services.DB.Where("id IN ?", req.StackIDs).Find(&stacks)
 	}
 	if err := h.Services.DB.Model(&company).Association("Stack").Replace(stacks); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"stack": stacks})
+}
+
+// PUT /admin/schools/:id/stacks — replace the school's tags (technologies, methodologies, professions)
+func (h *Handler) adminSetSchoolStacks(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	var req struct {
+		StackIDs []uint `json:"stack_ids"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	var school model.School
+	if err := h.Services.DB.First(&school, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "school not found"})
+		return
+	}
+	var stacks []model.Stack
+	if len(req.StackIDs) > 0 {
+		h.Services.DB.Where("id IN ?", req.StackIDs).Find(&stacks)
+	}
+	if err := h.Services.DB.Model(&school).Association("Stack").Replace(stacks); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

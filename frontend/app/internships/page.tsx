@@ -159,10 +159,10 @@ export default function InternshipsPage() {
       <Header />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-ink-deep via-ink to-brand">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-          <h1 className="text-4xl font-extrabold text-white sm:text-5xl">{t.internships.title}</h1>
-          <p className="mt-3 max-w-2xl text-lg text-white/80">
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+          <h1 className="text-3xl font-bold text-slate-900">{t.internships.title}</h1>
+          <p className="mt-2 max-w-2xl text-slate-600">
             Актуальные наборы в IT-компании Центральной Азии. Сохраняйте — мы напомним о дедлайне.
           </p>
           <div className="mt-6 max-w-2xl">
@@ -173,7 +173,7 @@ export default function InternshipsPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Поиск по должности, компании, городу…"
-              className="w-full rounded-2xl border-0 bg-white px-5 py-3.5 text-base text-slate-900 shadow-lg placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-light"
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
             />
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function InternshipsPage() {
             </select>
             {hasPrefs && (
               <button type="button" onClick={() => setForMe(!forMe)} aria-pressed={forMe} className={chip(forMe)}>
-                ✨ Подходит мне
+                Подходит мне
               </button>
             )}
             <button type="button" onClick={() => setMoreOpen(!moreOpen)} aria-expanded={moreOpen} className={chip(moreOpen)}>

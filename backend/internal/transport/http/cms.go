@@ -482,7 +482,7 @@ func (h *Handler) adminGetSchool(c *gin.Context) {
 		return
 	}
 	var school model.School
-	if err := h.Services.DB.Preload("Courses").First(&school, id).Error; err != nil {
+	if err := h.Services.DB.Preload("Courses").Preload("Stack").First(&school, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "school not found"})
 		return
 	}

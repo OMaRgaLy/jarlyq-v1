@@ -84,12 +84,15 @@ func NewCourseRepository(db *gorm.DB) CourseRepository {
 }
 
 func (r *schoolRepo) List(ctx context.Context, filter EducationFilter) ([]model.School, error) {
-	query := r.db.WithContext(ctx).Model(&model.School{}).Where("is_active = ?", true).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions")
+	query := r.db.WithContext(ctx).Model(&model.School{}).Where("is_active = ?", true).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions").Preload("Stack")
 	if len(filter.StackIDs) > 0 {
-		query = query.Joins("JOIN courses ON courses.school_id = schools.id").Joins("JOIN course_stacks cs ON cs.course_id = courses.id").Where("cs.stack_id IN ?", filter.StackIDs).Group("schools.id")
+		// A school matches by its own tags or by the tags of any of its courses.
+		query = query.Where(`schools.id IN (SELECT school_id FROM school_stacks WHERE stack_id IN ?)
+			OR schools.id IN (SELECT c.school_id FROM courses c JOIN course_stacks cs ON cs.course_id = c.id WHERE cs.stack_id IN ?)`,
+			filter.StackIDs, filter.StackIDs)
 	}
 	if len(filter.RegionIDs) > 0 {
-		query = query.Joins("JOIN course_regions cr ON cr.course_id = courses.id").Where("cr.region_id IN ?", filter.RegionIDs).Group("schools.id")
+		query = query.Where(`schools.id IN (SELECT c.school_id FROM courses c JOIN course_regions cr ON cr.course_id = c.id WHERE cr.region_id IN ?)`, filter.RegionIDs)
 	}
 	limit := filter.Limit
 	if limit <= 0 || limit > 100 {
@@ -106,7 +109,7 @@ func (r *schoolRepo) List(ctx context.Context, filter EducationFilter) ([]model.
 
 func (r *schoolRepo) FindByID(ctx context.Context, id uint) (*model.School, error) {
 	var school model.School
-	if err := r.db.WithContext(ctx).Where("is_active = ?", true).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions").First(&school, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("is_active = ?", true).Preload("Courses").Preload("Courses.Stack").Preload("Courses.Regions").Preload("Stack").First(&school, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}

@@ -108,14 +108,14 @@ export default function TrackerPage() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
       <Header />
-      <section className="bg-gradient-to-br from-ink-deep via-ink to-brand">
+      <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-10">
-          <h1 className="text-3xl font-extrabold text-white sm:text-4xl">Мои отклики</h1>
-          <p className="mt-2 max-w-2xl text-white/80">Сохраняйте стажировки, следите за статусом и не пропускайте дедлайны.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Мои отклики</h1>
+          <p className="mt-2 max-w-2xl text-slate-600">Сохраняйте стажировки, следите за статусом и не пропускайте дедлайны.</p>
           {tracker.loggedIn && (
             <div className="mt-5 flex flex-wrap gap-2">
               {columns.map((c) => (
-                <span key={c.key} className="rounded-full bg-white/15 px-3 py-1 text-sm font-medium text-white">{c.label}: {c.items.length}</span>
+                <span key={c.key} className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{c.label}: {c.items.length}</span>
               ))}
             </div>
           )}
