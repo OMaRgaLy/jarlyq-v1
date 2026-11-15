@@ -28,6 +28,8 @@ func newUserRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) {
 	auth.DELETE("/me/experiences/:eid", handler.deleteExperience)
 	auth.POST("/me/skills", handler.addSkill)
 	auth.DELETE("/me/skills/:sid", handler.deleteSkill)
+	auth.PUT("/me/onboarding", handler.saveOnboarding)
+	auth.POST("/me/premium-interest", handler.savePremiumInterest)
 	auth.PUT("/me/preferred-stacks", handler.setPreferredStacks)
 	auth.GET("/me/preferred-stacks", handler.getPreferredStacks)
 }
@@ -55,6 +57,12 @@ type fullProfileResponse struct {
 	Skills          []model.UserSkill      `json:"skills"`
 	PreferredStacks []model.Stack          `json:"preferred_stacks"`
 	Role            string                 `json:"role"`
+	Level           string                 `json:"level,omitempty"`
+	Country         string                 `json:"country,omitempty"`
+	City            string                 `json:"city,omitempty"`
+	Onboarded       bool                   `json:"onboarded"`
+	IsPremium       bool                   `json:"is_premium"`
+	PremiumUntil    *time.Time             `json:"premium_until,omitempty"`
 }
 
 func (h *Handler) getProfile(c *gin.Context) {
@@ -86,6 +94,12 @@ func (h *Handler) getProfile(c *gin.Context) {
 		Skills:          user.Skills,
 		PreferredStacks: user.PreferredStacks,
 		Role:            user.Role,
+		Level:           user.Level,
+		Country:         user.Country,
+		City:            user.City,
+		Onboarded:       user.OnboardedAt != nil,
+		IsPremium:       user.Role == "admin" || user.IsPremium(),
+		PremiumUntil:    user.PremiumUntil,
 	}
 	if resp.Role == "" {
 		resp.Role = "user"

@@ -26,7 +26,16 @@ type User struct {
 	TelegramChatID string `gorm:"size:50;index" json:"-"` // Telegram chat_id after linking
 	// Role-based access: "user", "company_owner", "school_owner", "partner", "admin"
 	Role      string `gorm:"size:30;default:'user'"`
-	CompanyID *uint  `gorm:"index"` // set when role=company_owner
+	// Onboarding answers (student level, country, city). OnboardedAt is nil until the wizard is finished.
+	Level       string     `gorm:"size:30"` // schoolkid | student | switcher | junior
+	Country     string     `gorm:"size:10"` // ISO code, e.g. "KZ"
+	City        string     `gorm:"size:100"`
+	OnboardedAt *time.Time
+	// Premium subscription: active while PremiumUntil is in the future.
+	PremiumUntil *time.Time
+	// PremiumInterestAt: when the user pressed "I want Premium" — a demand signal while payments are manual.
+	PremiumInterestAt *time.Time
+	CompanyID         *uint `gorm:"index"` // set when role=company_owner
 	SchoolID  *uint  `gorm:"index"` // set when role=school_owner
 	// Preferred stacks for personalized recommendations
 	PreferredStacks []Stack `gorm:"many2many:user_preferred_stacks"`
@@ -178,7 +187,7 @@ type Opportunity struct {
 	Type           string     `gorm:"size:20;index" json:"type"`
 	Title          string     `gorm:"size:255" json:"title"`
 	Description    string     `gorm:"type:text" json:"description,omitempty"`
-	Requirements   string     `gorm:"type:text" json:"-"`
+	Requirements   string     `gorm:"type:text" json:"requirements,omitempty"`
 	ApplyURL       string     `gorm:"size:512" json:"applyURL,omitempty"`
 	SourceURL      string     `gorm:"size:512" json:"-"`                        // оригинальная страница вакансии
 	Level          string     `gorm:"size:50" json:"level"`
@@ -204,6 +213,10 @@ type Opportunity struct {
 	ParsedAt       *time.Time `json:"-"`
 	StartDate      *time.Time `json:"-"`
 	EndDate        *time.Time `json:"-"`
+	// PremiumUntil: while set and in the future, only Premium users see the posting (early access).
+	PremiumUntil *time.Time `gorm:"index" json:"premiumUntil,omitempty"`
+	// ApplyClicks counts clicks on "Apply" — a lead metric shown to company owners.
+	ApplyClicks int        `gorm:"default:0" json:"-"`
 	Stack          []Stack    `gorm:"many2many:opportunity_stacks" json:"-"`
 	Regions        []Region   `gorm:"many2many:opportunity_regions" json:"-"`
 }
@@ -683,6 +696,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&TelegramLinkCode{},
 		// Switchable site sections (on / soon / off)
 		&SiteModule{},
+		// Student application tracker + deadline reminders
+		&UserApplication{},
+		&DeadlineReminder{},
 	)
 }
 

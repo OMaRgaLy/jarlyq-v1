@@ -11,6 +11,7 @@ const links = [
   { href: '/admin/reviews', label: '⭐ Отзывы' },
   { href: '/admin/suggestions', label: '📬 Предложения' },
   { href: '/admin/companies', label: '🏢 Компании' },
+  { href: '/admin/import', label: '📥 Импорт из таблицы' },
   { href: '/admin/schools', label: '🎓 Школы' },
   { href: '/admin/hackathons', label: '🏆 Хакатоны' },
   { href: '/admin/resources', label: '📚 Ресурсы' },

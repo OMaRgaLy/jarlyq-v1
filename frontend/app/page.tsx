@@ -22,7 +22,16 @@ interface RecommendedCompany {
 export default function Page() {
   const { t } = useLang();
   const [recommended, setRecommended] = useState<RecommendedCompany[]>([]);
+  // Real counters from the database. Nothing is shown until they arrive (and never if the catalog is empty),
+  // so the page never advertises numbers we do not have.
+  const [overview, setOverview] = useState<{ companies: number; opportunities: number; stacks: number } | null>(null);
   const isLoggedIn = !!getToken();
+
+  useEffect(() => {
+    api.get<{ companies: number; opportunities: number; stacks: number }>('/stats/overview')
+      .then((r) => setOverview(r.data))
+      .catch(() => setOverview(null));
+  }, []);
   const { state: moduleState } = useModules();
   // A "path" card only makes sense while at least one section behind it works.
   const jobPathOn = ['internships', 'jobs', 'companies'].some((k) => moduleState(k) === 'on');
@@ -238,21 +247,22 @@ export default function Page() {
         )}
 
         {/* ── Stats ── */}
-        <section className="border-y border-slate-200/70 dark:border-slate-800/60">
-          <div className="mx-auto grid max-w-4xl grid-cols-2 md:grid-cols-4">
-            {[
-              { num: t.home.stat1Num, label: t.home.stat1Label },
-              { num: t.home.stat2Num, label: t.home.stat2Label },
-              { num: t.home.stat3Num, label: t.home.stat3Label },
-              { num: 'AI', label: t.home.stat4Label },
-            ].map((s, i) => (
-              <div key={s.label} className={`flex flex-col items-center py-8 text-center ${i > 0 ? 'border-l border-slate-200/70 dark:border-slate-800/60' : ''}`}>
-                <span className="text-3xl font-extrabold text-brand">{s.num}</span>
-                <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">{s.label}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+        {overview && (overview.companies > 0 || overview.opportunities > 0) && (
+          <section className="border-y border-slate-200/70 dark:border-slate-800/60">
+            <div className="mx-auto grid max-w-3xl grid-cols-3">
+              {[
+                { num: overview.companies, label: 'компаний в каталоге' },
+                { num: overview.opportunities, label: 'открытых позиций' },
+                { num: overview.stacks, label: 'технологий' },
+              ].map((s, i) => (
+                <div key={s.label} className={`flex flex-col items-center py-8 text-center ${i > 0 ? 'border-l border-slate-200/70 dark:border-slate-800/60' : ''}`}>
+                  <span className="text-3xl font-extrabold text-brand">{s.num}</span>
+                  <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── AI teaser ── */}
         <section className="px-4 py-14">

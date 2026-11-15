@@ -48,7 +48,7 @@ func (h *Handler) telegramGenLinkCode(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code":       code,
 		"expires_in": 900, // seconds
-		"bot_url":    "https://t.me/" + h.Config.TelegramBotToken, // overridden in frontend with actual bot username
+		// Never put the bot token in a response: it is a secret that gives full control of the bot.
 	})
 }
 

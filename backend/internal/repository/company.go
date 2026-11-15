@@ -36,7 +36,10 @@ func NewCompanyRepository(db *gorm.DB) CompanyRepository {
 }
 
 func (r *companyRepo) List(ctx context.Context, filter CompanyFilter) ([]model.Company, error) {
-	activeOnly := func(db *gorm.DB) *gorm.DB { return db.Where("is_active = ?", true) }
+	// Premium early-access postings stay out of public company lists.
+	activeOnly := func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_active = ? AND (premium_until IS NULL OR premium_until <= NOW())", true)
+	}
 	query := r.db.WithContext(ctx).Model(&model.Company{}).Preload("Stack").Preload("Regions").Preload("Opportunities", activeOnly).Preload("Opportunities.Stack").Preload("Opportunities.Regions")
 
 	if len(filter.StackIDs) > 0 {
@@ -63,7 +66,9 @@ func (r *companyRepo) FindByID(ctx context.Context, id uint) (*model.Company, er
 	var company model.Company
 	if err := r.db.WithContext(ctx).
 		Preload("Stack").Preload("Regions").
-		Preload("Opportunities", func(db *gorm.DB) *gorm.DB { return db.Where("is_active = ?", true) }).Preload("Opportunities.Stack").Preload("Opportunities.Regions").
+		Preload("Opportunities", func(db *gorm.DB) *gorm.DB {
+			return db.Where("is_active = ? AND (premium_until IS NULL OR premium_until <= NOW())", true)
+		}).Preload("Opportunities.Stack").Preload("Opportunities.Regions").
 		Preload("Offices").Preload("Photos", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
 		Preload("Showcase", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order ASC") }).
 		Preload("HRContacts").Preload("HRContent").

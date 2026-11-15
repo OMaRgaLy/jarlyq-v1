@@ -184,6 +184,11 @@ export interface InternshipItem extends Opportunity {
   companyName: string;
   companyLogoURL?: string;
   companyId: number;
+  /** Technology names (tagged on the posting or listed by its company). */
+  stacks?: string[];
+  requirements?: string;
+  /** Set while the posting is in its Premium-only early-access window. */
+  premiumUntil?: string;
 }
 
 export interface HRContact {

@@ -25,6 +25,7 @@ func newDashboardRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manag
 	companyGroup.Use(middleware.RequireRole("company_owner"))
 	{
 		companyGroup.GET("", handler.dashboardGetCompany)
+		companyGroup.GET("/leads", handler.dashboardCompanyLeads)
 		companyGroup.PUT("", handler.dashboardUpdateCompany)
 		companyGroup.POST("/opportunities", handler.dashboardCreateOpportunity)
 		companyGroup.PUT("/opportunities/:id", handler.dashboardUpdateOpportunity)
@@ -199,7 +200,7 @@ func (h *Handler) dashboardCreateOpportunity(c *gin.Context) {
 		Title:          req.Title,
 		Description:    req.Description,
 		Requirements:   req.Requirements,
-		ApplyURL:       req.ApplyURL,
+		ApplyURL:       safeURL(req.ApplyURL),
 		Level:          req.Level,
 		SalaryMin:      req.SalaryMin,
 		SalaryMax:      req.SalaryMax,
@@ -207,8 +208,8 @@ func (h *Handler) dashboardCreateOpportunity(c *gin.Context) {
 		WorkFormat:     req.WorkFormat,
 		City:           req.City,
 		IsYearRound:    req.IsYearRound,
-		IsVerified:     req.IsVerified,
-		Source:         req.Source,
+		IsVerified:     false, // only admins can verify a posting
+		Source:         "owner",
 	}
 	if req.Deadline != nil {
 		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
@@ -247,7 +248,7 @@ func (h *Handler) dashboardUpdateOpportunity(c *gin.Context) {
 	opp.Title = req.Title
 	opp.Description = req.Description
 	opp.Requirements = req.Requirements
-	opp.ApplyURL = req.ApplyURL
+	opp.ApplyURL = safeURL(req.ApplyURL)
 	opp.Level = req.Level
 	opp.SalaryMin = req.SalaryMin
 	opp.SalaryMax = req.SalaryMax
@@ -255,8 +256,7 @@ func (h *Handler) dashboardUpdateOpportunity(c *gin.Context) {
 	opp.WorkFormat = req.WorkFormat
 	opp.City = req.City
 	opp.IsYearRound = req.IsYearRound
-	opp.IsVerified = req.IsVerified
-	opp.Source = req.Source
+	// IsVerified, Source and the Premium window stay admin-controlled.
 	if req.Deadline != nil {
 		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
 			opp.Deadline = &t

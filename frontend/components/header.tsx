@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -22,6 +23,7 @@ function useNavLinks() {
     { key: 'internships', href: '/internships', label: t.nav.internships },
     { key: 'jobs', href: '/jobs', label: t.nav.jobs },
     { key: 'companies', href: '/companies', label: t.nav.companies },
+    { key: 'stacks', href: '/stacks', label: 'Стеки' },
     { key: 'schools', href: '/schools', label: t.nav.schools },
     { key: 'career-paths', href: '/career-paths', label: t.nav.careerPaths },
     { key: 'resources', href: '/resources', label: t.nav.resources },
@@ -45,6 +47,7 @@ function SoonBadge({ children }: { children: React.ReactNode }) {
 // ─── Main header ──────────────────────────────────────────────────────────────
 
 export function Header() {
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -79,7 +82,11 @@ export function Header() {
   }, []);
 
   const handleLogout = () => { clearAuth(); setUser(null); };
-  const handleAuthSuccess = () => { setShowAuth(false); setUser(getUser()); };
+  const handleAuthSuccess = (isNew?: boolean) => {
+    setShowAuth(false);
+    setUser(getUser());
+    if (isNew) router.push('/onboarding');
+  };
 
   return (
     <>
@@ -92,7 +99,7 @@ export function Header() {
           </Link>
 
           {/* ── Desktop nav (flex-1, centered, scrollable if needed) ── */}
-          <nav className="hidden flex-1 items-center justify-center gap-0.5 overflow-x-auto md:flex">
+          <nav className="hidden flex-1 items-center justify-start gap-0.5 overflow-x-auto md:flex xl:justify-center">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -160,7 +167,15 @@ export function Header() {
                     <ChevronDownIcon className={`transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-slate-200/70 bg-white py-1 shadow-lg dark:border-slate-700/60 dark:bg-slate-900">
+                    <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-slate-200/70 bg-white py-1 shadow-lg dark:border-slate-700/60 dark:bg-slate-900">
+                      <Link href="/tracker" onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-brand hover:bg-brand/5">
+                        📌 Мои отклики
+                      </Link>
+                      <Link href="/premium" onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800">
+                        ⭐ Premium
+                      </Link>
                       <Link href="/profile" onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800">
                         <PersonIcon /> {t.nav.myProfile}
@@ -246,7 +261,11 @@ export function Header() {
 
                 {mounted && (user || authEnabled) && (
                   user ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
+                      <Link href="/tracker" onClick={() => setMenuOpen(false)}
+                        className="text-sm font-semibold text-brand">
+                        📌 Отклики
+                      </Link>
                       <Link href="/profile" onClick={() => setMenuOpen(false)}
                         className="text-sm font-medium text-slate-700 dark:text-slate-200">
                         {user.first_name}
