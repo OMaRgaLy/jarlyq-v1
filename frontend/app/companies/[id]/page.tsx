@@ -12,6 +12,7 @@ import { getUser } from '../../../lib/auth';
 import { api } from '../../../lib/api';
 import { applyTo } from '../../../lib/tracker';
 import type { CompanyShowcase, HRContent, School } from '../../../lib/api';
+import { isImageSrc, isUpload } from '../../../lib/image';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -226,10 +227,10 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
         {/* ── Hero card ── */}
         <div className="card overflow-hidden">
           {/* Cover / photo gallery */}
-          {photos.length > 0 && photos[activePhoto].url?.startsWith('http') ? (
+          {photos.length > 0 && isImageSrc(photos[activePhoto].url) ? (
             <div className="relative h-56 w-full bg-slate-100 dark:bg-slate-800">
               <Image
-                src={photos[activePhoto].url}
+                src={photos[activePhoto].url} unoptimized={isUpload(photos[activePhoto].url)}
                 alt={photos[activePhoto].caption || company.name}
                 fill
                 className="object-cover transition-opacity duration-300"
@@ -260,17 +261,17 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                 </>
               )}
             </div>
-          ) : company.coverURL?.startsWith('http') ? (
+          ) : isImageSrc(company.coverURL) ? (
             <div className="relative h-56 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-              <Image src={company.coverURL} alt={company.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 1024px" priority />
+              <Image src={company.coverURL} unoptimized={isUpload(company.coverURL)} alt={company.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 1024px" priority />
             </div>
           ) : null}
 
           <div className="p-6">
             <div className="flex items-start gap-4">
-              {company.logoURL?.startsWith('http') && (
+              {isImageSrc(company.logoURL) && (
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 shadow-sm">
-                  <Image src={company.logoURL} alt={`${company.name} logo`} fill className="object-contain p-1.5" sizes="64px" />
+                  <Image src={company.logoURL} unoptimized={isUpload(company.logoURL)} alt={`${company.name} logo`} fill className="object-contain p-1.5" sizes="64px" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -410,7 +411,7 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                       href={`/schools/${s.id}`}
                       className="flex items-center gap-3 rounded-xl border border-slate-200/70 p-3 transition hover:border-brand/40 hover:shadow-sm dark:border-slate-700/50"
                     >
-                      {s.logoURL?.startsWith('http') ? (
+                      {isImageSrc(s.logoURL) ? (
                         <img src={s.logoURL} alt={s.name} className="h-10 w-10 rounded-lg object-cover" />
                       ) : (
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 font-bold dark:bg-emerald-900/30 dark:text-emerald-400">
@@ -436,9 +437,9 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                 <div className="grid gap-4 sm:grid-cols-2">
                   {showcase.map((item) => (
                     <div key={item.id} className="card flex flex-col overflow-hidden">
-                      {item.imageURL?.startsWith('http') && (
+                      {isImageSrc(item.imageURL) && (
                         <div className="relative h-36 w-full bg-slate-100 dark:bg-slate-800">
-                          <Image src={item.imageURL} alt={item.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, 512px" />
+                          <Image src={item.imageURL} unoptimized={isUpload(item.imageURL)} alt={item.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, 512px" />
                         </div>
                       )}
                       <div className="flex flex-1 flex-col gap-2 p-4">

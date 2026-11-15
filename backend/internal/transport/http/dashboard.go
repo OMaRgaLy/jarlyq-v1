@@ -159,6 +159,8 @@ func (h *Handler) dashboardUpdateCompany(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeImageURLs(&req.CoverURL, &req.LogoURL)
+	safeURLs(&req.Website)
 	company.Name = req.Name
 	company.Description = req.Description
 	company.CoverURL = req.CoverURL
@@ -376,6 +378,8 @@ func (h *Handler) dashboardUpdateSchool(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeImageURLs(&req.CoverURL)
+	safeURLs(&req.Website)
 	school.Name = req.Name
 	school.Type = req.Type
 	school.Country = req.Country

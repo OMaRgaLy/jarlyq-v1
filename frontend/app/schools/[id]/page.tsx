@@ -10,6 +10,7 @@ import { FavoriteButton } from '../../../components/favorite-button';
 import { useSchool } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
 import { api } from '../../../lib/api';
+import { isImageSrc, isUpload } from '../../../lib/image';
 
 interface RelatedCompany {
   id: number;
@@ -88,10 +89,10 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
 
         {/* Hero card */}
         <div className="card overflow-hidden">
-          {school.coverURL?.startsWith('http') && (
+          {isImageSrc(school.coverURL) && (
             <div className="relative h-52 w-full bg-slate-100 dark:bg-slate-800">
               <Image
-                src={school.coverURL}
+                src={school.coverURL} unoptimized={isUpload(school.coverURL)}
                 alt={school.name}
                 fill
                 className="object-cover"
@@ -104,7 +105,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
           <div className="p-6">
             {/* Name + logo + favorite */}
             <div className="flex items-start gap-4">
-              {school.logoURL?.startsWith('http') && (
+              {isImageSrc(school.logoURL) && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={school.logoURL} alt={school.name} className="h-14 w-14 rounded-xl object-contain border border-slate-100 dark:border-slate-800 bg-white p-1 shadow-sm shrink-0" />
               )}
@@ -204,7 +205,7 @@ export default function SchoolDetailPage({ params }: { params: { id: string } })
               {relatedCompanies.map(c => (
                 <Link key={c.id} href={`/companies/${c.id}`}
                   className="flex items-center gap-3 rounded-xl border border-slate-200/70 p-3 transition hover:border-brand/40 hover:shadow-sm dark:border-slate-700/50">
-                  {c.logoURL?.startsWith('http') ? (
+                  {isImageSrc(c.logoURL) ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={c.logoURL} alt={c.name} className="h-10 w-10 rounded-lg object-cover" />
                   ) : (

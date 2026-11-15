@@ -90,7 +90,8 @@ func (h *Handler) adminCreateShowcase(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	safeURLs(&req.ImageURL, &req.LinkURL)
+	safeImageURLs(&req.ImageURL)
+	safeURLs(&req.LinkURL)
 	item := model.CompanyShowcase{
 		CompanyID:   companyID,
 		Type:        req.Type,
@@ -154,7 +155,7 @@ func (h *Handler) adminCreatePhoto(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	req.URL = safeURL(req.URL)
+	req.URL = safeImageURL(req.URL)
 	if req.URL == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid photo url"})
 		return
@@ -180,6 +181,11 @@ func (h *Handler) adminUpdatePhoto(c *gin.Context) {
 	var req photoRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	req.URL = safeImageURL(req.URL)
+	if req.URL == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid photo url"})
 		return
 	}
 	h.Services.DB.Model(&model.CompanyPhoto{}).Where("id = ?", id).Updates(map[string]any{
@@ -519,7 +525,7 @@ func (h *Handler) adminUpdateSchoolFull(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	safeURLs(&req.LogoURL, &req.CoverURL)
+	safeImageURLs(&req.LogoURL, &req.CoverURL)
 	if err := h.Services.DB.Model(&model.School{}).Where("id = ?", id).Updates(map[string]any{
 		"name": req.Name, "type": req.Type, "country": req.Country, "city": req.City,
 		"description": req.Description, "about": req.About,

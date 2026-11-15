@@ -12,6 +12,7 @@ import {
   createDashboardCourse,
   deleteDashboardCourse,
 } from '../../../lib/dashboard-api';
+import { ImageUpload } from '../../../components/image-upload';
 
 export default function SchoolDashboardPage() {
   const router = useRouter();
@@ -134,6 +135,7 @@ export default function SchoolDashboardPage() {
             <div>
               <label className={labelCls}>Cover URL</label>
               <input className={inputCls} value={form.cover_url} onChange={e => setForm(f => ({ ...f, cover_url: e.target.value }))} />
+              <div className="mt-1"><ImageUpload onUploaded={u => setForm(f => ({ ...f, cover_url: u }))} /></div>
             </div>
           </div>
 

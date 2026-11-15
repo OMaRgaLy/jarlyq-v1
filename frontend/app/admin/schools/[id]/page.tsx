@@ -10,6 +10,8 @@ import {
   SCHOOL_TYPES, SCHOOL_PREDEFINED_BADGES,
   type AdminSchoolFull, type EntityBadge, type EntityTheme, type AdminCourse,
 } from '../../../../lib/admin-api';
+import { isImageSrc } from '../../../../lib/image';
+import { ImageUpload } from '../../../../components/image-upload';
 
 type Tab = 'main' | 'courses' | 'badges' | 'theme';
 
@@ -126,14 +128,16 @@ function TabMain({ school, onSaved }: { school: AdminSchoolFull; onSaved: () => 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Input label="Logo URL" value={form.logo_url} onChange={f('logo_url')} />
-          {form.logo_url?.startsWith('http') && (
+          <div className="mt-1"><ImageUpload as="admin" onUploaded={u => setForm(p => ({ ...p, logo_url: u }))} /></div>
+          {isImageSrc(form.logo_url) && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={form.logo_url} alt="logo" className="mt-2 h-12 object-contain rounded border border-gray-200 dark:border-gray-700 p-1 bg-white" />
           )}
         </div>
         <div>
           <Input label="Cover URL" value={form.cover_url} onChange={f('cover_url')} />
-          {form.cover_url?.startsWith('http') && (
+          <div className="mt-1"><ImageUpload as="admin" onUploaded={u => setForm(p => ({ ...p, cover_url: u }))} /></div>
+          {isImageSrc(form.cover_url) && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={form.cover_url} alt="cover" className="mt-2 h-12 object-cover rounded border border-gray-200 dark:border-gray-700 w-full" />
           )}

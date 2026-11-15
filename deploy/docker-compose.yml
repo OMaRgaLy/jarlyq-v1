@@ -25,6 +25,10 @@ services:
         condition: service_healthy
     env_file:
       - ../.env
+    environment:
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads:/data/uploads
     ports:
       - "8080:8080"
 
@@ -63,6 +67,7 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
+  uploads:
   db-data:
   certbot-conf:
   certbot-www:

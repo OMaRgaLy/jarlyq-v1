@@ -3,6 +3,7 @@ import { School } from '../lib/api';
 import { useLang } from '../lib/lang-context';
 import { useTheme } from 'next-themes';
 import { FavoriteButton } from './favorite-button';
+import { isImageSrc } from '../lib/image';
 
 const TYPE_LABELS: Record<string, string> = {
   bootcamp: 'Буткемп',
@@ -48,7 +49,7 @@ export function SchoolCard({ school }: { school: School }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
           {/* Logo */}
-          {school.logoURL?.startsWith('http') && (
+          {isImageSrc(school.logoURL) && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={school.logoURL} alt={school.name}
               className="h-10 w-10 shrink-0 rounded-xl object-contain border border-slate-100 dark:border-slate-800 bg-white p-0.5 shadow-sm" />

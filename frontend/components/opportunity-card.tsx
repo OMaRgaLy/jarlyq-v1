@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { InternshipItem } from '../lib/api';
 import { TONE_CLASS, TrackerItem, applyTo, deadlineInfo, statusMeta } from '../lib/tracker';
+import { isImageSrc } from '../lib/image';
 
 const FORMAT_LABEL: Record<string, string> = { remote: 'Удалённо', office: 'Офис', hybrid: 'Гибрид' };
 
@@ -18,7 +19,7 @@ function formatSalary(min?: number, max?: number, currency?: string) {
 
 export function CompanyLogo({ name, url, size = 56 }: { name: string; url?: string; size?: number }) {
   const style = { width: size, height: size };
-  if (url?.startsWith('http')) {
+  if (isImageSrc(url)) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={url} alt={name} style={style} className="shrink-0 rounded-2xl bg-white object-cover ring-1 ring-slate-200 dark:ring-slate-700" />;
   }

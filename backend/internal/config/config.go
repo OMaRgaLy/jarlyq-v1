@@ -31,6 +31,7 @@ type Config struct {
 	CSRFCookieDomain   string
 	SwaggerEnabled     bool
 	AdminEmail          string
+	UploadDir           string // where uploaded images are stored
 	TelegramBotToken    string
 	TelegramWebhookSecret string // optional header check
 }
@@ -59,6 +60,7 @@ func Load() (*Config, error) {
 		CSRFCookieDomain:   getString("CSRF_COOKIE_DOMAIN", ""),
 		SwaggerEnabled:     getBool("SWAGGER_ENABLED", getString("APP_ENV", "development") != "production"),
 		AdminEmail:            getString("ADMIN_EMAIL", ""),
+		UploadDir:             getString("UPLOAD_DIR", "./uploads"),
 		TelegramBotToken:      getString("TELEGRAM_BOT_TOKEN", ""),
 		TelegramWebhookSecret: getString("TELEGRAM_WEBHOOK_SECRET", ""),
 	}

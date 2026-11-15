@@ -72,5 +72,6 @@ func RegisterRoutes(router gin.IRouter, handler *Handler, jwt auth.Manager, auth
 	newTelegramRoutes(v1.Group("/telegram"), handler, jwt)
 	newFavoriteRoutes(v1.Group("/favorites"), handler, jwt)
 	newDashboardRoutes(v1.Group("/dashboard"), handler, jwt)
+	newUploadRoutes(v1.Group("/uploads"), handler, jwt)
 	newAdminRoutes(v1.Group("/admin"), handler, jwt)
 }

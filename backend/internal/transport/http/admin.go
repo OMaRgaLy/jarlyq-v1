@@ -191,7 +191,8 @@ func (h *Handler) adminCreateCompany(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	safeURLs(&req.CoverURL, &req.LogoURL)
+	safeImageURLs(&req.CoverURL, &req.LogoURL)
+	safeURLs(&req.Website)
 	company := &model.Company{
 		Name:          req.Name,
 		Description:   req.Description,
@@ -236,7 +237,8 @@ func (h *Handler) adminUpdateCompany(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	safeURLs(&req.CoverURL, &req.LogoURL)
+	safeImageURLs(&req.CoverURL, &req.LogoURL)
+	safeURLs(&req.Website)
 	company.Name = req.Name
 	company.Description = req.Description
 	company.CoverURL = req.CoverURL
@@ -663,7 +665,8 @@ func (h *Handler) adminCreateSchool(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	safeURLs(&req.CoverURL)
+	safeImageURLs(&req.CoverURL)
+	safeURLs(&req.Website)
 	school := &model.School{
 		Name:          req.Name,
 		Type:          req.Type,
@@ -700,7 +703,8 @@ func (h *Handler) adminUpdateSchool(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	safeURLs(&req.CoverURL)
+	safeImageURLs(&req.CoverURL)
+	safeURLs(&req.Website)
 	school.Name = req.Name
 	school.Type = req.Type
 	school.Country = req.Country

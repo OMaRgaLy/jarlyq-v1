@@ -18,6 +18,8 @@ import {
   createAdminOpportunity, deleteAdminOpportunity,
   type AdminOpportunity,
 } from '../../../../lib/admin-api';
+import { isImageSrc } from '../../../../lib/image';
+import { ImageUpload } from '../../../../components/image-upload';
 
 // ─── Tab IDs ──────────────────────────────────────────────────────────────────
 
@@ -156,14 +158,16 @@ function TabMain({ company, allStacks, onSaved }: {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Input label="Logo URL" value={form.logo_url} onChange={f('logo_url')} />
-          {form.logo_url?.startsWith('http') && (
+          <div className="mt-1"><ImageUpload as="admin" onUploaded={u => setForm(p => ({ ...p, logo_url: u }))} /></div>
+          {isImageSrc(form.logo_url) && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={form.logo_url} alt="logo" className="mt-2 h-12 object-contain rounded border border-gray-200 dark:border-gray-700 p-1 bg-white" />
           )}
         </div>
         <div>
           <Input label="Cover URL" value={form.cover_url} onChange={f('cover_url')} />
-          {form.cover_url?.startsWith('http') && (
+          <div className="mt-1"><ImageUpload as="admin" onUploaded={u => setForm(p => ({ ...p, cover_url: u }))} /></div>
+          {isImageSrc(form.cover_url) && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={form.cover_url} alt="cover" className="mt-2 h-12 object-cover rounded border border-gray-200 dark:border-gray-700 w-full" />
           )}
@@ -363,7 +367,7 @@ function TabShowcase({ company, onSaved }: { company: AdminCompanyFull; onSaved:
               {['internship','event','vacancy','news'].map(t => <option key={t}>{t}</option>)}
             </Select>
             <Input label="Заголовок" value={form.title} onChange={f('title')} />
-            <Input label="Image URL" value={form.imageURL ?? ''} onChange={f('imageURL')} />
+            <div><Input label="Image URL" value={form.imageURL ?? ''} onChange={f('imageURL')} /><div className="mt-1"><ImageUpload as="admin" onUploaded={u => setForm(p => ({ ...p, imageURL: u }))} /></div></div>
             <Input label="Link URL" value={form.linkURL ?? ''} onChange={f('linkURL')} />
             <Input label="Порядок" type="number" value={form.sortOrder} onChange={f('sortOrder')} />
           </div>
@@ -422,7 +426,7 @@ function TabPhotos({ company, onSaved }: { company: AdminCompanyFull; onSaved: (
       <h3 className="font-semibold">Галерея ({company.photos?.length ?? 0})</h3>
 
       <div className="flex gap-2 items-end">
-        <div className="flex-1"><Input label="URL фото" value={url} onChange={e => setUrl(e.target.value)} /></div>
+        <div className="flex-1"><Input label="URL фото" value={url} onChange={e => setUrl(e.target.value)} /><div className="mt-1"><ImageUpload as="admin" onUploaded={setUrl} /></div></div>
         <div className="flex-1"><Input label="Подпись" value={caption} onChange={e => setCaption(e.target.value)} /></div>
         <Btn onClick={add} disabled={saving || !url}>{saving ? '...' : 'Добавить'}</Btn>
       </div>
@@ -431,7 +435,7 @@ function TabPhotos({ company, onSaved }: { company: AdminCompanyFull; onSaved: (
         {(company.photos ?? []).map((photo: AdminPhoto) => (
           <div key={photo.id} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            {photo.url?.startsWith('http') && <img src={photo.url} alt={photo.caption ?? ''} className="w-full h-24 object-cover" />}
+            {isImageSrc(photo.url) && <img src={photo.url} alt={photo.caption ?? ''} className="w-full h-24 object-cover" />}
             {photo.caption && <p className="text-xs p-1 text-center truncate">{photo.caption}</p>}
             <button
               onClick={() => del(photo.id)}

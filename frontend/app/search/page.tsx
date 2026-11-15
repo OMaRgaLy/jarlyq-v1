@@ -8,6 +8,7 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Header } from '../../components/header';
 import { api } from '../../lib/api';
 import { useLang } from '../../lib/lang-context';
+import { isImageSrc, isUpload } from '../../lib/image';
 
 interface SearchCompany { id: number; name: string; logoURL?: string; industry?: string }
 interface SearchSchool  { id: number; name: string; description?: string }
@@ -113,9 +114,9 @@ function SearchContent() {
                   {results.companies.map(c => (
                     <Link key={c.id} href={`/companies/${c.id}`}
                       className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                      {c.logoURL?.startsWith('http') ? (
+                      {isImageSrc(c.logoURL) ? (
                         <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700">
-                          <Image src={c.logoURL} alt={c.name} fill className="object-contain p-0.5" sizes="32px" />
+                          <Image src={c.logoURL} unoptimized={isUpload(c.logoURL)} alt={c.name} fill className="object-contain p-0.5" sizes="32px" />
                         </div>
                       ) : (
                         <div className="h-8 w-8 shrink-0 rounded-lg bg-brand/10 flex items-center justify-center text-xs font-bold text-brand">
