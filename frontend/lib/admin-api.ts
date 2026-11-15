@@ -7,7 +7,9 @@ export const adminApi = axios.create({
   headers: {
     'ngrok-skip-browser-warning': 'true',
   },
-  // No withCredentials — we use Authorization header, not cookies
+  // Auth is the Authorization header (it wins over cookies on the server), but the
+  // backend's CSRF check for POST/PUT/DELETE needs the csrf_token cookie to be sent too.
+  withCredentials: true,
 });
 
 adminApi.interceptors.request.use((config) => {
@@ -15,6 +17,11 @@ adminApi.interceptors.request.use((config) => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Double-submit CSRF: echo the cookie value in a header (same as lib/api.ts).
+    const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+    if (csrf) {
+      config.headers['X-CSRF-Token'] = decodeURIComponent(csrf[1]);
     }
   }
   return config;
@@ -580,3 +587,36 @@ export const updateAdminResource = (id: number, body: ResourceForm) =>
 export const deleteAdminResource = (id: number) =>
   adminApi.delete(`/admin/resources/${id}`);
 
+// ─── Site modules (on / soon / off) ───────────────────────────────────────────
+
+export type ModuleState = 'on' | 'soon' | 'off';
+
+export interface AdminModule {
+  key: string;
+  label: string;
+  description: string;
+  state: ModuleState;
+  sortOrder: number;
+  updatedAt: string;
+}
+
+export const MODULE_PRESETS: { value: 'mvp' | 'all'; label: string; hint: string }[] = [
+  { value: 'mvp', label: 'Режим показа (MVP)', hint: 'Работают компании, стажировки и вакансии. Остальное — «скоро», пет-проекты скрыты.' },
+  { value: 'all', label: 'Включить всё', hint: 'Все разделы работают.' },
+];
+
+export const fetchAdminModules = async (): Promise<AdminModule[]> => {
+  const { data } = await adminApi.get('/modules');
+  return data.modules ?? [];
+};
+export const updateAdminModule = async (
+  key: string,
+  body: Partial<Pick<AdminModule, 'state' | 'label' | 'description'>>,
+): Promise<AdminModule> => {
+  const { data } = await adminApi.put(`/admin/modules/${key}`, body);
+  return data.module;
+};
+export const applyModulePreset = async (preset: 'mvp' | 'all'): Promise<AdminModule[]> => {
+  const { data } = await adminApi.post('/admin/modules/preset', { preset });
+  return data.modules ?? [];
+};

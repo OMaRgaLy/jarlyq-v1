@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ModuleGate } from '../../components/module-gate';
 
 export const metadata: Metadata = {
   title: 'Вопросы с собеседований в IT',
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <ModuleGate module="interview">{children}</ModuleGate>;
 }

@@ -681,6 +681,8 @@ func AutoMigrate(db *gorm.DB) error {
 		&Resource{},
 		// Telegram integration
 		&TelegramLinkCode{},
+		// Switchable site sections (on / soon / off)
+		&SiteModule{},
 	)
 }
 

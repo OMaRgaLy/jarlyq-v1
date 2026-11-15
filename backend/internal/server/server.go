@@ -52,6 +52,11 @@ func New(cfg *config.Config) (*Server, error) {
 		log.Warnf("seed database: %v (probably already seeded)", err)
 	}
 
+	// Make sure every known site module has a row (never overwrites admin edits).
+	if err := model.EnsureSiteModules(db); err != nil {
+		return nil, fmt.Errorf("ensure site modules: %w", err)
+	}
+
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
 	engine.Use(gin.Recovery(), middleware.RequestLogger(log))

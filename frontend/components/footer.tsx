@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { useLang } from '../lib/lang-context';
+import { useModules, moduleKeyFromHref } from '../lib/modules';
 
 export function Footer() {
   const { t } = useLang();
+  const { state } = useModules();
   const year = new Date().getFullYear();
 
-  const sections = [
+  const allSections = [
     {
       title: t.nav.opportunities,
       links: [
@@ -36,6 +38,12 @@ export function Footer() {
       ],
     },
   ];
+
+  // Links to sections the admin hid must not stay in the footer.
+  // Pages outside the module list (suggest, search, legal) are always shown.
+  const sections = allSections
+    .map((sec) => ({ ...sec, links: sec.links.filter((l) => state(moduleKeyFromHref(l.href)) !== 'off') }))
+    .filter((sec) => sec.links.length > 0);
 
   return (
     <footer className="mt-auto border-t border-slate-200/70 dark:border-slate-800/60 bg-white dark:bg-[#0a0f1e]">

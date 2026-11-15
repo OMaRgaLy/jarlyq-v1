@@ -11,19 +11,35 @@ import { AuthModal } from './auth-modal';
 import { getUser, clearAuth, AuthUser } from '../lib/auth';
 import { useLang } from '../lib/lang-context';
 import { LOCALES, Locale } from '../lib/i18n';
+import { useModules } from '../lib/modules';
 
 // ─── Nav links (flat, no dropdowns — stable across languages) ────────────────
 
 function useNavLinks() {
   const { t } = useLang();
-  return [
-    { href: '/internships', label: t.nav.internships },
-    { href: '/jobs', label: t.nav.jobs },
-    { href: '/companies', label: t.nav.companies },
-    { href: '/schools', label: t.nav.schools },
-    { href: '/career-paths', label: t.nav.careerPaths },
-    { href: '/resources', label: 'Ресурсы' },
+  const { ready, state } = useModules();
+  const all = [
+    { key: 'internships', href: '/internships', label: t.nav.internships },
+    { key: 'jobs', href: '/jobs', label: t.nav.jobs },
+    { key: 'companies', href: '/companies', label: t.nav.companies },
+    { key: 'schools', href: '/schools', label: t.nav.schools },
+    { key: 'career-paths', href: '/career-paths', label: t.nav.careerPaths },
+    { key: 'resources', href: '/resources', label: t.nav.resources },
   ];
+  // Hidden sections disappear; "soon" ones stay, marked with a badge.
+  // Until we know the state, show nothing rather than a nav that then changes.
+  if (!ready) return [];
+  return all
+    .filter((l) => state(l.key) !== 'off')
+    .map((l) => ({ ...l, soon: state(l.key) === 'soon' }));
+}
+
+function SoonBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 align-middle text-[10px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+      {children}
+    </span>
+  );
 }
 
 // ─── Main header ──────────────────────────────────────────────────────────────
@@ -38,6 +54,7 @@ export function Header() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useLang();
   const navLinks = useNavLinks();
+  const authEnabled = useModules().state('auth') === 'on';
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -83,6 +100,7 @@ export function Header() {
                 className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-brand dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 {link.label}
+                {link.soon && <SoonBadge>{t.modules.soonBadge}</SoonBadge>}
               </Link>
             ))}
           </nav>
@@ -130,7 +148,7 @@ export function Header() {
             </button>
 
             {/* Auth — desktop */}
-            {mounted && (
+            {mounted && (user || authEnabled) && (
               user ? (
                 <div className="relative hidden md:block" ref={userMenuRef}>
                   <button
@@ -203,6 +221,7 @@ export function Header() {
                   className="px-5 py-3 text-sm font-medium text-slate-700 hover:text-brand dark:text-slate-200"
                 >
                   {link.label}
+                  {link.soon && <SoonBadge>{t.modules.soonBadge}</SoonBadge>}
                 </Link>
               ))}
 
@@ -225,7 +244,7 @@ export function Header() {
                   ))}
                 </div>
 
-                {mounted && (
+                {mounted && (user || authEnabled) && (
                   user ? (
                     <div className="flex items-center gap-2">
                       <Link href="/profile" onClick={() => setMenuOpen(false)}

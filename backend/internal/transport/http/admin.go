@@ -143,6 +143,11 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 	group.POST("/resources", handler.adminCreateResource)
 	group.PUT("/resources/:id", handler.adminUpdateResource)
 	group.DELETE("/resources/:id", handler.adminDeleteResource)
+
+	// ─── Site modules (on / soon / off) ───────────────────────────────────────
+	// The list itself is public (GET /modules); admins only change it here.
+	group.PUT("/modules/:key", handler.adminUpdateModule)
+	group.POST("/modules/preset", handler.adminApplyModulePreset)
 }
 
 // ─── COMPANIES ────────────────────────────────────────────────────────────────

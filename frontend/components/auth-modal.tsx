@@ -63,17 +63,21 @@ export function AuthModal({ onClose, onSuccess }: Props) {
           </button>
         </div>
 
-        {/* Google */}
-        <GoogleLoginButton
-          onSuccess={() => { onSuccess(); }}
-          onError={(msg) => setError(msg)}
-        />
+        {/* Google — only when configured; otherwise it renders as an empty gap above "или" */}
+        {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
+          <>
+            <GoogleLoginButton
+              onSuccess={() => { onSuccess(); }}
+              onError={(msg) => setError(msg)}
+            />
 
-        <div className="my-4 flex items-center gap-3">
-          <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
-          <span className="text-xs text-slate-400">или</span>
-          <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
-        </div>
+            <div className="my-4 flex items-center gap-3">
+              <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
+              <span className="text-xs text-slate-400">или</span>
+              <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
+            </div>
+          </>
+        )}
 
         {/* Email form */}
         <form onSubmit={handleSubmit} className="space-y-3">

@@ -5,10 +5,12 @@ import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
 import { getToken } from '../../../lib/auth';
 import { useLang } from '../../../lib/lang-context';
+import { useModules, moduleKeyFromHref } from '../../../lib/modules';
 
 export default function ForJobSeekersPage() {
   const isLoggedIn = !!getToken();
   const { t } = useLang();
+  const { state: moduleState } = useModules();
 
   const sections = [
     {
@@ -79,7 +81,7 @@ export default function ForJobSeekersPage() {
         {/* Sections */}
         <section className="mx-auto max-w-5xl px-4 pb-16">
           <div className="space-y-5">
-            {sections.map(({ icon, href, title, desc, gradient, bg, tags }, i) => (
+            {sections.filter((sec) => moduleState(moduleKeyFromHref(sec.href)) !== 'off').map(({ icon, href, title, desc, gradient, bg, tags }, i) => (
               <Link
                 key={href}
                 href={href}

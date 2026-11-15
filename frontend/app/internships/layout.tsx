@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ModuleGate } from '../../components/module-gate';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jarlyq.kz';
 
@@ -14,4 +15,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) { return children; }
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <ModuleGate module="internships">{children}</ModuleGate>;
+}

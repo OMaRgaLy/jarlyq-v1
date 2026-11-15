@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { getToken } from '../lib/auth';
 import { api } from '../lib/api';
 import type { Stack } from '../lib/api';
+import { useModules } from '../lib/modules';
+import { SoonStrip } from '../components/soon-strip';
 
 interface RecommendedCompany {
   id: number;
@@ -21,6 +23,11 @@ export default function Page() {
   const { t } = useLang();
   const [recommended, setRecommended] = useState<RecommendedCompany[]>([]);
   const isLoggedIn = !!getToken();
+  const { state: moduleState } = useModules();
+  // A "path" card only makes sense while at least one section behind it works.
+  const jobPathOn = ['internships', 'jobs', 'companies'].some((k) => moduleState(k) === 'on');
+  const studentPathOn = ['schools', 'masters', 'career-paths'].some((k) => moduleState(k) === 'on');
+  const pathsShown = Number(jobPathOn) + Number(studentPathOn);
 
   useEffect(() => {
     if (!getToken()) return;
@@ -75,9 +82,10 @@ export default function Page() {
 
         {/* ── Two Paths ── */}
         <section className="relative -mt-20 px-4 pb-16">
-          <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2">
+          <div className={`mx-auto grid gap-6 ${pathsShown === 1 ? 'max-w-xl' : 'max-w-5xl sm:grid-cols-2'}`}>
 
             {/* Path: Job Seekers */}
+            {jobPathOn && (
             <Link
               href="/for/job-seekers"
               className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-7 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900 sm:p-9"
@@ -106,8 +114,10 @@ export default function Page() {
                 </div>
               </div>
             </Link>
+            )}
 
             {/* Path: Students */}
+            {studentPathOn && (
             <Link
               href="/for/students"
               className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white p-7 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-700/50 dark:bg-slate-900 sm:p-9"
@@ -136,8 +146,12 @@ export default function Page() {
                 </div>
               </div>
             </Link>
+            )}
           </div>
         </section>
+
+        {/* ── Coming soon (driven by /admin/modules) ── */}
+        <SoonStrip />
 
         {/* ── What makes Jarlyq different ── */}
         <section className="border-y border-slate-200/70 bg-slate-50/80 px-4 py-14 dark:border-slate-800/60 dark:bg-slate-900/30">

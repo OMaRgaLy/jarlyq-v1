@@ -31,6 +31,18 @@ const dict = {
       learning: 'Обучение',
       platform: 'Платформа',
       projectIdeas: 'Идеи проектов',
+      resources: 'Ресурсы',
+    },
+    modules: {
+      soonBadge: 'Скоро',
+      soonTitle: 'Этот раздел скоро появится',
+      soonFallback: 'Мы над ним работаем. А пока можно изучить компании и стажировки.',
+      offTitle: 'Раздел пока недоступен',
+      offText: 'Сейчас этот раздел отключён.',
+      backHome: 'На главную',
+      toCompanies: 'К каталогу компаний',
+      stripTitle: 'Скоро на Jarlyq',
+      stripSub: 'Мы строим больше, чем поиск стажировок. Вот что появится дальше:',
     },
     home: {
       heroSubtitle: 'Платформа для поиска стажировок и вакансий в IT-компаниях СНГ и EMEA. Ищи компании по своему стеку технологий.',
@@ -521,6 +533,18 @@ const dict = {
       learning: 'Learning',
       platform: 'Platform',
       projectIdeas: 'Project Ideas',
+      resources: 'Resources',
+    },
+    modules: {
+      soonBadge: 'Soon',
+      soonTitle: 'This section is coming soon',
+      soonFallback: "We're working on it. Meanwhile, explore companies and internships.",
+      offTitle: 'This section is not available yet',
+      offText: 'This section is currently turned off.',
+      backHome: 'Home',
+      toCompanies: 'Browse companies',
+      stripTitle: 'Coming soon to Jarlyq',
+      stripSub: "We're building more than an internship search. Here is what comes next:",
     },
     home: {
       heroSubtitle: 'Platform for finding internships and jobs at IT companies across CIS and EMEA. Find companies by your tech stack.',
@@ -1008,6 +1032,18 @@ const dict = {
       learning: 'Оқыту',
       platform: 'Платформа',
       projectIdeas: 'Жоба идеялары',
+      resources: 'Ресурстар',
+    },
+    modules: {
+      soonBadge: 'Жақында',
+      soonTitle: 'Бұл бөлім жақында ашылады',
+      soonFallback: 'Біз оның үстінде жұмыс істеп жатырмыз. Әзірге компаниялар мен тағылымдамаларды қарауға болады.',
+      offTitle: 'Бөлім әзірге қолжетімсіз',
+      offText: 'Бұл бөлім қазір өшірулі.',
+      backHome: 'Басты бетке',
+      toCompanies: 'Компаниялар каталогына',
+      stripTitle: 'Jarlyq-те жақында',
+      stripSub: 'Біз тағылымдама іздеуден де көп нәрсе жасап жатырмыз. Мына бөлімдер келе жатыр:',
     },
     home: {
       heroSubtitle: 'IT-компанияларда тәжірибе мен жұмыс іздеуге арналған платформа. Технология стегі бойынша компанияңды тап.',
@@ -1480,6 +1516,12 @@ export interface Translations {
     login: string; logout: string; suggest: string; myProfile: string;
     publicProfile: string; search: string; groupWork: string; groupPrep: string;
     opportunities: string; learning: string; platform: string; projectIdeas: string;
+    resources: string;
+  };
+  modules: {
+    soonBadge: string; soonTitle: string; soonFallback: string;
+    offTitle: string; offText: string; backHome: string; toCompanies: string;
+    stripTitle: string; stripSub: string;
   };
   search: {
     placeholder: string; empty: string; companies: string;
