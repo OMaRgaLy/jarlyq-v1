@@ -32,6 +32,12 @@ func NewCSRFMiddleware(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		// API requests authenticated via Authorization Bearer token are immune to CSRF
+		if authHeader := c.GetHeader("Authorization"); len(authHeader) > 7 && authHeader[:7] == "Bearer " {
+			c.Next()
+			return
+		}
+
 		csrfCookie, err := c.Cookie(cfg.CSRFCookieName)
 		if err != nil || csrfCookie == "" {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "missing csrf token"})
