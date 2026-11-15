@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Header } from '../../components/header';
 import { Footer } from '../../components/footer';
 import { CompanyCard } from '../../components/company-card';
@@ -19,6 +19,12 @@ export default function CompaniesPage() {
   const [stackId, setStackId] = useState('');
   const [regionId, setRegionId] = useState('');
   const [workFormat, setWorkFormat] = useState('');
+
+  // Deep link from the "Stacks" page: /companies?stack=<id>
+  useEffect(() => {
+    const s = new URLSearchParams(window.location.search).get('stack');
+    if (s && /^\d+$/.test(s)) setStackId(s);
+  }, []);
 
   const apiParams = useMemo(() => ({
     ...(stackId  ? { 'stack_ids[]':  [stackId]  } : {}),

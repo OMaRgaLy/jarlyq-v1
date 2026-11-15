@@ -8,18 +8,18 @@
 /* ─── Color scheme ────────────────────────────────────────────────────────── */
 :root {
   color-scheme: light;
-  --brand: #2563eb;
-  --brand-light: #3b82f6;
-  --brand-dark: #1d4ed8;
+  --brand: #157a8c;
+  --brand-light: #2a9fb2;
+  --brand-dark: #0e5f6f;
   --radius-card: 1rem;
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06);
-  --shadow-card-hover: 0 4px 16px -2px rgb(37 99 235 / .12), 0 2px 6px -1px rgb(0 0 0 / .08);
+  --shadow-card-hover: 0 4px 16px -2px rgb(21 122 140 / .16), 0 2px 6px -1px rgb(0 0 0 / .08);
 }
 
 .dark {
   color-scheme: dark;
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / .3), 0 1px 2px -1px rgb(0 0 0 / .2);
-  --shadow-card-hover: 0 4px 20px -4px rgb(37 99 235 / .25), 0 2px 8px -1px rgb(0 0 0 / .4);
+  --shadow-card-hover: 0 4px 20px -4px rgb(21 122 140 / .25), 0 2px 8px -1px rgb(0 0 0 / .4);
 }
 
 /* ─── Base ────────────────────────────────────────────────────────────────── */
@@ -73,7 +73,7 @@ a {
 
 /* ─── Selection ───────────────────────────────────────────────────────────── */
 ::selection {
-  background: rgb(37 99 235 / .15);
+  background: rgb(21 122 140 / .15);
   color: inherit;
 }
 
@@ -94,11 +94,11 @@ a {
 
 .card:hover {
   box-shadow: var(--shadow-card-hover);
-  border-color: rgb(37 99 235 / .2);
+  border-color: rgb(21 122 140 / .2);
 }
 
 .dark .card:hover {
-  border-color: rgb(37 99 235 / .25);
+  border-color: rgb(21 122 140 / .25);
 }
 
 /* ─── Card lift variant (for clickable cards) ─────────────────────────────── */
@@ -188,7 +188,7 @@ a {
 
 /* ─── Gradient text ───────────────────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #2a9fb2 0%, #157a8c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -196,11 +196,11 @@ a {
 
 /* ─── Glow effects ────────────────────────────────────────────────────────── */
 .glow-blue {
-  box-shadow: 0 0 30px rgb(37 99 235 / .15);
+  box-shadow: 0 0 30px rgb(21 122 140 / .15);
 }
 
 .dark .glow-blue {
-  box-shadow: 0 0 40px rgb(37 99 235 / .2);
+  box-shadow: 0 0 40px rgb(21 122 140 / .2);
 }
 
 /* ─── Page layout helpers ─────────────────────────────────────────────────── */

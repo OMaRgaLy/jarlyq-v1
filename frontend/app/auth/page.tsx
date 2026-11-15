@@ -22,7 +22,7 @@ function AuthContent() {
   const router = useRouter();
   const params = useSearchParams();
   const { t } = useLang();
-  const returnTo = params.get('next') || '/profile';
+  const returnTo = params.get('next') || '/internships';
 
   const [mode, setMode] = useState<'login' | 'register'>('register');
   const [email, setEmail] = useState('');
@@ -45,9 +45,11 @@ function AuthContent() {
       if (mode === 'register') {
         if (!termsAccepted) { setError(t.auth.termsRequired); setLoading(false); return; }
         await emailRegister(email, password, firstName, lastName, termsAccepted);
-      } else {
-        await emailLogin(email, password);
+        // New accounts go through the short onboarding wizard first.
+        router.push('/onboarding');
+        return;
       }
+      await emailLogin(email, password);
       router.push(returnTo);
     } catch (err: any) {
       setError(err?.response?.data?.error || t.auth.genericError);

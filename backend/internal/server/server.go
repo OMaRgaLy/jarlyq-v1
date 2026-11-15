@@ -105,6 +105,9 @@ func New(cfg *config.Config) (*Server, error) {
 		engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
+	// Hourly Telegram nudges for saved opportunities whose deadline is near.
+	handler.StartDeadlineReminders(context.Background())
+
 	return &Server{engine: engine, cfg: cfg, db: db, log: log}, nil
 }
 

@@ -8,7 +8,8 @@ import { emailLogin, emailRegister } from '../lib/auth';
 
 interface Props {
   onClose: () => void;
-  onSuccess: () => void;
+  /** isNew is true right after a registration, so the caller can start onboarding. */
+  onSuccess: (isNew?: boolean) => void;
 }
 
 type Mode = 'login' | 'register';
@@ -37,7 +38,7 @@ export function AuthModal({ onClose, onSuccess }: Props) {
       } else {
         await emailRegister(email, password, firstName, lastName, termsAccepted);
       }
-      onSuccess();
+      onSuccess(mode === 'register');
     } catch {
       setError(mode === 'login' ? 'Неверный email или пароль' : 'Ошибка регистрации. Возможно, этот email уже занят.');
     } finally {

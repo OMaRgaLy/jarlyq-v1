@@ -10,6 +10,7 @@ import { useCompany, useCompanyReviews } from '../../../lib/hooks';
 import { useLang } from '../../../lib/lang-context';
 import { getUser } from '../../../lib/auth';
 import { api } from '../../../lib/api';
+import { applyTo } from '../../../lib/tracker';
 import type { CompanyShowcase, HRContent, School } from '../../../lib/api';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -531,10 +532,10 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                               </p>
                             )}
                             {opp.applyURL && (
-                              <a href={opp.applyURL} target="_blank" rel="noreferrer"
+                              <button type="button" onClick={() => { applyTo(opp.id).catch(() => {}); }}
                                 className="mt-auto inline-flex rounded-lg bg-brand px-4 py-2 text-center text-xs font-semibold text-white hover:bg-brand-dark">
                                 {t.company.apply}
-                              </a>
+                              </button>
                             )}
                           </div>
                         );
@@ -575,10 +576,10 @@ export default function CompanyDetailPage({ params }: { params: { id: string } }
                               </p>
                             )}
                             {opp.applyURL && (
-                              <a href={opp.applyURL} target="_blank" rel="noreferrer"
+                              <button type="button" onClick={() => { applyTo(opp.id).catch(() => {}); }}
                                 className="mt-auto inline-flex rounded-lg bg-brand px-4 py-2 text-center text-xs font-semibold text-white hover:bg-brand-dark">
                                 {t.company.respond}
-                              </a>
+                              </button>
                             )}
                           </div>
                         );

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '../../../components/header';
+import { CompanyLeads } from '../../../components/company-leads';
 import { getToken, getUser } from '../../../lib/auth';
 import { useLang } from '../../../lib/lang-context';
 import { api, Company, Opportunity, HRContact } from '../../../lib/api';
@@ -140,6 +141,8 @@ export default function CompanyDashboardPage() {
           <h1 className="text-2xl font-bold">{t.dashboard.editCompany}</h1>
           {saved && <span className="text-sm text-green-600">{t.dashboard.saved}</span>}
         </div>
+
+        <CompanyLeads />
 
         {/* Company Info Form */}
         <section className="border border-border rounded-xl p-6 bg-card mb-6 space-y-4">

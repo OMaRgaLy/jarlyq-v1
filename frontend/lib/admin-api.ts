@@ -257,10 +257,35 @@ export interface AdminUser {
   company_id: number | null;
   school_id: number | null;
   created_at: string;
+  premium_until?: string | null;
+  premium_interest_at?: string | null;
+  level?: string;
+  country?: string;
 }
 export const fetchAdminUsers = async (): Promise<AdminUser[]> => {
   const { data } = await adminApi.get('/admin/users');
   return data.users ?? [];
+};
+
+/** days = 0 revokes Premium; otherwise extends it by that many days. */
+export const setUserPremium = async (id: number, days: number): Promise<string | null> => {
+  const { data } = await adminApi.put(`/admin/users/${id}/premium`, { days });
+  return data.premium_until ?? null;
+};
+
+// Bulk import (spreadsheet rows)
+export interface ImportRow { [column: string]: string }
+export interface ImportResult { row: number; status: 'created' | 'updated' | 'error'; message?: string }
+export interface ImportResponse {
+  dry_run: boolean;
+  created: number;
+  updated: number;
+  errors: number;
+  results: ImportResult[];
+}
+export const runImport = async (rows: ImportRow[], dryRun: boolean): Promise<ImportResponse> => {
+  const { data } = await adminApi.post<ImportResponse>('/admin/import', { dry_run: dryRun, rows });
+  return data;
 };
 
 // Owner Requests

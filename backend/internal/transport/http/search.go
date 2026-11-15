@@ -83,6 +83,7 @@ func (h *Handler) search(c *gin.Context) {
 	if err := h.Services.DB.Table("opportunities").
 		Select("opportunities.*, companies.name AS company_name").
 		Joins("LEFT JOIN companies ON companies.id = opportunities.company_id").
+		Where("opportunities.is_active = ? AND (opportunities.premium_until IS NULL OR opportunities.premium_until <= NOW())", true).
 		Where("LOWER(opportunities.title) LIKE ? OR LOWER(opportunities.description) LIKE ? OR LOWER(companies.name) LIKE ?", like, like, like).
 		Limit(5).
 		Scan(&opps).Error; err != nil {

@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -57,6 +58,10 @@ func newAdminRoutes(group *gin.RouterGroup, handler *Handler, jwt auth.Manager) 
 
 	// Users (read-only)
 	group.GET("/users", handler.adminListUsers)
+	group.PUT("/users/:id/premium", handler.adminSetUserPremium)
+
+	// Bulk import (CSV rows parsed in the browser) — fastest way to fill the catalog
+	group.POST("/import", handler.adminImport)
 
 	// HR Contacts
 	group.POST("/companies/:id/hr-contacts", handler.adminCreateHRContact)
@@ -319,6 +324,26 @@ type adminOpportunityRequest struct {
 	IsYearRound    bool    `json:"is_year_round"`
 	IsVerified     bool    `json:"is_verified"`
 	Source         string  `json:"source"`
+	Country        string  `json:"country"`
+	// PremiumHours: show this posting to Premium users only for N hours (early access).
+	// nil = leave unchanged, 0 = remove the lock.
+	PremiumHours *int `json:"premium_hours"`
+}
+
+// applyPremiumWindow sets or clears the Premium-only window on an opportunity.
+func applyPremiumWindow(opp *model.Opportunity, hours *int) {
+	if hours == nil {
+		return
+	}
+	if *hours <= 0 {
+		opp.PremiumUntil = nil
+		return
+	}
+	if *hours > 168 {
+		*hours = 168 // a week is the longest early-access window that makes sense
+	}
+	t := time.Now().Add(time.Duration(*hours) * time.Hour)
+	opp.PremiumUntil = &t
 }
 
 func (h *Handler) adminCreateOpportunity(c *gin.Context) {
@@ -332,6 +357,7 @@ func (h *Handler) adminCreateOpportunity(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeURLs(&req.ApplyURL)
 	opp := model.Opportunity{
 		CompanyID:      uint(companyID),
 		Type:           req.Type,
@@ -345,10 +371,12 @@ func (h *Handler) adminCreateOpportunity(c *gin.Context) {
 		SalaryCurrency: req.SalaryCurrency,
 		WorkFormat:     req.WorkFormat,
 		City:           req.City,
+		Country:        strings.ToUpper(strings.TrimSpace(req.Country)),
 		IsYearRound:    req.IsYearRound,
 		IsVerified:     req.IsVerified,
 		Source:         req.Source,
 	}
+	applyPremiumWindow(&opp, req.PremiumHours)
 	if req.Deadline != nil {
 		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
 			opp.Deadline = &t
@@ -377,6 +405,7 @@ func (h *Handler) adminUpdateOpportunity(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	safeURLs(&req.ApplyURL)
 	opp.Type = req.Type
 	opp.Title = req.Title
 	opp.Description = req.Description
@@ -388,9 +417,11 @@ func (h *Handler) adminUpdateOpportunity(c *gin.Context) {
 	opp.SalaryCurrency = req.SalaryCurrency
 	opp.WorkFormat = req.WorkFormat
 	opp.City = req.City
+	opp.Country = strings.ToUpper(strings.TrimSpace(req.Country))
 	opp.IsYearRound = req.IsYearRound
 	opp.IsVerified = req.IsVerified
 	opp.Source = req.Source
+	applyPremiumWindow(&opp, req.PremiumHours)
 	if req.Deadline != nil {
 		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
 			opp.Deadline = &t
@@ -528,6 +559,7 @@ type adminOpportunityDirectRequest struct {
 	IsVerified     bool    `json:"is_verified"`
 	NeedsReview    bool    `json:"needs_review"`
 	Deadline       *string `json:"deadline"`
+	PremiumHours   *int    `json:"premium_hours"`
 }
 
 func (h *Handler) adminCreateOpportunityDirect(c *gin.Context) {
@@ -559,6 +591,7 @@ func (h *Handler) adminCreateOpportunityDirect(c *gin.Context) {
 		NeedsReview:    req.NeedsReview,
 		ParsedAt:       &now,
 	}
+	applyPremiumWindow(&opp, req.PremiumHours)
 	if req.Deadline != nil {
 		if t, err := time.Parse("2006-01-02", *req.Deadline); err == nil {
 			opp.Deadline = &t
@@ -875,9 +908,13 @@ func (h *Handler) adminListUsers(c *gin.Context) {
 		CompanyID *uint  `json:"company_id"`
 		SchoolID  *uint  `json:"school_id"`
 		CreatedAt string `json:"created_at"`
+		PremiumUntil      *time.Time `json:"premium_until"`
+		PremiumInterestAt *time.Time `json:"premium_interest_at"`
+		Level             string     `json:"level"`
+		Country           string     `json:"country"`
 	}
 	h.Services.DB.Table("users").
-		Select("id, first_name, last_name, email, phone, role, company_id, school_id, created_at").
+		Select("id, first_name, last_name, email, phone, role, company_id, school_id, created_at, premium_until, premium_interest_at, level, country").
 		Order("created_at DESC").
 		Limit(200).
 		Scan(&users)
